@@ -1,0 +1,977 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#020617" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="V6 Fitness" />
+    <meta
+      name="description"
+      content="Nutrition tracking with food search, daily logging, adaptive targets, and offline support."
+    />
+    <title>V6 Fitness Dashboard</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png" />
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+
+  <body class="min-h-screen bg-slate-950 text-slate-100">
+    <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <header
+        class="mb-6 rounded-[2rem] border border-slate-800 bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950 p-6 shadow-2xl shadow-slate-950/50"
+      >
+        <div
+          class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between"
+        >
+          <div class="space-y-2">
+            <p class="text-xs uppercase tracking-[0.32em] text-emerald-300/80">
+              Daily product
+            </p>
+            <h1 class="text-3xl font-semibold tracking-tight sm:text-4xl">
+              V6 Fitness Dashboard
+            </h1>
+            <p class="max-w-2xl text-sm text-slate-300">
+              Modular Vanilla JS tracking with a real food log, meal planner,
+              onboarding, USDA/OFF/Edamam integrations, and a pantry assistant.
+            </p>
+          </div>
+
+          <div
+            class="rounded-2xl border border-slate-800 bg-slate-950/50 px-4 py-3 text-sm text-slate-300"
+          >
+            <p class="text-xs uppercase tracking-[0.24em] text-slate-500">
+              Selected date
+            </p>
+            <p id="selectedDateLabel" class="mt-1 font-medium text-white"></p>
+          </div>
+        </div>
+      </header>
+
+      <main class="grid gap-12">
+        <section class="grid gap-4">
+          <div class="space-y-2">
+            <p class="text-xs uppercase tracking-[0.28em] text-emerald-300/80">
+              Today
+            </p>
+            <h2 class="text-3xl font-semibold tracking-tight text-white">
+              Log today and track progress
+            </h2>
+            <p class="max-w-3xl text-sm text-slate-400">
+              Everything important for today lives here: remaining targets, quick
+              logging, and your day foods.
+            </p>
+          </div>
+
+          <section
+            class="rounded-[2rem] border border-slate-800 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 p-6 shadow-2xl shadow-slate-950/40"
+          >
+            <div class="grid gap-8 xl:grid-cols-[1.15fr_0.85fr]">
+              <div class="space-y-6">
+                <div
+                  class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between"
+                >
+                  <div>
+                    <p class="text-xs uppercase tracking-[0.24em] text-slate-500">
+                      Daily dashboard
+                    </p>
+                    <h3 class="mt-1 text-2xl font-semibold text-white">
+                      Day summary
+                    </h3>
+                  </div>
+                  <div
+                    class="rounded-[1.75rem] border border-emerald-500/20 bg-emerald-500/10 px-5 py-4"
+                  >
+                    <p class="text-xs uppercase tracking-[0.24em] text-emerald-200/80">
+                      Calories left
+                    </p>
+                    <p
+                      id="kcalRemaining"
+                      class="mt-2 text-5xl font-black tracking-tight sm:text-6xl"
+                    >
+                      0
+                    </p>
+                  </div>
+                </div>
+
+                <div class="grid gap-4 md:grid-cols-4">
+                  <div class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
+                    <p class="text-xs uppercase tracking-[0.2em] text-slate-500">
+                      Calorie status
+                    </p>
+                    <p id="kcalStatus" class="mt-2 text-sm text-slate-300"></p>
+                  </div>
+
+                  <div class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
+                    <p class="text-xs uppercase tracking-[0.2em] text-slate-500">
+                      Macros
+                    </p>
+                    <p id="macroSummary" class="mt-2 text-sm text-slate-300"></p>
+                  </div>
+
+                  <div class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
+                    <p class="text-xs uppercase tracking-[0.2em] text-slate-500">
+                      Day
+                    </p>
+                    <p id="dayMetaSummary" class="mt-2 text-sm text-slate-300"></p>
+                  </div>
+
+                  <div class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
+                    <p class="text-xs uppercase tracking-[0.2em] text-slate-500">
+                      Active targets
+                    </p>
+                    <p id="targetSummary" class="mt-2 text-sm text-slate-300"></p>
+                  </div>
+                </div>
+
+                <div class="grid gap-4 lg:grid-cols-2">
+                  <label class="space-y-2">
+                    <span class="text-sm text-slate-300">Kcal</span>
+                    <input
+                      id="kcal"
+                      type="number"
+                      placeholder="0"
+                      class="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
+                    />
+                  </label>
+
+                  <label class="space-y-2">
+                    <span class="text-sm text-slate-300">Protein</span>
+                    <input
+                      id="prot"
+                      type="number"
+                      placeholder="0"
+                      class="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
+                    />
+                  </label>
+
+                  <label class="space-y-2">
+                    <span class="text-sm text-slate-300">Carbs</span>
+                    <input
+                      id="carb"
+                      type="number"
+                      placeholder="0"
+                      class="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
+                    />
+                  </label>
+
+                  <label class="space-y-2">
+                    <span class="text-sm text-slate-300">Fat</span>
+                    <input
+                      id="fat"
+                      type="number"
+                      placeholder="0"
+                      class="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
+                    />
+                  </label>
+
+                  <label class="space-y-2">
+                    <span class="text-sm text-slate-300">Weight</span>
+                    <input
+                      id="peso"
+                      type="number"
+                      placeholder="0"
+                      class="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
+                    />
+                  </label>
+
+                  <label class="space-y-2">
+                    <span class="text-sm text-slate-300">Water</span>
+                    <input
+                      id="agua"
+                      type="number"
+                      step="0.1"
+                      placeholder="0"
+                      class="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
+                    />
+                  </label>
+
+                  <label class="space-y-2">
+                    <span class="text-sm text-slate-300">Fiber</span>
+                    <input
+                      id="fiber"
+                      type="number"
+                      step="0.1"
+                      placeholder="0"
+                      class="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
+                    />
+                  </label>
+
+                  <label class="space-y-2">
+                    <span class="text-sm text-slate-300">Day type</span>
+                    <select
+                      id="dayType"
+                      class="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
+                    >
+                      <option value="normal">normal</option>
+                      <option value="training">training</option>
+                      <option value="rest">rest</option>
+                    </select>
+                  </label>
+                </div>
+
+                <div class="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
+                  <div class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
+                    <p class="text-xs uppercase tracking-[0.2em] text-slate-500">
+                      Context and insight
+                    </p>
+                    <p id="dayTypeSummary" class="mt-2 text-sm text-slate-300">
+                      normal
+                    </p>
+                    <p id="adaptiveTdeeInsight" class="mt-3 text-sm text-slate-300">
+                      Adaptive TDEE: not enough data yet.
+                    </p>
+                  </div>
+
+                  <div id="safetyWarnings" class="grid gap-3"></div>
+                </div>
+
+                <div class="grid gap-4">
+                  <label class="space-y-2">
+                    <span class="text-sm text-slate-300">Notes</span>
+                    <textarea
+                      id="notes"
+                      rows="4"
+                      placeholder="How did today go?"
+                      class="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
+                    ></textarea>
+                  </label>
+
+                  <div class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
+                    <p class="text-xs uppercase tracking-[0.2em] text-slate-500">
+                      Notes preview
+                    </p>
+                    <p id="notesPreview" class="mt-2 text-sm text-slate-300">
+                      No notes saved for this day.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid gap-6">
+                <section
+                  class="rounded-[1.75rem] border border-slate-800 bg-slate-950/70 p-5"
+                >
+                  <div class="mb-4">
+                    <p class="text-xs uppercase tracking-[0.24em] text-slate-500">
+                      Food log
+                    </p>
+                    <h3 class="mt-1 text-xl font-semibold text-white">
+                      Quick log
+                    </h3>
+                  </div>
+
+                  <div class="flex flex-col gap-3 sm:flex-row">
+                    <select
+                      id="quickFoodSelect"
+                      class="flex-1 rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
+                    ></select>
+                    <input
+                      id="quickFoodGrams"
+                      type="number"
+                      placeholder="g"
+                      class="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500 sm:w-28"
+                    />
+                    <button
+                      id="quickAddFoodBtn"
+                      type="button"
+                      class="rounded-2xl bg-emerald-500 px-5 py-3 font-semibold text-slate-950 transition hover:bg-emerald-400"
+                    >
+                      Add
+                    </button>
+                  </div>
+
+                  <ul id="dayFoodList" class="mt-4 grid gap-3 text-sm"></ul>
+                </section>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <section class="grid gap-4">
+          <div class="space-y-2">
+            <p class="text-xs uppercase tracking-[0.28em] text-amber-300/80">
+              Add foods
+            </p>
+            <h2 class="text-3xl font-semibold tracking-tight text-white">
+              Search, pick, and log
+            </h2>
+            <p class="max-w-3xl text-sm text-slate-400">
+              One fast flow for local matches first, USDA name search next, and
+              Open Food Facts as the fallback.
+            </p>
+          </div>
+
+          <section
+            class="rounded-[2rem] border border-slate-800 bg-slate-900/80 p-6 shadow-xl shadow-slate-950/40"
+          >
+            <div class="flex flex-col gap-3 lg:flex-row">
+              <input
+                id="globalFoodSearch"
+                placeholder="Search chicken, rice, oats, yogurt..."
+                class="flex-1 rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
+              />
+              <button
+                id="searchAllApis"
+                type="button"
+                class="rounded-2xl bg-emerald-500 px-5 py-3 font-semibold text-slate-950 transition hover:bg-emerald-400"
+              >
+                Search
+              </button>
+            </div>
+
+            <div class="mt-4 flex flex-wrap gap-2 text-[11px] text-slate-400">
+              <span class="rounded-full border border-slate-800 bg-slate-950/70 px-3 py-1">
+                `Enter` runs search
+              </span>
+              <span class="rounded-full border border-slate-800 bg-slate-950/70 px-3 py-1">
+                USDA powers generic food search
+              </span>
+              <span class="rounded-full border border-slate-800 bg-slate-950/70 px-3 py-1">
+                Barcode import stays optional
+              </span>
+            </div>
+
+            <p id="globalFoodSearchStatus" class="mt-4 text-sm text-slate-300">
+              Search foods by name. Barcode import stays optional.
+            </p>
+            <div id="searchResultsMeta" class="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4"></div>
+            <div id="searchResults" class="mt-4 grid gap-3"></div>
+          </section>
+        </section>
+
+        <section class="grid gap-4">
+          <div class="space-y-2">
+            <p class="text-xs uppercase tracking-[0.28em] text-sky-300/80">
+              Suggestions
+            </p>
+            <h2 class="text-3xl font-semibold tracking-tight text-white">
+              Plan the rest of the day
+            </h2>
+          </div>
+
+          <section
+            class="rounded-[2rem] border border-slate-800 bg-slate-900/80 p-6 shadow-xl shadow-slate-950/40"
+          >
+            <div
+              class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div>
+                <p class="text-xs uppercase tracking-[0.24em] text-slate-500">
+                  Meal planner
+                </p>
+                <h3 class="mt-1 text-2xl font-semibold text-white">
+                  Suggestions for the rest of the day
+                </h3>
+              </div>
+
+              <button
+                id="generateMealPlanBtn"
+                type="button"
+                class="rounded-full border border-sky-500/40 bg-sky-500/10 px-4 py-2 text-sm font-semibold text-sky-200 transition hover:border-sky-400 hover:bg-sky-500/20"
+              >
+                  Refresh plan
+              </button>
+            </div>
+
+            <div
+              id="mealPlanContainer"
+              class="hidden grid gap-4 lg:grid-cols-2"
+            ></div>
+          </section>
+        </section>
+
+        <section class="grid gap-4">
+          <div class="space-y-2">
+            <p class="text-xs uppercase tracking-[0.28em] text-slate-400">
+              Progress
+            </p>
+            <h2 class="text-3xl font-semibold tracking-tight text-white">
+              History and trend
+            </h2>
+          </div>
+
+          <div class="grid gap-6 xl:grid-cols-[0.92fr_1.08fr]">
+            <section
+              class="rounded-[2rem] border border-slate-800 bg-slate-900/80 p-6 shadow-xl shadow-slate-950/40"
+            >
+              <div class="mb-4 flex items-center justify-between gap-3">
+                <div>
+                  <p class="text-xs uppercase tracking-[0.24em] text-slate-500">
+                    Calendar
+                  </p>
+                  <h3 class="mt-1 text-xl font-semibold text-white">
+                    Day navigation
+                  </h3>
+                </div>
+                <div class="flex gap-2">
+                  <button
+                    id="prevMonth"
+                    type="button"
+                    class="rounded-full border border-slate-700 px-4 py-2 text-sm text-slate-300 transition hover:border-slate-500 hover:text-white"
+                  >
+                    Previous
+                  </button>
+                  <button
+                    id="nextMonth"
+                    type="button"
+                    class="rounded-full border border-slate-700 px-4 py-2 text-sm text-slate-300 transition hover:border-slate-500 hover:text-white"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+
+              <p id="monthLabel" class="mb-4 text-sm font-semibold text-slate-300"></p>
+              <div id="calendar" class="grid grid-cols-7 gap-2"></div>
+            </section>
+
+            <section class="grid gap-6 lg:grid-cols-2">
+              <section
+                class="rounded-[2rem] border border-slate-800 bg-slate-900/80 p-6 shadow-xl shadow-slate-950/40"
+              >
+                <div class="mb-4">
+                  <p class="text-xs uppercase tracking-[0.24em] text-slate-500">
+                    Charts
+                  </p>
+                  <h3 class="mt-1 text-xl font-semibold text-white">
+                    Weight trend
+                  </h3>
+                </div>
+
+                <div class="h-[280px]">
+                  <canvas id="weightChart"></canvas>
+                </div>
+              </section>
+
+              <section
+                class="rounded-[2rem] border border-slate-800 bg-slate-900/80 p-6 shadow-xl shadow-slate-950/40"
+              >
+                <div class="mb-4">
+                  <p class="text-xs uppercase tracking-[0.24em] text-slate-500">
+                    Charts
+                  </p>
+                  <h3 class="mt-1 text-xl font-semibold text-white">
+                    Day macros
+                  </h3>
+                </div>
+
+                <div class="h-[280px]">
+                  <canvas id="macroChart"></canvas>
+                </div>
+              </section>
+            </section>
+          </div>
+        </section>
+
+        <details
+          id="configSection"
+          class="rounded-[2rem] border border-slate-800 bg-slate-900/50 p-6 opacity-80 shadow-xl shadow-slate-950/30 transition hover:opacity-100"
+        >
+          <summary class="cursor-pointer list-none">
+            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p class="text-xs uppercase tracking-[0.28em] text-slate-500">
+                  Settings
+                </p>
+                <h2 class="text-3xl font-semibold tracking-tight text-white">
+                  Database, APIs, and setup
+                </h2>
+              </div>
+              <span class="text-sm text-slate-400">
+                Expand to manage profile, foods, recipes, and backups
+              </span>
+            </div>
+          </summary>
+
+          <div class="mt-8 grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
+            <div class="grid gap-6">
+              <section
+                class="rounded-[1.75rem] border border-slate-800 bg-slate-950/70 p-6"
+              >
+                <div class="mb-4 flex items-center justify-between gap-3">
+                  <div>
+                    <p class="text-xs uppercase tracking-[0.24em] text-slate-500">
+                      Perfil
+                    </p>
+                    <h3 class="mt-1 text-2xl font-semibold text-white">
+                      Perfil do utilizador
+                    </h3>
+                  </div>
+                  <button
+                    id="editProfileBtn"
+                    type="button"
+                    class="rounded-full border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-slate-500 hover:text-white"
+                  >
+                    Editar perfil
+                  </button>
+                </div>
+
+                <div id="profileSummary" class="grid gap-3"></div>
+              </section>
+
+              <section
+                id="legacyFoodSearchSection"
+                class="hidden rounded-[1.75rem] border border-slate-800 bg-slate-950/70 p-6"
+              >
+                <div class="mb-4">
+                  <p class="text-xs uppercase tracking-[0.24em] text-slate-500">
+                    Pesquisa
+                  </p>
+                  <h3 class="mt-1 text-2xl font-semibold text-white">
+                    Pesquisa de alimentos
+                  </h3>
+                </div>
+
+                <div class="flex flex-col gap-3 sm:flex-row">
+                  <input
+                    id="edamamFoodQuery"
+                    placeholder="Ex: chicken breast, oats, yogurt"
+                    class="flex-1 rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
+                  />
+                  <button
+                    id="searchEdamamFoodBtn"
+                    type="button"
+                    class="rounded-2xl border border-sky-500/40 bg-sky-500/10 px-4 py-3 font-semibold text-sky-200 transition hover:border-sky-400 hover:bg-sky-500/20"
+                  >
+                    Pesquisar Edamam
+                  </button>
+                </div>
+
+                <p id="edamamFoodStatus" class="mt-4 text-sm text-slate-300"></p>
+                <div id="edamamFoodResults" class="mt-4 grid gap-3"></div>
+              </section>
+
+              <section
+                class="rounded-[1.75rem] border border-slate-800 bg-slate-950/70 p-6"
+              >
+                  <div class="mb-4">
+                    <p class="text-xs uppercase tracking-[0.24em] text-slate-500">
+                      APIs
+                    </p>
+                    <h3 class="mt-1 text-2xl font-semibold text-white">
+                      Nutrition APIs
+                    </h3>
+                  </div>
+
+                <div class="grid gap-3">
+                  <input
+                    id="usdaApiKey"
+                    placeholder="USDA API Key (optional)"
+                    autocomplete="off"
+                    class="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
+                  />
+                  <input
+                    id="edamamAppId"
+                    placeholder="Edamam App ID"
+                    autocomplete="off"
+                    class="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
+                  />
+                  <input
+                    id="edamamAppKey"
+                    type="password"
+                    placeholder="Edamam App Key"
+                    autocomplete="off"
+                    class="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
+                  />
+                  <button
+                    id="saveApiConfigBtn"
+                    type="button"
+                    class="rounded-2xl bg-emerald-500 px-4 py-3 font-semibold text-slate-950 transition hover:bg-emerald-400"
+                  >
+                    Save API settings
+                  </button>
+                </div>
+
+                <p id="apiConfigStatus" class="mt-4 text-sm text-slate-300"></p>
+                <p id="edamamConfigWarning" class="mt-2 text-xs text-slate-500"></p>
+              </section>
+
+              <section
+                class="rounded-[1.75rem] border border-slate-800 bg-slate-950/70 p-6"
+              >
+                <div
+                  class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <div>
+                    <p class="text-xs uppercase tracking-[0.24em] text-slate-500">
+                      Despensa
+                    </p>
+                    <h3 class="mt-1 text-2xl font-semibold text-white">
+                      Receitas com o que tens em casa
+                    </h3>
+                  </div>
+
+                  <div class="flex flex-wrap gap-2">
+                    <button
+                      id="suggestPantryRecipesBtn"
+                      type="button"
+                      class="rounded-full border border-emerald-500/40 bg-emerald-500/10 px-4 py-2 text-sm font-semibold text-emerald-200 transition hover:border-emerald-400 hover:bg-emerald-500/20"
+                    >
+                      Sugerir receitas
+                    </button>
+                    <button
+                      id="clearPantryBtn"
+                      type="button"
+                      class="rounded-full border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 transition hover:border-slate-500 hover:text-white"
+                    >
+                      Limpar despensa
+                    </button>
+                  </div>
+                </div>
+
+                <div
+                  id="pantryFoodList"
+                  class="grid gap-3 lg:grid-cols-2"
+                ></div>
+
+                <div id="pantrySuggestions" class="mt-5 grid gap-4"></div>
+              </section>
+            </div>
+
+            <div class="grid gap-6">
+              <section
+                id="foodDBSection"
+                class="hidden rounded-[1.75rem] border border-slate-800 bg-slate-950/70 p-6"
+              >
+                <div class="mb-4">
+                  <p class="text-xs uppercase tracking-[0.24em] text-slate-500">
+                    Food DB
+                  </p>
+                  <h3 class="mt-1 text-2xl font-semibold text-white">
+                    Base de dados de alimentos
+                  </h3>
+                </div>
+
+                <input id="foodEditingId" type="hidden" value="" />
+                <input id="foodSource" type="hidden" value="manual" />
+                <input id="foodExternalId" type="hidden" value="" />
+                <input id="foodRawExternal" type="hidden" value="" />
+
+                <div class="grid gap-3">
+                  <input
+                    id="foodName"
+                    placeholder="Food name"
+                    class="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
+                  />
+                  <div class="grid gap-3 sm:grid-cols-2">
+                    <input
+                      id="foodKcal"
+                      type="number"
+                      placeholder="Kcal"
+                      class="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
+                    />
+                    <input
+                      id="foodP"
+                      type="number"
+                      placeholder="Protein"
+                      class="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
+                    />
+                    <input
+                      id="foodC"
+                      type="number"
+                      placeholder="Carbs"
+                      class="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
+                    />
+                    <input
+                      id="foodF"
+                      type="number"
+                      placeholder="Fat"
+                      class="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
+                    />
+                    <input
+                      id="foodFiber"
+                      type="number"
+                      placeholder="Fiber"
+                      class="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
+                    />
+                  </div>
+
+                  <div>
+                    <div class="mb-2 flex items-center justify-between gap-3">
+                      <span class="text-sm text-slate-300">Manual tags</span>
+                      <span id="foodImportStatus" class="text-xs text-slate-500"></span>
+                    </div>
+                    <div
+                      id="foodTags"
+                      class="grid grid-cols-2 gap-2 text-xs text-slate-300"
+                    >
+                        <label><input type="checkbox" value="protein" class="foodTag" /> Protein</label>
+                        <label><input type="checkbox" value="carb" class="foodTag" /> Carbs</label>
+                        <label><input type="checkbox" value="fat" class="foodTag" /> Fat</label>
+                        <label><input type="checkbox" value="main" class="foodTag" /> Main meal</label>
+                        <label><input type="checkbox" value="snack" class="foodTag" /> Snack</label>
+                        <label><input type="checkbox" value="cut" class="foodTag" /> Cut</label>
+                        <label><input type="checkbox" value="bulk" class="foodTag" /> Bulk</label>
+                    </div>
+                  </div>
+
+                  <div class="grid gap-3">
+                    <input
+                      id="foodBarcode"
+                      type="text"
+                      placeholder="Barcode (optional)"
+                      class="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
+                    />
+                    <div class="flex flex-col gap-3 sm:flex-row">
+                      <button
+                        id="btnFetchOFF"
+                        type="button"
+                        class="rounded-2xl border border-sky-500/40 bg-sky-500/10 px-4 py-3 font-semibold text-sky-200 transition hover:border-sky-400 hover:bg-sky-500/20"
+                      >
+                        Import from OFF
+                      </button>
+                      <button
+                        id="addFoodBtn"
+                        type="button"
+                        class="rounded-2xl bg-emerald-500 px-4 py-3 font-semibold text-slate-950 transition hover:bg-emerald-400"
+                      >
+                        Add food
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div id="foodList" class="mt-5 grid gap-3"></div>
+              </section>
+
+              <section
+                class="rounded-[1.75rem] border border-slate-800 bg-slate-950/70 p-6"
+              >
+                <div class="mb-4">
+                  <p class="text-xs uppercase tracking-[0.24em] text-slate-500">
+                    Recipes
+                  </p>
+                  <h3 class="mt-1 text-2xl font-semibold text-white">Receitas</h3>
+                </div>
+
+                <div class="grid gap-3">
+                  <input
+                    id="recipeName"
+                    placeholder="Nome da receita"
+                    class="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
+                  />
+
+                  <div class="flex flex-col gap-3 sm:flex-row">
+                    <select
+                      id="recipeFoodSelect"
+                      class="flex-1 rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
+                    ></select>
+                    <input
+                      id="recipeFoodGrams"
+                      type="number"
+                      placeholder="g"
+                      class="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500 sm:w-28"
+                    />
+                    <button
+                      id="addIngredientBtn"
+                      type="button"
+                      class="rounded-2xl border border-slate-700 px-4 py-3 font-semibold text-slate-200 transition hover:border-slate-500 hover:text-white"
+                    >
+                      Adicionar
+                    </button>
+                  </div>
+                </div>
+
+                <ul id="recipeBuilderList" class="mt-4 grid gap-3 text-sm"></ul>
+                <p id="recipeBuilderTotals" class="mt-4 text-sm text-slate-300"></p>
+
+                <button
+                  id="saveRecipeBtn"
+                  type="button"
+                  class="mt-4 rounded-2xl bg-emerald-500 px-4 py-3 font-semibold text-slate-950 transition hover:bg-emerald-400"
+                >
+                  Guardar Receita
+                </button>
+
+                <div id="recipesList" class="mt-5 grid gap-3"></div>
+              </section>
+
+              <section
+                class="rounded-[1.75rem] border border-slate-800 bg-slate-950/70 p-6"
+              >
+                <div class="mb-4">
+                  <p class="text-xs uppercase tracking-[0.24em] text-slate-500">
+                    Backup
+                  </p>
+                  <h3 class="mt-1 text-2xl font-semibold text-white">
+                    Exportar e importar
+                  </h3>
+                </div>
+
+                <div class="flex flex-col gap-3 sm:flex-row">
+                  <button
+                    id="exportBackupBtn"
+                    type="button"
+                    class="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 font-semibold text-emerald-200 transition hover:border-emerald-400 hover:bg-emerald-500/20"
+                  >
+                    Exportar backup
+                  </button>
+                  <button
+                    id="importBackupBtn"
+                    type="button"
+                    class="rounded-2xl border border-slate-700 px-4 py-3 font-semibold text-slate-200 transition hover:border-slate-500 hover:text-white"
+                  >
+                    Importar backup
+                  </button>
+                  <input
+                    id="importBackupInput"
+                    type="file"
+                    accept="application/json"
+                    class="hidden"
+                  />
+                </div>
+
+                <p id="backupStatus" class="mt-4 text-sm text-emerald-300">
+                  Backup ready to export.
+                </p>
+              </section>
+            </div>
+          </div>
+        </details>
+      </main>
+    </div>
+
+    <div
+      id="profileModal"
+      class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/80 px-4 py-6 backdrop-blur-sm"
+      aria-hidden="true"
+    >
+      <div
+        class="w-full max-w-xl rounded-[2rem] border border-slate-800 bg-slate-900 p-6 shadow-2xl shadow-slate-950/60"
+      >
+        <div class="space-y-2">
+          <p class="text-xs uppercase tracking-[0.28em] text-emerald-300/80">
+            Required setup
+          </p>
+          <h2 class="text-3xl font-semibold text-white">
+            Set up your profile before using the app
+          </h2>
+          <p class="text-sm text-slate-300">
+            This defines your baseline goal and unlocks the planner and adaptive
+            suggestions.
+          </p>
+        </div>
+
+        <form id="profileForm" class="mt-6 grid gap-4">
+          <label class="space-y-2">
+            <span class="text-sm text-slate-300">Name</span>
+            <input
+              id="profileName"
+              type="text"
+              required
+              placeholder="Name"
+              class="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
+            />
+          </label>
+
+          <div class="grid gap-4 sm:grid-cols-2">
+            <label class="space-y-2">
+              <span class="text-sm text-slate-300">Age</span>
+              <input
+                id="profileAge"
+                type="number"
+                min="10"
+                required
+                placeholder="Age"
+                class="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
+              />
+            </label>
+
+            <label class="space-y-2">
+              <span class="text-sm text-slate-300">Weight (kg)</span>
+              <input
+                id="profileWeight"
+                type="number"
+                step="0.1"
+                min="1"
+                required
+                placeholder="Weight"
+                class="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
+              />
+            </label>
+
+            <label class="space-y-2">
+              <span class="text-sm text-slate-300">Height (cm)</span>
+              <input
+                id="profileHeight"
+                type="number"
+                min="50"
+                required
+                placeholder="Height"
+                class="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
+              />
+            </label>
+
+            <label class="space-y-2">
+              <span class="text-sm text-slate-300">Gender</span>
+              <select
+                id="profileGender"
+                required
+                class="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
+              >
+                <option value="">Select</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+            </label>
+          </div>
+
+          <label class="space-y-2">
+            <span class="text-sm text-slate-300">Goal</span>
+            <select
+              id="profileGoal"
+              class="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
+            >
+              <option value="cut">cut</option>
+              <option value="maintenance" selected>maintenance</option>
+              <option value="bulk">bulk</option>
+            </select>
+          </label>
+
+          <label class="space-y-2">
+            <span class="text-sm text-slate-300">Activity level</span>
+            <select
+              id="profileActivityLevel"
+              required
+              class="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
+            >
+              <option value="">Select</option>
+              <option value="sedentary">sedentary</option>
+              <option value="light">light</option>
+              <option value="moderate">moderate</option>
+              <option value="heavy">heavy</option>
+              <option value="athlete">athlete</option>
+            </select>
+          </label>
+
+          <label class="space-y-2">
+            <span class="text-sm text-slate-300">Meals per day</span>
+            <select
+              id="profileMealsPerDay"
+              class="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
+            >
+              <option value="3">3</option>
+              <option value="4" selected>4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+            </select>
+          </label>
+
+          <button
+            id="saveProfileBtn"
+            type="submit"
+            class="mt-2 rounded-2xl bg-emerald-500 px-4 py-3 font-semibold text-slate-950 transition hover:bg-emerald-400"
+          >
+            Save profile
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="./js/main.js"></script>
+  </body>
+</html>
