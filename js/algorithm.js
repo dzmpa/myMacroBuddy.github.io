@@ -51,6 +51,10 @@ function normalizeActivityLevel(activityLevel) {
     : "";
 }
 
+function clampBodyFatPercentage(value) {
+  return Math.min(75, Math.max(2, safeNumber(value)));
+}
+
 export function hasCompleteProfile(profile = {}) {
   const source = profile && typeof profile === "object" ? profile : {};
   const hasGoal = ["cut", "maintenance", "bulk"].includes(
@@ -80,6 +84,143 @@ export function calculateFiberTarget(kcal) {
 export function calculateWaterTarget(weight, trainingHours = 0) {
   const liters = (safeNumber(weight) * 35 + safeNumber(trainingHours) * 1000) / 1000;
   return roundToTwo(Math.max(0, liters));
+}
+
+export function calculateNavyBodyFat(profile = {}) {
+  const gender = normalizeGender(profile.gender);
+  const height = safeNumber(profile.height);
+  const weight = safeNumber(profile.weight);
+  const neck = safeNumber(profile.neck);
+  const waist = safeNumber(profile.waist);
+  const hip = safeNumber(profile.hip);
+
+  if (!["male", "female"].includes(gender) || height <= 0 || neck <= 0 || waist <= 0) {
+    return null;
+  }
+
+  let density = 0;
+
+  if (gender === "male") {
+    if (waist <= neck) {
+      return null;
+    }
+
+    density =
+      1.0324 -
+      0.19077 * Math.log10(waist - neck) +
+      0.15456 * Math.log10(height);
+  } else {
+    if (hip <= 0 || waist + hip <= neck) {
+      return null;
+    }
+
+    density =
+      1.29579 -
+      0.35004 * Math.log10(waist + hip - neck) +
+      0.221 * Math.log10(height);
+  }
+
+  if (!Number.isFinite(density) || density <= 0) {
+    return null;
+  }
+
+  const bodyFat = roundToOne(clampBodyFatPercentage(495 / density - 450));
+  const fatMass = weight > 0 ? roundToOne((weight * bodyFat) / 100) : 0;
+  const leanMass = weight > 0 ? roundToOne(Math.max(0, weight - fatMass)) : 0;
+
+  return {
+    bodyFat,
+    fatMass,
+    leanMass,
+    category: getBodyFatCategory(gender, bodyFat),
+  };
+}
+
+export function getBodyFatCategory(gender, bodyFat) {
+  const cleanGender = normalizeGender(gender);
+  const cleanBodyFat = safeNumber(bodyFat);
+
+  if (!["male", "female"].includes(cleanGender) || cleanBodyFat <= 0) {
+    return "";
+  }
+
+  if (cleanGender === "male") {
+    if (cleanBodyFat < 10) return "very lean";
+    if (cleanBodyFat < 18) return "lean";
+    if (cleanBodyFat < 25) return "balanced";
+    return "higher body fat";
+  }
+
+  if (cleanBodyFat < 18) return "very lean";
+  if (cleanBodyFat < 28) return "lean";
+  if (cleanBodyFat < 35) return "balanced";
+  return "higher body fat";
+}
+
+export function getBodyFatRecommendation(profile = {}, estimate = null) {
+  const gender = normalizeGender(profile.gender);
+  const goal = normalizeGoal(profile.goal);
+  const bodyFat = safeNumber(estimate?.bodyFat);
+  const category = String(estimate?.category || "").trim();
+
+  if (!["male", "female"].includes(gender) || bodyFat <= 0) {
+    return null;
+  }
+
+  const leanCutFloor = gender === "male" ? 10 : 18;
+  const balancedUpper = gender === "male" ? 18 : 28;
+  const higherBodyFat = gender === "male" ? 25 : 35;
+
+  if (bodyFat < leanCutFloor) {
+    return {
+      title:
+        goal === "cut"
+          ? "Recommendation: avoid an aggressive cut"
+          : "Recommendation: maintain or lean bulk",
+      message:
+        goal === "cut"
+          ? `You look ${category}. A cut is likely unnecessary right now, so maintenance is the safer next move.`
+          : `You look ${category}. Maintenance or a small lean bulk is usually the better call from here.`,
+    };
+  }
+
+  if (bodyFat < balancedUpper) {
+    return {
+      title:
+        goal === "bulk"
+          ? "Recommendation: a lean bulk can work"
+          : goal === "cut"
+            ? "Recommendation: a small cut can work"
+            : "Recommendation: maintenance is a strong default",
+      message:
+        goal === "bulk"
+          ? `You are in a ${category} range. A controlled surplus can make sense if performance and muscle gain are the priority.`
+          : goal === "cut"
+            ? `You are in a ${category} range. A gentle cut is reasonable if you want a sharper look without overdoing it.`
+            : `You are in a ${category} range. Maintenance is a clean place to hold while you build consistency.`,
+    };
+  }
+
+  if (bodyFat < higherBodyFat) {
+    return {
+      title:
+        goal === "bulk"
+          ? "Recommendation: consider maintenance before bulking"
+          : "Recommendation: maintenance or a gentle cut",
+      message:
+        goal === "bulk"
+          ? `You are in a ${category} range. A bulk is probably not the best first move, so maintenance or a small cut is the cleaner path.`
+          : `You are in a ${category} range. A gentle cut is reasonable if you want to lean out, but maintenance also works if adherence matters more right now.`,
+    };
+  }
+
+  return {
+    title: "Recommendation: start with a cut",
+    message:
+      goal === "bulk"
+        ? `You are in a ${category} range. A bulk is not the best next step, so start with a cut or at least maintenance first.`
+        : `You are in a ${category} range. A moderate cut with high protein is the clearest next move before thinking about a bulk.`,
+  };
 }
 
 export function calculateBaseMacros(profile) {

@@ -3,7 +3,7 @@ import {
   calculateBaseMacros,
   calculateSafetyWarnings,
   sumEntryMacros,
-} from "./algorithm.js";
+} from "./algorithm.js?v=navy2";
 import { inferTags, mergeTags } from "./food.js";
 import {
   createEmptyDay,
@@ -559,6 +559,24 @@ function normalizeRecipeSuggestions(rawSuggestions) {
   };
 }
 
+function normalizeSearchPagination(rawPagination) {
+  if (!rawPagination || typeof rawPagination !== "object") {
+    return null;
+  }
+
+  return {
+    page: Math.max(1, safeNumber(rawPagination.page) || 1),
+    pageSize: Math.max(1, safeNumber(rawPagination.pageSize) || 12),
+    totalCount: Math.max(0, safeNumber(rawPagination.totalCount)),
+    totalPages: Math.max(1, safeNumber(rawPagination.totalPages) || 1),
+    hasNextPage: Boolean(rawPagination.hasNextPage),
+    hasPreviousPage: Boolean(rawPagination.hasPreviousPage),
+    localCount: Math.max(0, safeNumber(rawPagination.localCount)),
+    externalCount: Math.max(0, safeNumber(rawPagination.externalCount)),
+    localPinned: Boolean(rawPagination.localPinned),
+  };
+}
+
 function normalizeLastExternalImport(rawImport) {
   if (!rawImport || typeof rawImport !== "object") {
     return null;
@@ -592,6 +610,7 @@ function normalizeLastExternalImport(rawImport) {
     recentAction: String(rawImport.recentAction ?? "").trim(),
     recentFoodKey: String(rawImport.recentFoodKey ?? "").trim(),
     recentGrams: safeNumber(rawImport.recentGrams),
+    pagination: normalizeSearchPagination(rawImport.pagination),
     item: normalizeImportedFood(rawImport.item),
     items: (Array.isArray(rawImport.items) ? rawImport.items : [])
       .map(normalizeImportedFood)
@@ -800,7 +819,13 @@ export async function loadFromStorage() {
 }
 
 export function saveToStorage(sourceState) {
-  queueStorageWrite(JSON.stringify(serializeState(sourceState)));
+  try {
+    queueStorageWrite(JSON.stringify(serializeState(sourceState)));
+    return true;
+  } catch (error) {
+    console.warn("Storage save skipped because state serialization failed.", error);
+    return false;
+  }
 }
 
 export function createBackupPayload(sourceState) {

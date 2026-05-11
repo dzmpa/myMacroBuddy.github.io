@@ -1,9 +1,9 @@
-const CACHE_NAME = "v6-fitness-dashboard-v6-iphone";
+const CACHE_NAME = "v6-macro-calculator-v4";
 const APP_ASSETS = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
-  "./js/algorithm.js",
+  "./js/algorithm.js?v=navy2",
   "./js/calendar.js",
   "./js/charts.js",
   "./js/coach.js",
@@ -21,7 +21,6 @@ const APP_ASSETS = [
   "./js/state.js",
   "./js/storage.js",
   "./js/ui.js",
-  "./js/usdaFoodData.js",
   "./js/utils.js",
   "./assets/apple-touch-icon.png",
   "./assets/icon-192.png",

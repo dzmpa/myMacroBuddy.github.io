@@ -1,6 +1,6 @@
 import { buildCoachScores } from "./coach.js";
 import { hasEdamamConfig, searchRecipesByIngredients } from "./edamam.js";
-import { getEffectiveTargets } from "./algorithm.js";
+import { getEffectiveTargets } from "./algorithm.js?v=navy2";
 import {
   createEmptyRecipeSuggestions,
   getState,

@@ -399,3 +399,769 @@
  HTTP  29/04/2026 15:19:56 127.0.0.1 Returned 304 in 1 ms
  HTTP  29/04/2026 15:19:58 127.0.0.1 GET /service-worker.js
  HTTP  29/04/2026 15:19:58 127.0.0.1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:13:16 ::1 GET /
+ HTTP  29/04/2026 20:13:16 ::1 Returned 200 in 4 ms
+ HTTP  29/04/2026 20:13:16 ::1 GET /js/main.js
+ HTTP  29/04/2026 20:13:16 ::1 Returned 200 in 4 ms
+ HTTP  29/04/2026 20:13:16 ::1 GET /js/algorithm.js
+ HTTP  29/04/2026 20:13:16 ::1 Returned 200 in 1 ms
+ HTTP  29/04/2026 20:13:16 ::1 GET /js/state.js
+ HTTP  29/04/2026 20:13:16 ::1 GET /js/storage.js
+ HTTP  29/04/2026 20:13:16 ::1 GET /js/food.js
+ HTTP  29/04/2026 20:13:16 ::1 GET /js/coach.js
+ HTTP  29/04/2026 20:13:16 ::1 Returned 200 in 2 ms
+ HTTP  29/04/2026 20:13:16 ::1 Returned 200 in 2 ms
+ HTTP  29/04/2026 20:13:16 ::1 Returned 200 in 2 ms
+ HTTP  29/04/2026 20:13:16 ::1 GET /js/edamam.js
+ HTTP  29/04/2026 20:13:16 ::1 GET /js/foodSearch.js
+ HTTP  29/04/2026 20:13:16 ::1 Returned 200 in 2 ms
+ HTTP  29/04/2026 20:13:16 ::1 Returned 200 in 2 ms
+ HTTP  29/04/2026 20:13:16 ::1 Returned 200 in 1 ms
+ HTTP  29/04/2026 20:13:16 ::1 GET /js/calendar.js
+ HTTP  29/04/2026 20:13:16 ::1 GET /js/dashboard.js
+ HTTP  29/04/2026 20:13:16 ::1 Returned 200 in 2 ms
+ HTTP  29/04/2026 20:13:16 ::1 Returned 200 in 1 ms
+ HTTP  29/04/2026 20:13:16 ::1 GET /js/foodLog.js
+ HTTP  29/04/2026 20:13:16 ::1 GET /js/openFoodFacts.js
+ HTTP  29/04/2026 20:13:16 ::1 Returned 200 in 1 ms
+ HTTP  29/04/2026 20:13:16 ::1 GET /js/pantry.js
+ HTTP  29/04/2026 20:13:16 ::1 GET /js/mealPlanner.js
+ HTTP  29/04/2026 20:13:16 ::1 Returned 200 in 2 ms
+ HTTP  29/04/2026 20:13:16 ::1 Returned 200 in 1 ms
+ HTTP  29/04/2026 20:13:16 ::1 Returned 200 in 5 ms
+ HTTP  29/04/2026 20:13:16 ::1 GET /js/recipes.js
+ HTTP  29/04/2026 20:13:16 ::1 GET /js/seeds.js
+ HTTP  29/04/2026 20:13:16 ::1 Returned 200 in 2 ms
+ HTTP  29/04/2026 20:13:16 ::1 Returned 200 in 1 ms
+ HTTP  29/04/2026 20:13:16 ::1 GET /js/ui.js
+ HTTP  29/04/2026 20:13:16 ::1 GET /js/utils.js
+ HTTP  29/04/2026 20:13:16 ::1 GET /js/charts.js
+ HTTP  29/04/2026 20:13:16 ::1 Returned 200 in 1 ms
+ HTTP  29/04/2026 20:13:16 ::1 Returned 200 in 4 ms
+ HTTP  29/04/2026 20:13:16 ::1 Returned 200 in 1 ms
+ HTTP  29/04/2026 20:13:16 ::1 GET /service-worker.js
+ HTTP  29/04/2026 20:13:16 ::1 Returned 200 in 1 ms
+ HTTP  29/04/2026 20:13:16 ::1 GET /index.html
+ HTTP  29/04/2026 20:13:16 ::1 Returned 301 in 1 ms
+ HTTP  29/04/2026 20:13:16 ::1 GET /
+ HTTP  29/04/2026 20:13:16 ::1 GET /manifest.webmanifest
+ HTTP  29/04/2026 20:13:16 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:13:16 ::1 Returned 200 in 2 ms
+ HTTP  29/04/2026 20:13:16 ::1 GET /index
+ HTTP  29/04/2026 20:13:16 ::1 Returned 301 in 1 ms
+ HTTP  29/04/2026 20:13:16 ::1 GET /js/algorithm.js
+ HTTP  29/04/2026 20:13:16 ::1 GET /
+ HTTP  29/04/2026 20:13:16 ::1 GET /js/calendar.js
+ HTTP  29/04/2026 20:13:16 ::1 Returned 304 in 2 ms
+ HTTP  29/04/2026 20:13:16 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:13:16 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:13:16 ::1 GET /js/charts.js
+ HTTP  29/04/2026 20:13:16 ::1 GET /js/coach.js
+ HTTP  29/04/2026 20:13:16 ::1 GET /js/dashboard.js
+ HTTP  29/04/2026 20:13:16 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:13:16 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:13:16 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:13:17 ::1 GET /js/edamam.js
+ HTTP  29/04/2026 20:13:17 ::1 GET /js/food.js
+ HTTP  29/04/2026 20:13:17 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:13:17 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:13:17 ::1 GET /js/foodSearch.js
+ HTTP  29/04/2026 20:13:17 ::1 Returned 304 in 0 ms
+ HTTP  29/04/2026 20:13:17 ::1 GET /js/foodLog.js
+ HTTP  29/04/2026 20:13:17 ::1 Returned 304 in 0 ms
+ HTTP  29/04/2026 20:13:17 ::1 GET /js/main.js
+ HTTP  29/04/2026 20:13:17 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:13:17 ::1 GET /js/mealPlanner.js
+ HTTP  29/04/2026 20:13:17 ::1 GET /js/openFoodFacts.js
+ HTTP  29/04/2026 20:13:17 ::1 Returned 304 in 2 ms
+ HTTP  29/04/2026 20:13:17 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:13:17 ::1 GET /js/pantry.js
+ HTTP  29/04/2026 20:13:17 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:13:17 ::1 GET /js/recipes.js
+ HTTP  29/04/2026 20:13:17 ::1 Returned 304 in 0 ms
+ HTTP  29/04/2026 20:13:17 ::1 GET /js/seeds.js
+ HTTP  29/04/2026 20:13:17 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:13:17 ::1 GET /js/state.js
+ HTTP  29/04/2026 20:13:17 ::1 GET /js/storage.js
+ HTTP  29/04/2026 20:13:17 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:13:17 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:13:17 ::1 GET /js/ui.js
+ HTTP  29/04/2026 20:13:17 ::1 Returned 304 in 0 ms
+ HTTP  29/04/2026 20:13:17 ::1 GET /js/utils.js
+ HTTP  29/04/2026 20:13:17 ::1 Returned 304 in 0 ms
+ HTTP  29/04/2026 20:13:17 ::1 GET /assets/icon-192.svg
+ HTTP  29/04/2026 20:13:17 ::1 Returned 200 in 1 ms
+ HTTP  29/04/2026 20:13:17 ::1 GET /assets/icon-512.svg
+ HTTP  29/04/2026 20:13:17 ::1 Returned 200 in 0 ms
+ HTTP  29/04/2026 20:14:01 ::1 GET /
+ HTTP  29/04/2026 20:14:01 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:14:01 ::1 GET /js/main.js
+ HTTP  29/04/2026 20:14:01 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:14:02 ::1 GET /js/algorithm.js
+ HTTP  29/04/2026 20:14:02 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:14:02 ::1 GET /js/state.js
+ HTTP  29/04/2026 20:14:02 ::1 GET /js/storage.js
+ HTTP  29/04/2026 20:14:02 ::1 GET /js/food.js
+ HTTP  29/04/2026 20:14:02 ::1 GET /js/coach.js
+ HTTP  29/04/2026 20:14:02 ::1 Returned 304 in 2 ms
+ HTTP  29/04/2026 20:14:02 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:14:02 ::1 Returned 304 in 2 ms
+ HTTP  29/04/2026 20:14:02 ::1 GET /js/edamam.js
+ HTTP  29/04/2026 20:14:02 ::1 GET /js/foodSearch.js
+ HTTP  29/04/2026 20:14:02 ::1 Returned 304 in 3 ms
+ HTTP  29/04/2026 20:14:02 ::1 Returned 304 in 3 ms
+ HTTP  29/04/2026 20:14:02 ::1 GET /js/calendar.js
+ HTTP  29/04/2026 20:14:02 ::1 GET /js/dashboard.js
+ HTTP  29/04/2026 20:14:02 ::1 GET /js/foodLog.js
+ HTTP  29/04/2026 20:14:02 ::1 Returned 304 in 4 ms
+ HTTP  29/04/2026 20:14:02 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:14:02 ::1 Returned 304 in 2 ms
+ HTTP  29/04/2026 20:14:02 ::1 GET /js/openFoodFacts.js
+ HTTP  29/04/2026 20:14:02 ::1 GET /js/pantry.js
+ HTTP  29/04/2026 20:14:02 ::1 Returned 304 in 2 ms
+ HTTP  29/04/2026 20:14:02 ::1 Returned 304 in 2 ms
+ HTTP  29/04/2026 20:14:02 ::1 GET /js/mealPlanner.js
+ HTTP  29/04/2026 20:14:02 ::1 GET /js/recipes.js
+ HTTP  29/04/2026 20:14:02 ::1 GET /js/seeds.js
+ HTTP  29/04/2026 20:14:02 ::1 Returned 304 in 2 ms
+ HTTP  29/04/2026 20:14:02 ::1 Returned 304 in 2 ms
+ HTTP  29/04/2026 20:14:02 ::1 Returned 304 in 2 ms
+ HTTP  29/04/2026 20:14:02 ::1 GET /js/ui.js
+ HTTP  29/04/2026 20:14:02 ::1 GET /js/utils.js
+ HTTP  29/04/2026 20:14:02 ::1 Returned 304 in 3 ms
+ HTTP  29/04/2026 20:14:02 ::1 Returned 304 in 2 ms
+ HTTP  29/04/2026 20:14:02 ::1 GET /js/charts.js
+ HTTP  29/04/2026 20:14:02 ::1 Returned 304 in 3 ms
+ HTTP  29/04/2026 20:14:02 ::1 Returned 304 in 2 ms
+ HTTP  29/04/2026 20:14:03 ::1 GET /service-worker.js
+ HTTP  29/04/2026 20:14:03 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:22:26 ::1 GET /
+ HTTP  29/04/2026 20:22:26 ::1 Returned 200 in 1 ms
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/main.js
+ HTTP  29/04/2026 20:22:26 ::1 Returned 200 in 2 ms
+ HTTP  29/04/2026 20:22:26 ::1 GET /manifest.webmanifest
+ HTTP  29/04/2026 20:22:26 ::1 Returned 200 in 1 ms
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/algorithm.js
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/state.js
+ HTTP  29/04/2026 20:22:26 ::1 Returned 200 in 2 ms
+ HTTP  29/04/2026 20:22:26 ::1 Returned 200 in 1 ms
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/food.js
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/coach.js
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/storage.js
+ HTTP  29/04/2026 20:22:26 ::1 Returned 200 in 2 ms
+ HTTP  29/04/2026 20:22:26 ::1 Returned 200 in 2 ms
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/edamam.js
+ HTTP  29/04/2026 20:22:26 ::1 Returned 200 in 2 ms
+ HTTP  29/04/2026 20:22:26 ::1 Returned 200 in 1 ms
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/foodSearch.js
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/calendar.js
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/dashboard.js
+ HTTP  29/04/2026 20:22:26 ::1 Returned 200 in 2 ms
+ HTTP  29/04/2026 20:22:26 ::1 Returned 200 in 1 ms
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/foodLog.js
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/openFoodFacts.js
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/pantry.js
+ HTTP  29/04/2026 20:22:26 ::1 Returned 200 in 4 ms
+ HTTP  29/04/2026 20:22:26 ::1 Returned 200 in 2 ms
+ HTTP  29/04/2026 20:22:26 ::1 Returned 200 in 3 ms
+ HTTP  29/04/2026 20:22:26 ::1 Returned 200 in 2 ms
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/mealPlanner.js
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/recipes.js
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/seeds.js
+ HTTP  29/04/2026 20:22:26 ::1 Returned 200 in 4 ms
+ HTTP  29/04/2026 20:22:26 ::1 Returned 200 in 3 ms
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/ui.js
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/utils.js
+ HTTP  29/04/2026 20:22:26 ::1 Returned 200 in 5 ms
+ HTTP  29/04/2026 20:22:26 ::1 Returned 200 in 4 ms
+ HTTP  29/04/2026 20:22:26 ::1 Returned 200 in 4 ms
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/charts.js
+ HTTP  29/04/2026 20:22:26 ::1 Returned 200 in 0 ms
+ HTTP  29/04/2026 20:22:26 ::1 GET /service-worker.js
+ HTTP  29/04/2026 20:22:26 ::1 Returned 200 in 1 ms
+ HTTP  29/04/2026 20:22:26 ::1 GET /index.html
+ HTTP  29/04/2026 20:22:26 ::1 Returned 301 in 2 ms
+ HTTP  29/04/2026 20:22:26 ::1 GET /
+ HTTP  29/04/2026 20:22:26 ::1 GET /manifest.webmanifest
+ HTTP  29/04/2026 20:22:26 ::1 Returned 304 in 3 ms
+ HTTP  29/04/2026 20:22:26 ::1 GET /index
+ HTTP  29/04/2026 20:22:26 ::1 Returned 301 in 0 ms
+ HTTP  29/04/2026 20:22:26 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/algorithm.js
+ HTTP  29/04/2026 20:22:26 ::1 GET /
+ HTTP  29/04/2026 20:22:26 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/calendar.js
+ HTTP  29/04/2026 20:22:26 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:22:26 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/charts.js
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/coach.js
+ HTTP  29/04/2026 20:22:26 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:22:26 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/dashboard.js
+ HTTP  29/04/2026 20:22:26 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/edamam.js
+ HTTP  29/04/2026 20:22:26 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/food.js
+ HTTP  29/04/2026 20:22:26 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/foodSearch.js
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/foodLog.js
+ HTTP  29/04/2026 20:22:26 ::1 Returned 304 in 0 ms
+ HTTP  29/04/2026 20:22:26 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/main.js
+ HTTP  29/04/2026 20:22:26 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/mealPlanner.js
+ HTTP  29/04/2026 20:22:26 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/openFoodFacts.js
+ HTTP  29/04/2026 20:22:26 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/pantry.js
+ HTTP  29/04/2026 20:22:26 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/recipes.js
+ HTTP  29/04/2026 20:22:26 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/seeds.js
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/state.js
+ HTTP  29/04/2026 20:22:26 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:22:26 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/storage.js
+ HTTP  29/04/2026 20:22:26 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/ui.js
+ HTTP  29/04/2026 20:22:26 ::1 GET /js/utils.js
+ HTTP  29/04/2026 20:22:26 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:22:26 ::1 GET /assets/icon-192.svg
+ HTTP  29/04/2026 20:22:26 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:22:26 ::1 Returned 200 in 1 ms
+ HTTP  29/04/2026 20:22:26 ::1 GET /assets/icon-512.svg
+ HTTP  29/04/2026 20:22:26 ::1 Returned 200 in 1 ms
+ HTTP  29/04/2026 20:22:26 ::1 GET /favicon.ico
+ HTTP  29/04/2026 20:22:26 ::1 GET /assets/icon-192.svg
+ HTTP  29/04/2026 20:22:26 ::1 Returned 304 in 0 ms
+ HTTP  29/04/2026 20:22:26 ::1 Returned 404 in 4 ms
+ HTTP  29/04/2026 20:41:45 ::1 GET /
+ HTTP  29/04/2026 20:41:45 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:41:45 ::1 GET /js/main.js
+ HTTP  29/04/2026 20:41:45 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:41:46 ::1 GET /js/algorithm.js
+ HTTP  29/04/2026 20:41:46 ::1 GET /js/state.js
+ HTTP  29/04/2026 20:41:46 ::1 GET /js/storage.js
+ HTTP  29/04/2026 20:41:46 ::1 Returned 304 in 2 ms
+ HTTP  29/04/2026 20:41:46 ::1 Returned 304 in 2 ms
+ HTTP  29/04/2026 20:41:46 ::1 GET /js/food.js
+ HTTP  29/04/2026 20:41:46 ::1 Returned 304 in 2 ms
+ HTTP  29/04/2026 20:41:46 ::1 GET /js/foodSearch.js
+ HTTP  29/04/2026 20:41:46 ::1 GET /js/calendar.js
+ HTTP  29/04/2026 20:41:46 ::1 GET /js/coach.js
+ HTTP  29/04/2026 20:41:46 ::1 GET /js/edamam.js
+ HTTP  29/04/2026 20:41:46 ::1 Returned 304 in 3 ms
+ HTTP  29/04/2026 20:41:46 ::1 Returned 304 in 2 ms
+ HTTP  29/04/2026 20:41:46 ::1 Returned 304 in 3 ms
+ HTTP  29/04/2026 20:41:46 ::1 Returned 304 in 2 ms
+ HTTP  29/04/2026 20:41:46 ::1 GET /js/dashboard.js
+ HTTP  29/04/2026 20:41:46 ::1 Returned 304 in 3 ms
+ HTTP  29/04/2026 20:41:46 ::1 GET /js/foodLog.js
+ HTTP  29/04/2026 20:41:46 ::1 GET /js/openFoodFacts.js
+ HTTP  29/04/2026 20:41:46 ::1 GET /js/pantry.js
+ HTTP  29/04/2026 20:41:46 ::1 GET /js/mealPlanner.js
+ HTTP  29/04/2026 20:41:46 ::1 Returned 304 in 4 ms
+ HTTP  29/04/2026 20:41:46 ::1 Returned 304 in 3 ms
+ HTTP  29/04/2026 20:41:46 ::1 Returned 304 in 3 ms
+ HTTP  29/04/2026 20:41:46 ::1 Returned 304 in 4 ms
+ HTTP  29/04/2026 20:41:46 ::1 GET /js/recipes.js
+ HTTP  29/04/2026 20:41:46 ::1 Returned 304 in 4 ms
+ HTTP  29/04/2026 20:41:46 ::1 GET /js/seeds.js
+ HTTP  29/04/2026 20:41:46 ::1 GET /js/ui.js
+ HTTP  29/04/2026 20:41:46 ::1 GET /js/utils.js
+ HTTP  29/04/2026 20:41:46 ::1 Returned 304 in 5 ms
+ HTTP  29/04/2026 20:41:46 ::1 Returned 304 in 4 ms
+ HTTP  29/04/2026 20:41:46 ::1 Returned 304 in 3 ms
+ HTTP  29/04/2026 20:41:46 ::1 Returned 304 in 3 ms
+ HTTP  29/04/2026 20:41:46 ::1 GET /js/charts.js
+ HTTP  29/04/2026 20:41:46 ::1 Returned 304 in 1 ms
+ HTTP  29/04/2026 20:41:47 ::1 GET /service-worker.js
+ HTTP  29/04/2026 20:41:47 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 11:45:32 ::1 GET /
+ HTTP  30/04/2026 11:45:32 ::1 Returned 200 in 6 ms
+ HTTP  30/04/2026 11:45:32 ::1 GET /js/main.js
+ HTTP  30/04/2026 11:45:32 ::1 Returned 200 in 2 ms
+ HTTP  30/04/2026 11:45:33 ::1 GET /js/algorithm.js
+ HTTP  30/04/2026 11:45:33 ::1 GET /js/state.js
+ HTTP  30/04/2026 11:45:33 ::1 GET /js/storage.js
+ HTTP  30/04/2026 11:45:33 ::1 Returned 304 in 3 ms
+ HTTP  30/04/2026 11:45:33 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 11:45:33 ::1 Returned 200 in 3 ms
+ HTTP  30/04/2026 11:45:33 ::1 GET /js/food.js
+ HTTP  30/04/2026 11:45:33 ::1 GET /js/coach.js
+ HTTP  30/04/2026 11:45:33 ::1 GET /js/edamam.js
+ HTTP  30/04/2026 11:45:33 ::1 Returned 304 in 11 ms
+ HTTP  30/04/2026 11:45:33 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 11:45:33 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 11:45:33 ::1 GET /js/foodSearch.js
+ HTTP  30/04/2026 11:45:33 ::1 GET /js/calendar.js
+ HTTP  30/04/2026 11:45:33 ::1 GET /js/dashboard.js
+ HTTP  30/04/2026 11:45:33 ::1 Returned 304 in 3 ms
+ HTTP  30/04/2026 11:45:33 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 11:45:33 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 11:45:33 ::1 GET /js/foodLog.js
+ HTTP  30/04/2026 11:45:33 ::1 GET /js/openFoodFacts.js
+ HTTP  30/04/2026 11:45:33 ::1 GET /js/pantry.js
+ HTTP  30/04/2026 11:45:33 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 11:45:33 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 11:45:33 ::1 Returned 304 in 3 ms
+ HTTP  30/04/2026 11:45:33 ::1 GET /js/mealPlanner.js
+ HTTP  30/04/2026 11:45:33 ::1 GET /js/recipes.js
+ HTTP  30/04/2026 11:45:33 ::1 GET /js/seeds.js
+ HTTP  30/04/2026 11:45:33 ::1 Returned 304 in 3 ms
+ HTTP  30/04/2026 11:45:33 ::1 Returned 304 in 3 ms
+ HTTP  30/04/2026 11:45:33 ::1 Returned 304 in 3 ms
+ HTTP  30/04/2026 11:45:33 ::1 GET /js/ui.js
+ HTTP  30/04/2026 11:45:33 ::1 GET /js/utils.js
+ HTTP  30/04/2026 11:45:33 ::1 GET /js/charts.js
+ HTTP  30/04/2026 11:45:33 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 11:45:33 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 11:45:33 ::1 Returned 200 in 5 ms
+ HTTP  30/04/2026 11:45:37 ::1 GET /service-worker.js
+ HTTP  30/04/2026 11:45:37 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 12:02:14 ::1 GET /
+ HTTP  30/04/2026 12:02:14 ::1 Returned 200 in 1 ms
+ HTTP  30/04/2026 12:02:14 ::1 GET /js/main.js
+ HTTP  30/04/2026 12:02:14 ::1 Returned 200 in 1 ms
+ HTTP  30/04/2026 12:02:14 ::1 GET /js/algorithm.js
+ HTTP  30/04/2026 12:02:14 ::1 GET /js/state.js
+ HTTP  30/04/2026 12:02:14 ::1 GET /js/storage.js
+ HTTP  30/04/2026 12:02:14 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 12:02:14 ::1 Returned 304 in 3 ms
+ HTTP  30/04/2026 12:02:14 ::1 GET /js/food.js
+ HTTP  30/04/2026 12:02:14 ::1 GET /js/coach.js
+ HTTP  30/04/2026 12:02:14 ::1 Returned 200 in 4 ms
+ HTTP  30/04/2026 12:02:14 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 12:02:14 ::1 GET /js/foodSearch.js
+ HTTP  30/04/2026 12:02:14 ::1 GET /js/calendar.js
+ HTTP  30/04/2026 12:02:14 ::1 GET /js/edamam.js
+ HTTP  30/04/2026 12:02:14 ::1 Returned 304 in 3 ms
+ HTTP  30/04/2026 12:02:14 ::1 Returned 304 in 3 ms
+ HTTP  30/04/2026 12:02:14 ::1 Returned 304 in 5 ms
+ HTTP  30/04/2026 12:02:14 ::1 GET /js/dashboard.js
+ HTTP  30/04/2026 12:02:14 ::1 Returned 304 in 7 ms
+ HTTP  30/04/2026 12:02:14 ::1 GET /js/foodLog.js
+ HTTP  30/04/2026 12:02:14 ::1 GET /js/openFoodFacts.js
+ HTTP  30/04/2026 12:02:14 ::1 GET /js/pantry.js
+ HTTP  30/04/2026 12:02:14 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 12:02:14 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 12:02:14 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 12:02:14 ::1 GET /js/mealPlanner.js
+ HTTP  30/04/2026 12:02:14 ::1 Returned 304 in 3 ms
+ HTTP  30/04/2026 12:02:14 ::1 GET /js/recipes.js
+ HTTP  30/04/2026 12:02:14 ::1 GET /js/seeds.js
+ HTTP  30/04/2026 12:02:14 ::1 GET /js/ui.js
+ HTTP  30/04/2026 12:02:14 ::1 Returned 304 in 5 ms
+ HTTP  30/04/2026 12:02:14 ::1 Returned 304 in 3 ms
+ HTTP  30/04/2026 12:02:14 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 12:02:14 ::1 GET /js/utils.js
+ HTTP  30/04/2026 12:02:14 ::1 GET /js/charts.js
+ HTTP  30/04/2026 12:02:14 ::1 Returned 200 in 3 ms
+ HTTP  30/04/2026 12:02:14 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 12:02:14 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 12:02:16 ::1 GET /service-worker.js
+ HTTP  30/04/2026 12:02:16 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 12:07:43 ::1 GET /
+ HTTP  30/04/2026 12:07:43 ::1 Returned 304 in 0 ms
+ HTTP  30/04/2026 12:07:43 ::1 GET /js/main.js
+ HTTP  30/04/2026 12:07:43 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 12:07:44 ::1 GET /js/algorithm.js
+ HTTP  30/04/2026 12:07:44 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 12:07:44 ::1 GET /js/state.js
+ HTTP  30/04/2026 12:07:44 ::1 GET /js/storage.js
+ HTTP  30/04/2026 12:07:44 ::1 GET /js/food.js
+ HTTP  30/04/2026 12:07:44 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 12:07:44 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 12:07:44 ::1 GET /js/coach.js
+ HTTP  30/04/2026 12:07:44 ::1 GET /js/edamam.js
+ HTTP  30/04/2026 12:07:44 ::1 GET /js/foodSearch.js
+ HTTP  30/04/2026 12:07:44 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 12:07:44 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 12:07:44 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 12:07:44 ::1 GET /js/calendar.js
+ HTTP  30/04/2026 12:07:44 ::1 GET /js/dashboard.js
+ HTTP  30/04/2026 12:07:44 ::1 Returned 304 in 4 ms
+ HTTP  30/04/2026 12:07:44 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 12:07:44 ::1 GET /js/foodLog.js
+ HTTP  30/04/2026 12:07:44 ::1 GET /js/openFoodFacts.js
+ HTTP  30/04/2026 12:07:44 ::1 GET /js/pantry.js
+ HTTP  30/04/2026 12:07:44 ::1 Returned 304 in 3 ms
+ HTTP  30/04/2026 12:07:44 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 12:07:44 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 12:07:44 ::1 GET /js/mealPlanner.js
+ HTTP  30/04/2026 12:07:44 ::1 GET /js/recipes.js
+ HTTP  30/04/2026 12:07:44 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 12:07:44 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 12:07:44 ::1 GET /js/seeds.js
+ HTTP  30/04/2026 12:07:44 ::1 GET /js/ui.js
+ HTTP  30/04/2026 12:07:44 ::1 GET /js/utils.js
+ HTTP  30/04/2026 12:07:44 ::1 Returned 304 in 3 ms
+ HTTP  30/04/2026 12:07:44 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 12:07:44 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 12:07:44 ::1 GET /js/charts.js
+ HTTP  30/04/2026 12:07:44 ::1 Returned 304 in 3 ms
+ HTTP  30/04/2026 12:07:44 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 12:07:45 ::1 GET /service-worker.js
+ HTTP  30/04/2026 12:07:45 ::1 Returned 304 in 3 ms
+ HTTP  30/04/2026 12:08:36 ::1 GET /
+ HTTP  30/04/2026 12:08:36 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 12:08:36 ::1 GET /js/main.js
+ HTTP  30/04/2026 12:08:36 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 12:08:36 ::1 GET /js/algorithm.js
+ HTTP  30/04/2026 12:08:36 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 12:08:36 ::1 GET /js/state.js
+ HTTP  30/04/2026 12:08:36 ::1 GET /js/storage.js
+ HTTP  30/04/2026 12:08:36 ::1 GET /js/food.js
+ HTTP  30/04/2026 12:08:36 ::1 GET /js/coach.js
+ HTTP  30/04/2026 12:08:36 ::1 GET /js/edamam.js
+ HTTP  30/04/2026 12:08:36 ::1 GET /js/foodSearch.js
+ HTTP  30/04/2026 12:08:36 ::1 Returned 304 in 4 ms
+ HTTP  30/04/2026 12:08:36 ::1 Returned 304 in 4 ms
+ HTTP  30/04/2026 12:08:36 ::1 Returned 304 in 4 ms
+ HTTP  30/04/2026 12:08:36 ::1 Returned 304 in 3 ms
+ HTTP  30/04/2026 12:08:36 ::1 Returned 304 in 3 ms
+ HTTP  30/04/2026 12:08:36 ::1 Returned 304 in 3 ms
+ HTTP  30/04/2026 12:08:36 ::1 GET /js/calendar.js
+ HTTP  30/04/2026 12:08:36 ::1 GET /js/dashboard.js
+ HTTP  30/04/2026 12:08:36 ::1 GET /js/foodLog.js
+ HTTP  30/04/2026 12:08:36 ::1 Returned 304 in 5 ms
+ HTTP  30/04/2026 12:08:36 ::1 Returned 304 in 4 ms
+ HTTP  30/04/2026 12:08:36 ::1 GET /js/openFoodFacts.js
+ HTTP  30/04/2026 12:08:36 ::1 GET /js/pantry.js
+ HTTP  30/04/2026 12:08:36 ::1 GET /js/mealPlanner.js
+ HTTP  30/04/2026 12:08:36 ::1 Returned 304 in 6 ms
+ HTTP  30/04/2026 12:08:36 ::1 Returned 304 in 3 ms
+ HTTP  30/04/2026 12:08:36 ::1 Returned 304 in 3 ms
+ HTTP  30/04/2026 12:08:36 ::1 GET /js/recipes.js
+ HTTP  30/04/2026 12:08:36 ::1 GET /js/seeds.js
+ HTTP  30/04/2026 12:08:36 ::1 Returned 304 in 45 ms
+ HTTP  30/04/2026 12:08:36 ::1 Returned 304 in 45 ms
+ HTTP  30/04/2026 12:08:36 ::1 Returned 304 in 37 ms
+ HTTP  30/04/2026 12:08:36 ::1 GET /js/ui.js
+ HTTP  30/04/2026 12:08:36 ::1 GET /js/utils.js
+ HTTP  30/04/2026 12:08:36 ::1 GET /js/charts.js
+ HTTP  30/04/2026 12:08:36 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 12:08:36 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 12:08:36 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 12:08:38 ::1 GET /service-worker.js
+ HTTP  30/04/2026 12:08:38 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:01:34 ::1 GET /
+ HTTP  30/04/2026 13:01:34 ::1 Returned 200 in 3 ms
+ HTTP  30/04/2026 13:01:34 ::1 GET /js/main.js
+ HTTP  30/04/2026 13:01:34 ::1 Returned 200 in 1 ms
+ HTTP  30/04/2026 13:01:35 ::1 GET /js/algorithm.js
+ HTTP  30/04/2026 13:01:35 ::1 GET /js/state.js
+ HTTP  30/04/2026 13:01:35 ::1 GET /js/storage.js
+ HTTP  30/04/2026 13:01:35 ::1 Returned 200 in 3 ms
+ HTTP  30/04/2026 13:01:35 ::1 Returned 200 in 2 ms
+ HTTP  30/04/2026 13:01:35 ::1 Returned 200 in 1 ms
+ HTTP  30/04/2026 13:01:35 ::1 GET /js/food.js
+ HTTP  30/04/2026 13:01:35 ::1 GET /js/coach.js
+ HTTP  30/04/2026 13:01:35 ::1 GET /js/edamam.js
+ HTTP  30/04/2026 13:01:35 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:01:35 ::1 Returned 200 in 3 ms
+ HTTP  30/04/2026 13:01:35 ::1 Returned 200 in 2 ms
+ HTTP  30/04/2026 13:01:35 ::1 GET /js/foodSearch.js
+ HTTP  30/04/2026 13:01:35 ::1 GET /js/calendar.js
+ HTTP  30/04/2026 13:01:35 ::1 GET /js/dashboard.js
+ HTTP  30/04/2026 13:01:35 ::1 Returned 200 in 2 ms
+ HTTP  30/04/2026 13:01:35 ::1 Returned 200 in 1 ms
+ HTTP  30/04/2026 13:01:35 ::1 Returned 200 in 2 ms
+ HTTP  30/04/2026 13:01:35 ::1 GET /js/foodLog.js
+ HTTP  30/04/2026 13:01:35 ::1 GET /js/openFoodFacts.js
+ HTTP  30/04/2026 13:01:35 ::1 GET /js/pantry.js
+ HTTP  30/04/2026 13:01:35 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:01:35 ::1 Returned 200 in 3 ms
+ HTTP  30/04/2026 13:01:35 ::1 Returned 200 in 3 ms
+ HTTP  30/04/2026 13:01:35 ::1 GET /js/mealPlanner.js
+ HTTP  30/04/2026 13:01:35 ::1 GET /js/recipes.js
+ HTTP  30/04/2026 13:01:35 ::1 GET /js/seeds.js
+ HTTP  30/04/2026 13:01:35 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:01:35 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:01:35 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:01:35 ::1 GET /js/ui.js
+ HTTP  30/04/2026 13:01:35 ::1 GET /js/usdaFoodData.js
+ HTTP  30/04/2026 13:01:35 ::1 GET /js/utils.js
+ HTTP  30/04/2026 13:01:35 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:01:35 ::1 Returned 200 in 3 ms
+ HTTP  30/04/2026 13:01:35 ::1 Returned 200 in 3 ms
+ HTTP  30/04/2026 13:01:35 ::1 GET /js/charts.js
+ HTTP  30/04/2026 13:01:35 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:01:38 ::1 GET /service-worker.js
+ HTTP  30/04/2026 13:01:38 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:06:51 ::1 GET /
+ HTTP  30/04/2026 13:06:51 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:06:51 ::1 GET /js/main.js
+ HTTP  30/04/2026 13:06:51 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:06:52 ::1 GET /js/algorithm.js
+ HTTP  30/04/2026 13:06:52 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:06:52 ::1 GET /js/state.js
+ HTTP  30/04/2026 13:06:52 ::1 GET /js/storage.js
+ HTTP  30/04/2026 13:06:52 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:06:52 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:06:52 ::1 GET /js/food.js
+ HTTP  30/04/2026 13:06:52 ::1 GET /js/coach.js
+ HTTP  30/04/2026 13:06:52 ::1 GET /js/edamam.js
+ HTTP  30/04/2026 13:06:52 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:06:52 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:06:52 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:06:52 ::1 GET /js/foodSearch.js
+ HTTP  30/04/2026 13:06:52 ::1 GET /js/calendar.js
+ HTTP  30/04/2026 13:06:52 ::1 GET /js/dashboard.js
+ HTTP  30/04/2026 13:06:52 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:06:52 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:06:52 ::1 Returned 200 in 4 ms
+ HTTP  30/04/2026 13:06:52 ::1 GET /js/foodLog.js
+ HTTP  30/04/2026 13:06:52 ::1 GET /js/openFoodFacts.js
+ HTTP  30/04/2026 13:06:52 ::1 GET /js/pantry.js
+ HTTP  30/04/2026 13:06:52 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:06:52 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:06:52 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:06:52 ::1 GET /js/mealPlanner.js
+ HTTP  30/04/2026 13:06:52 ::1 GET /js/recipes.js
+ HTTP  30/04/2026 13:06:52 ::1 GET /js/seeds.js
+ HTTP  30/04/2026 13:06:52 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:06:52 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:06:52 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:06:52 ::1 GET /js/ui.js
+ HTTP  30/04/2026 13:06:52 ::1 GET /js/utils.js
+ HTTP  30/04/2026 13:06:52 ::1 GET /js/charts.js
+ HTTP  30/04/2026 13:06:52 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:06:52 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:06:52 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:06:52 ::1 GET /js/usdaFoodData.js
+ HTTP  30/04/2026 13:06:52 ::1 Returned 200 in 1 ms
+ HTTP  30/04/2026 13:06:55 ::1 GET /service-worker.js
+ HTTP  30/04/2026 13:06:55 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:25:04 ::1 GET /
+ HTTP  30/04/2026 13:25:04 ::1 Returned 200 in 1 ms
+ HTTP  30/04/2026 13:25:04 ::1 GET /js/main.js
+ HTTP  30/04/2026 13:25:04 ::1 Returned 200 in 2 ms
+ HTTP  30/04/2026 13:25:04 ::1 GET /js/algorithm.js
+ HTTP  30/04/2026 13:25:04 ::1 Returned 200 in 1 ms
+ HTTP  30/04/2026 13:25:04 ::1 GET /js/coach.js
+ HTTP  30/04/2026 13:25:04 ::1 GET /js/state.js
+ HTTP  30/04/2026 13:25:04 ::1 GET /js/storage.js
+ HTTP  30/04/2026 13:25:04 ::1 GET /js/food.js
+ HTTP  30/04/2026 13:25:04 ::1 GET /js/edamam.js
+ HTTP  30/04/2026 13:25:04 ::1 Returned 304 in 4 ms
+ HTTP  30/04/2026 13:25:04 ::1 Returned 200 in 3 ms
+ HTTP  30/04/2026 13:25:04 ::1 Returned 200 in 4 ms
+ HTTP  30/04/2026 13:25:04 ::1 Returned 200 in 4 ms
+ HTTP  30/04/2026 13:25:04 ::1 Returned 200 in 3 ms
+ HTTP  30/04/2026 13:25:04 ::1 GET /js/calendar.js
+ HTTP  30/04/2026 13:25:04 ::1 Returned 200 in 1 ms
+ HTTP  30/04/2026 13:25:04 ::1 GET /js/dashboard.js
+ HTTP  30/04/2026 13:25:04 ::1 GET /js/foodSearch.js
+ HTTP  30/04/2026 13:25:04 ::1 GET /js/foodLog.js
+ HTTP  30/04/2026 13:25:04 ::1 GET /js/openFoodFacts.js
+ HTTP  30/04/2026 13:25:04 ::1 GET /js/pantry.js
+ HTTP  30/04/2026 13:25:04 ::1 GET /js/mealPlanner.js
+ HTTP  30/04/2026 13:25:04 ::1 Returned 200 in 7 ms
+ HTTP  30/04/2026 13:25:04 ::1 Returned 200 in 6 ms
+ HTTP  30/04/2026 13:25:04 ::1 Returned 200 in 3 ms
+ HTTP  30/04/2026 13:25:04 ::1 Returned 200 in 2 ms
+ HTTP  30/04/2026 13:25:04 ::1 Returned 304 in 3 ms
+ HTTP  30/04/2026 13:25:04 ::1 Returned 304 in 3 ms
+ HTTP  30/04/2026 13:25:04 ::1 GET /js/recipes.js
+ HTTP  30/04/2026 13:25:04 ::1 GET /js/seeds.js
+ HTTP  30/04/2026 13:25:04 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:25:04 ::1 Returned 304 in 3 ms
+ HTTP  30/04/2026 13:25:04 ::1 GET /js/ui.js
+ HTTP  30/04/2026 13:25:04 ::1 GET /js/utils.js
+ HTTP  30/04/2026 13:25:04 ::1 Returned 200 in 2 ms
+ HTTP  30/04/2026 13:25:04 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:25:04 ::1 GET /js/charts.js
+ HTTP  30/04/2026 13:25:04 ::1 Returned 304 in 0 ms
+ HTTP  30/04/2026 13:25:04 ::1 GET /js/usdaFoodData.js
+ HTTP  30/04/2026 13:25:04 ::1 Returned 200 in 1 ms
+ HTTP  30/04/2026 13:25:06 ::1 GET /service-worker.js
+ HTTP  30/04/2026 13:25:06 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:29:18 ::1 GET /
+ HTTP  30/04/2026 13:29:18 ::1 Returned 200 in 1 ms
+ HTTP  30/04/2026 13:29:18 ::1 GET /js/main.js
+ HTTP  30/04/2026 13:29:18 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:29:19 ::1 GET /js/algorithm.js
+ HTTP  30/04/2026 13:29:19 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:29:19 ::1 GET /js/state.js
+ HTTP  30/04/2026 13:29:19 ::1 GET /js/storage.js
+ HTTP  30/04/2026 13:29:19 ::1 GET /js/food.js
+ HTTP  30/04/2026 13:29:19 ::1 GET /js/coach.js
+ HTTP  30/04/2026 13:29:19 ::1 GET /js/edamam.js
+ HTTP  30/04/2026 13:29:19 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:29:19 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:29:19 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:29:19 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:29:19 ::1 GET /js/foodSearch.js
+ HTTP  30/04/2026 13:29:19 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:29:19 ::1 GET /js/calendar.js
+ HTTP  30/04/2026 13:29:19 ::1 GET /js/dashboard.js
+ HTTP  30/04/2026 13:29:19 ::1 GET /js/foodLog.js
+ HTTP  30/04/2026 13:29:19 ::1 Returned 304 in 5 ms
+ HTTP  30/04/2026 13:29:19 ::1 Returned 304 in 5 ms
+ HTTP  30/04/2026 13:29:19 ::1 Returned 304 in 4 ms
+ HTTP  30/04/2026 13:29:19 ::1 GET /js/openFoodFacts.js
+ HTTP  30/04/2026 13:29:19 ::1 GET /js/pantry.js
+ HTTP  30/04/2026 13:29:19 ::1 Returned 304 in 4 ms
+ HTTP  30/04/2026 13:29:19 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:29:19 ::1 GET /js/mealPlanner.js
+ HTTP  30/04/2026 13:29:19 ::1 GET /js/recipes.js
+ HTTP  30/04/2026 13:29:19 ::1 GET /js/seeds.js
+ HTTP  30/04/2026 13:29:19 ::1 Returned 304 in 4 ms
+ HTTP  30/04/2026 13:29:19 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:29:19 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:29:19 ::1 GET /js/ui.js
+ HTTP  30/04/2026 13:29:19 ::1 GET /js/utils.js
+ HTTP  30/04/2026 13:29:19 ::1 Returned 304 in 3 ms
+ HTTP  30/04/2026 13:29:19 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:29:19 ::1 GET /js/usdaFoodData.js
+ HTTP  30/04/2026 13:29:19 ::1 GET /js/charts.js
+ HTTP  30/04/2026 13:29:19 ::1 Returned 304 in 3 ms
+ HTTP  30/04/2026 13:29:19 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:29:19 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:29:21 ::1 GET /service-worker.js
+ HTTP  30/04/2026 13:29:21 ::1 Returned 200 in 1 ms
+ HTTP  30/04/2026 13:29:21 ::1 GET /
+ HTTP  30/04/2026 13:29:21 ::1 GET /manifest.webmanifest
+ HTTP  30/04/2026 13:29:21 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:29:21 ::1 Returned 200 in 3 ms
+ HTTP  30/04/2026 13:29:21 ::1 GET /
+ HTTP  30/04/2026 13:29:21 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:29:21 ::1 GET /js/algorithm.js
+ HTTP  30/04/2026 13:29:21 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:29:21 ::1 GET /js/calendar.js
+ HTTP  30/04/2026 13:29:21 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:29:21 ::1 GET /js/charts.js
+ HTTP  30/04/2026 13:29:21 ::1 GET /js/coach.js
+ HTTP  30/04/2026 13:29:21 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:29:21 ::1 Returned 304 in 0 ms
+ HTTP  30/04/2026 13:29:21 ::1 GET /js/dashboard.js
+ HTTP  30/04/2026 13:29:21 ::1 Returned 304 in 0 ms
+ HTTP  30/04/2026 13:29:21 ::1 GET /js/edamam.js
+ HTTP  30/04/2026 13:29:21 ::1 GET /js/food.js
+ HTTP  30/04/2026 13:29:21 ::1 Returned 304 in 0 ms
+ HTTP  30/04/2026 13:29:21 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:29:21 ::1 GET /js/foodSearch.js
+ HTTP  30/04/2026 13:29:21 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:29:21 ::1 GET /js/foodLog.js
+ HTTP  30/04/2026 13:29:21 ::1 GET /js/main.js
+ HTTP  30/04/2026 13:29:21 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:29:21 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:29:21 ::1 GET /js/mealPlanner.js
+ HTTP  30/04/2026 13:29:21 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:29:21 ::1 GET /js/openFoodFacts.js
+ HTTP  30/04/2026 13:29:21 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:29:21 ::1 GET /js/pantry.js
+ HTTP  30/04/2026 13:29:21 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:29:21 ::1 GET /js/recipes.js
+ HTTP  30/04/2026 13:29:21 ::1 GET /js/seeds.js
+ HTTP  30/04/2026 13:29:21 ::1 GET /js/state.js
+ HTTP  30/04/2026 13:29:21 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:29:21 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:29:21 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:29:21 ::1 GET /js/storage.js
+ HTTP  30/04/2026 13:29:21 ::1 GET /js/ui.js
+ HTTP  30/04/2026 13:29:21 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:29:21 ::1 GET /js/usdaFoodData.js
+ HTTP  30/04/2026 13:29:21 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:29:21 ::1 Returned 304 in 0 ms
+ HTTP  30/04/2026 13:29:21 ::1 GET /js/utils.js
+ HTTP  30/04/2026 13:29:21 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:29:21 ::1 GET /assets/apple-touch-icon.png
+ HTTP  30/04/2026 13:29:21 ::1 GET /assets/icon-192.png
+ HTTP  30/04/2026 13:29:21 ::1 Returned 200 in 4 ms
+ HTTP  30/04/2026 13:29:21 ::1 Returned 200 in 4 ms
+ HTTP  30/04/2026 13:29:21 ::1 GET /assets/icon-512.png
+ HTTP  30/04/2026 13:29:21 ::1 GET /assets/icon-192.svg
+ HTTP  30/04/2026 13:29:21 ::1 GET /assets/icon-512.svg
+ HTTP  30/04/2026 13:29:21 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:29:21 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:29:21 ::1 Returned 200 in 5 ms
+ HTTP  30/04/2026 13:51:19 ::1 GET /
+ HTTP  30/04/2026 13:51:19 ::1 Returned 200 in 2 ms
+ HTTP  30/04/2026 13:51:19 ::1 GET /js/main.js
+ HTTP  30/04/2026 13:51:19 ::1 Returned 200 in 5 ms
+ HTTP  30/04/2026 13:51:20 ::1 GET /js/algorithm.js
+ HTTP  30/04/2026 13:51:20 ::1 GET /js/state.js
+ HTTP  30/04/2026 13:51:20 ::1 GET /js/storage.js
+ HTTP  30/04/2026 13:51:20 ::1 GET /js/food.js
+ HTTP  30/04/2026 13:51:20 ::1 GET /js/coach.js
+ HTTP  30/04/2026 13:51:20 ::1 Returned 304 in 5 ms
+ HTTP  30/04/2026 13:51:20 ::1 Returned 304 in 5 ms
+ HTTP  30/04/2026 13:51:20 ::1 Returned 304 in 4 ms
+ HTTP  30/04/2026 13:51:20 ::1 Returned 304 in 5 ms
+ HTTP  30/04/2026 13:51:20 ::1 GET /js/edamam.js
+ HTTP  30/04/2026 13:51:20 ::1 Returned 304 in 5 ms
+ HTTP  30/04/2026 13:51:20 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:51:20 ::1 GET /js/foodSearch.js
+ HTTP  30/04/2026 13:51:20 ::1 GET /js/calendar.js
+ HTTP  30/04/2026 13:51:20 ::1 GET /js/dashboard.js
+ HTTP  30/04/2026 13:51:20 ::1 GET /js/foodLog.js
+ HTTP  30/04/2026 13:51:20 ::1 Returned 304 in 5 ms
+ HTTP  30/04/2026 13:51:20 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:51:20 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:51:20 ::1 GET /js/openFoodFacts.js
+ HTTP  30/04/2026 13:51:20 ::1 GET /js/pantry.js
+ HTTP  30/04/2026 13:51:20 ::1 Returned 304 in 3 ms
+ HTTP  30/04/2026 13:51:20 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:51:20 ::1 GET /js/mealPlanner.js
+ HTTP  30/04/2026 13:51:20 ::1 GET /js/recipes.js
+ HTTP  30/04/2026 13:51:20 ::1 GET /js/seeds.js
+ HTTP  30/04/2026 13:51:20 ::1 Returned 304 in 3 ms
+ HTTP  30/04/2026 13:51:20 ::1 Returned 304 in 3 ms
+ HTTP  30/04/2026 13:51:20 ::1 Returned 304 in 3 ms
+ HTTP  30/04/2026 13:51:20 ::1 GET /js/ui.js
+ HTTP  30/04/2026 13:51:20 ::1 GET /js/utils.js
+ HTTP  30/04/2026 13:51:20 ::1 GET /js/usdaFoodData.js
+ HTTP  30/04/2026 13:51:20 ::1 Returned 304 in 7 ms
+ HTTP  30/04/2026 13:51:20 ::1 GET /js/charts.js
+ HTTP  30/04/2026 13:51:20 ::1 Returned 304 in 4 ms
+ HTTP  30/04/2026 13:51:20 ::1 Returned 304 in 4 ms
+ HTTP  30/04/2026 13:51:20 ::1 Returned 304 in 3 ms
+ HTTP  30/04/2026 13:51:20 ::1 Returned 200 in 8 ms
+ HTTP  30/04/2026 13:51:21 ::1 GET /service-worker.js
+ HTTP  30/04/2026 13:51:21 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:58:15 ::1 GET /
+ HTTP  30/04/2026 13:58:15 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:58:15 ::1 GET /js/main.js
+ HTTP  30/04/2026 13:58:15 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:58:15 ::1 GET /js/algorithm.js
+ HTTP  30/04/2026 13:58:15 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:58:15 ::1 GET /js/state.js
+ HTTP  30/04/2026 13:58:15 ::1 GET /js/storage.js
+ HTTP  30/04/2026 13:58:15 ::1 GET /js/food.js
+ HTTP  30/04/2026 13:58:15 ::1 GET /js/coach.js
+ HTTP  30/04/2026 13:58:15 ::1 GET /js/edamam.js
+ HTTP  30/04/2026 13:58:15 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:58:15 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:58:15 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:58:15 ::1 GET /js/foodSearch.js
+ HTTP  30/04/2026 13:58:15 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:58:15 ::1 GET /js/calendar.js
+ HTTP  30/04/2026 13:58:15 ::1 GET /js/dashboard.js
+ HTTP  30/04/2026 13:58:15 ::1 GET /js/foodLog.js
+ HTTP  30/04/2026 13:58:15 ::1 Returned 304 in 3 ms
+ HTTP  30/04/2026 13:58:15 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:58:15 ::1 Returned 304 in 3 ms
+ HTTP  30/04/2026 13:58:15 ::1 GET /js/openFoodFacts.js
+ HTTP  30/04/2026 13:58:15 ::1 Returned 304 in 2 ms
+ HTTP  30/04/2026 13:58:15 ::1 Returned 200 in 8 ms
+ HTTP  30/04/2026 13:58:15 ::1 GET /js/pantry.js
+ HTTP  30/04/2026 13:58:15 ::1 GET /js/mealPlanner.js
+ HTTP  30/04/2026 13:58:15 ::1 GET /js/recipes.js
+ HTTP  30/04/2026 13:58:15 ::1 Returned 304 in 4 ms
+ HTTP  30/04/2026 13:58:15 ::1 Returned 304 in 3 ms
+ HTTP  30/04/2026 13:58:15 ::1 Returned 304 in 3 ms
+ HTTP  30/04/2026 13:58:15 ::1 GET /js/seeds.js
+ HTTP  30/04/2026 13:58:15 ::1 Returned 304 in 5 ms
+ HTTP  30/04/2026 13:58:15 ::1 GET /js/ui.js
+ HTTP  30/04/2026 13:58:15 ::1 GET /js/utils.js
+ HTTP  30/04/2026 13:58:15 ::1 GET /js/usdaFoodData.js
+ HTTP  30/04/2026 13:58:15 ::1 Returned 304 in 5 ms
+ HTTP  30/04/2026 13:58:15 ::1 Returned 304 in 4 ms
+ HTTP  30/04/2026 13:58:15 ::1 Returned 304 in 4 ms
+ HTTP  30/04/2026 13:58:15 ::1 Returned 304 in 5 ms
+ HTTP  30/04/2026 13:58:15 ::1 GET /js/charts.js
+ HTTP  30/04/2026 13:58:15 ::1 Returned 304 in 1 ms
+ HTTP  30/04/2026 13:58:17 ::1 GET /service-worker.js
+ HTTP  30/04/2026 13:58:17 ::1 Returned 304 in 1 ms

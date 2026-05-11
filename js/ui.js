@@ -72,6 +72,11 @@ function renderSearchMeta(searchState = state.lastExternalImport) {
   const todayKcal = Math.round(safeNumber(selectedDay.kcal));
   const items = Array.isArray(searchState?.items) ? searchState.items : [];
   const isGlobalSearch = searchState?.type === "global-food-search";
+  const pagination = searchState?.pagination || null;
+  const currentPage = Math.max(1, safeNumber(pagination?.page) || 1);
+  const totalPages = Math.max(1, safeNumber(pagination?.totalPages) || 1);
+  const localCount = Math.max(0, safeNumber(pagination?.localCount));
+  const externalCount = Math.max(0, safeNumber(pagination?.externalCount));
 
   if (!isGlobalSearch || !items.length) {
     container.innerHTML = `
@@ -87,13 +92,13 @@ function renderSearchMeta(searchState = state.lastExternalImport) {
       </article>
       <article class="rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
         <p class="text-[11px] uppercase tracking-[0.2em] text-slate-500">Search order</p>
-        <p class="mt-2 text-sm font-medium text-white">Local database, USDA, then OFF fallback</p>
-        <p class="mt-1 text-xs text-slate-400">The main flow is now name-first for generic foods.</p>
+        <p class="mt-2 text-sm font-medium text-white">Local database, then Open Food Facts</p>
+        <p class="mt-1 text-xs text-slate-400">External food search is now simpler and fully name-first.</p>
       </article>
       <article class="rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
         <p class="text-[11px] uppercase tracking-[0.2em] text-slate-500">Quick action</p>
         <p class="mt-2 text-sm font-medium text-white">Set grams, add to today, or save</p>
-        <p class="mt-1 text-xs text-slate-400">The same card now covers search, logging, and persistence.</p>
+        <p class="mt-1 text-xs text-slate-400">You can also paste an Open Food Facts product link to load the exact item.</p>
       </article>
     `;
     return;
@@ -107,7 +112,11 @@ function renderSearchMeta(searchState = state.lastExternalImport) {
     <article class="rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
       <p class="text-[11px] uppercase tracking-[0.2em] text-slate-500">Results</p>
       <p class="mt-2 text-2xl font-semibold text-white">${items.length}</p>
-      <p class="mt-1 text-xs text-slate-400">combined matches across your local database and external sources.</p>
+      <p class="mt-1 text-xs text-slate-400">${
+        currentPage === 1 && localCount > 0
+          ? `${localCount} local match(es) plus ${externalCount} Open Food Facts result(s) on this page.`
+          : `${externalCount} Open Food Facts result(s) on this page.`
+      }</p>
     </article>
     <article class="rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
       <p class="text-[11px] uppercase tracking-[0.2em] text-slate-500">Saveable</p>
@@ -115,9 +124,9 @@ function renderSearchMeta(searchState = state.lastExternalImport) {
       <p class="mt-1 text-xs text-slate-400">result(s) not yet saved in your local database.</p>
     </article>
     <article class="rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
-      <p class="text-[11px] uppercase tracking-[0.2em] text-slate-500">Already saved</p>
-      <p class="mt-2 text-2xl font-semibold text-white">${savedCount}</p>
-      <p class="mt-1 text-xs text-slate-400">result(s) already available in your local database.</p>
+      <p class="text-[11px] uppercase tracking-[0.2em] text-slate-500">Page</p>
+      <p class="mt-2 text-2xl font-semibold text-white">${currentPage} / ${totalPages}</p>
+      <p class="mt-1 text-xs text-slate-400">${savedCount} result(s) already available in your local database.</p>
     </article>
     <article class="rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-4">
       <p class="text-[11px] uppercase tracking-[0.2em] text-emerald-200/80">Today</p>
@@ -139,19 +148,16 @@ export function renderApiConfig(config = state.apiConfig || {}) {
 
   const status = document.getElementById("apiConfigStatus");
   const warning = document.getElementById("edamamConfigWarning");
-  const hasUsdaKey = Boolean(config.usdaApiKey);
   const isConfigured = Boolean(config.edamamAppId && config.edamamAppKey);
 
   if (status) {
-    status.textContent = hasUsdaKey
-      ? "USDA custom key saved in this browser."
-      : "USDA search is ready with demo access. Add your own key for higher limits.";
+    status.textContent = "Open Food Facts search is built in. No API key is required.";
   }
 
   if (warning) {
     warning.textContent = isConfigured
-      ? "Edamam is configured as an optional extra search source."
-      : "Edamam is optional. The main search already uses your local database, USDA, and OFF fallback.";
+      ? "Edamam is configured for optional extras outside the main search flow."
+      : "Edamam is optional and is not used in the main search flow.";
   }
 }
 
@@ -173,7 +179,7 @@ export function renderProfileSummary(profile = state.userProfile) {
   if (!profile || !state.targets) {
     summary.innerHTML = `
       <div class="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-100">
-        O perfil nutricional ainda nao foi concluido. Preenche os dados obrigatorios para gerar targets reais.
+        Your profile is not set yet. Search and quick logging still work, but targets and planning stay locked until you save a profile.
       </div>
     `;
     return;
@@ -335,9 +341,10 @@ export function renderExternalFoodResults(
 
 export function renderSearchResults(
   searchState = state.lastExternalImport,
-  { onAddFood, onAddFoodToDay } = {},
+  { onAddFood, onAddFoodToDay, onChangePage } = {},
 ) {
   const container = document.getElementById("searchResults");
+  const paginationContainer = document.getElementById("searchResultsPagination");
   const status = document.getElementById("globalFoodSearchStatus");
 
   if (!container || !status) {
@@ -351,16 +358,20 @@ export function renderSearchResults(
 
   status.textContent = isGlobalSearch
     ? searchState.message || "Search ready."
-    : "Search foods by name. Barcode import stays optional.";
+    : "Search foods by name, barcode, or paste an Open Food Facts product link.";
 
   renderSearchMeta(searchState);
 
   if (!isGlobalSearch || !items.length) {
     container.innerHTML = `
       <div class="rounded-2xl border border-dashed border-slate-700 p-4 text-sm text-slate-400">
-        Search a food name, pick a result, set grams, and add it straight to today.
+        Search a food name, paste an Open Food Facts link, or enter a barcode. Then pick the result, set grams, and add it straight to today.
       </div>
     `;
+    if (paginationContainer) {
+      paginationContainer.innerHTML = "";
+      paginationContainer.classList.add("hidden");
+    }
     return;
   }
 
@@ -476,6 +487,75 @@ export function renderSearchResults(
 
     container.appendChild(card);
   });
+
+  if (paginationContainer) {
+    const pagination = searchState?.pagination || null;
+    const currentPage = Math.max(1, safeNumber(pagination?.page) || 1);
+    const totalPages = Math.max(1, safeNumber(pagination?.totalPages) || 1);
+    const hasPreviousPage = Boolean(pagination?.hasPreviousPage);
+    const hasNextPage = Boolean(pagination?.hasNextPage);
+    const localPinned = Boolean(pagination?.localPinned);
+    const localCount = Math.max(0, safeNumber(pagination?.localCount));
+    const externalCount = Math.max(0, safeNumber(pagination?.externalCount));
+
+    if (totalPages <= 1 && !hasPreviousPage && !hasNextPage) {
+      paginationContainer.innerHTML = "";
+      paginationContainer.classList.add("hidden");
+      return;
+    }
+
+    paginationContainer.classList.remove("hidden");
+    paginationContainer.innerHTML = `
+      <div class="flex flex-col gap-3 rounded-2xl border border-slate-800 bg-slate-950/70 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Search pages</p>
+          <p class="mt-1 text-sm font-medium text-white">Open Food Facts page ${currentPage} of ${totalPages}</p>
+          <p class="mt-1 text-xs text-slate-400">${
+            localPinned && localCount > 0
+              ? `${localCount} local match(es) stay pinned above ${externalCount} Open Food Facts result(s).`
+              : `${externalCount} Open Food Facts result(s) on this page.`
+          }</p>
+        </div>
+
+        <div class="flex gap-2">
+          <button
+            type="button"
+            data-search-page="previous"
+            class="rounded-full border px-4 py-2 text-sm font-semibold transition ${
+              hasPreviousPage
+                ? "border-slate-700 text-slate-200 hover:border-emerald-500 hover:text-white"
+                : "cursor-not-allowed border-slate-800 text-slate-500"
+            }"
+            ${hasPreviousPage ? "" : "disabled"}
+          >
+            Previous page
+          </button>
+          <button
+            type="button"
+            data-search-page="next"
+            class="rounded-full border px-4 py-2 text-sm font-semibold transition ${
+              hasNextPage
+                ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-100 hover:border-emerald-400 hover:bg-emerald-500/20"
+                : "cursor-not-allowed border-slate-800 text-slate-500"
+            }"
+            ${hasNextPage ? "" : "disabled"}
+          >
+            Next page
+          </button>
+        </div>
+      </div>
+    `;
+
+    const previousButton = paginationContainer.querySelector('[data-search-page="previous"]');
+    if (previousButton && hasPreviousPage) {
+      previousButton.addEventListener("click", () => onChangePage?.(currentPage - 1));
+    }
+
+    const nextButton = paginationContainer.querySelector('[data-search-page="next"]');
+    if (nextButton && hasNextPage) {
+      nextButton.addEventListener("click", () => onChangePage?.(currentPage + 1));
+    }
+  }
 }
 
 export function renderPantryList() {

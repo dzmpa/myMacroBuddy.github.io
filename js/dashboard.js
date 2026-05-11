@@ -1,8 +1,8 @@
-import { calculateRemaining, getEffectiveTargets } from "./algorithm.js";
+import { calculateRemaining, getEffectiveTargets } from "./algorithm.js?v=navy2";
 import { createEmptyDay, getState, setState } from "./state.js";
 import { saveToStorage } from "./storage.js";
 import { renderCharts } from "./charts.js";
-import { formatDate, safeNumber } from "./utils.js";
+import { formatDate, formatInputNumber, safeNumber } from "./utils.js";
 
 const FIELD_CONFIG = [
   { id: "kcal", numeric: true, event: "input" },
@@ -117,7 +117,10 @@ export function loadDay() {
     }
 
     const numericValue = safeNumber(day[id]);
-    element.value = numericValue > 0 ? numericValue : "";
+    element.value = formatInputNumber(numericValue, {
+      decimals: id === "kcal" ? 0 : 1,
+      allowZero: false,
+    });
   });
 
   renderDashboard();

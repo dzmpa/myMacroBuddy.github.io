@@ -3,7 +3,7 @@ import {
   calculateFiberTarget,
   getEffectiveTargets,
   sumEntryMacros,
-} from "./algorithm.js";
+} from "./algorithm.js?v=navy2";
 import { pickByScore } from "./coach.js";
 import { clamp, formatDate, safeNumber } from "./utils.js";
 

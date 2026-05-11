@@ -3,6 +3,30 @@ export function safeNumber(value) {
   return Number.isFinite(numericValue) ? numericValue : 0;
 }
 
+export function roundTo(value, decimals = 1) {
+  const factor = 10 ** Math.max(0, safeNumber(decimals));
+  const roundedValue = Math.round(safeNumber(value) * factor) / factor;
+
+  return Object.is(roundedValue, -0) ? 0 : roundedValue;
+}
+
+export function formatInputNumber(
+  value,
+  { decimals = 1, allowZero = true } = {},
+) {
+  const roundedValue = roundTo(value, decimals);
+
+  if (!allowZero && roundedValue === 0) {
+    return "";
+  }
+
+  if (Math.max(0, safeNumber(decimals)) === 0) {
+    return String(Math.round(roundedValue));
+  }
+
+  return Number(roundedValue.toFixed(decimals)).toString();
+}
+
 export function formatDate(value) {
   const date = value ? new Date(value) : new Date();
 

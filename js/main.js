@@ -1,10 +1,12 @@
 import {
   calculateAdaptiveTDEE,
   calculateBaseMacros,
+  calculateNavyBodyFat,
   getEffectiveTargets,
+  getBodyFatRecommendation,
   isProfileValid,
   calculateSafetyWarnings,
-} from "./algorithm.js";
+} from "./algorithm.js?v=navy2";
 import {
   createEmptyRecipeSuggestions,
   createEmptyDay,
@@ -22,11 +24,12 @@ import { buildCoachScores } from "./coach.js";
 import { searchFood, analyseRecipe, hasEdamamConfig } from "./edamam.js";
 import { searchAllApis } from "./foodSearch.js";
 import { initCalendar, renderCalendar } from "./calendar.js";
-import { initDashboard, renderDashboard } from "./dashboard.js";
+import { initDashboard, loadDay, renderDashboard } from "./dashboard.js";
 import {
   addFoodPayloadToDay,
   addFoodToDay,
   addMealToDay,
+  copyPreviousDayToSelected,
   removeFoodFromDay,
 } from "./foodLog.js";
 import { fetchFoodByBarcode } from "./openFoodFacts.js";
@@ -53,12 +56,103 @@ import {
   renderRecipesList,
   renderSearchResults,
 } from "./ui.js";
-import { formatDate, safeNumber } from "./utils.js";
+import { formatDate, formatInputNumber, safeNumber } from "./utils.js";
 
 let isProfileModalForcedOpen = false;
+const MACRO_CALCULATOR_FIELDS = [
+  { id: "calcAge", event: "input" },
+  { id: "calcWeight", event: "input" },
+  { id: "calcHeight", event: "input" },
+  { id: "calcGender", event: "change" },
+  { id: "calcActivityLevel", event: "change" },
+  { id: "calcGoal", event: "change" },
+  { id: "calcMealsPerDay", event: "input" },
+  { id: "calcTrainingHours", event: "input" },
+  { id: "calcNeck", event: "input" },
+  { id: "calcWaist", event: "input" },
+  { id: "calcHip", event: "input" },
+];
+const APP_PAGES = [
+  "calculator",
+  "today",
+  "search",
+  "suggestions",
+  "progress",
+  "settings",
+];
 
 function getElementValue(id) {
   return document.getElementById(id)?.value ?? "";
+}
+
+function isValidAppPage(page) {
+  return APP_PAGES.includes(String(page || "").trim().toLowerCase());
+}
+
+function getActiveAppPage() {
+  const params = new URLSearchParams(window.location.search);
+  const requestedPage = String(params.get("page") || "").trim().toLowerCase();
+
+  return isValidAppPage(requestedPage) ? requestedPage : "calculator";
+}
+
+function setActiveAppPage(nextPage, { replace = false } = {}) {
+  const normalizedPage = String(nextPage || "").trim().toLowerCase();
+
+  if (!isValidAppPage(normalizedPage)) {
+    return;
+  }
+
+  const url = new URL(window.location.href);
+  url.searchParams.set("page", normalizedPage);
+
+  if (replace) {
+    window.history.replaceState({}, "", url);
+  } else {
+    window.history.pushState({}, "", url);
+  }
+
+  renderPageNavigation();
+  window.scrollTo({ top: 0, behavior: "auto" });
+}
+
+function renderPageNavigation() {
+  const activePage = getActiveAppPage();
+
+  document.querySelectorAll("[data-page-link]").forEach((button) => {
+    const isActive = button.dataset.pageLink === activePage;
+
+    button.classList.toggle("border-emerald-500", isActive);
+    button.classList.toggle("bg-emerald-500", isActive);
+    button.classList.toggle("text-slate-950", isActive);
+    button.classList.toggle("text-slate-200", !isActive);
+    button.classList.toggle("border-slate-700", !isActive);
+    button.setAttribute("aria-current", isActive ? "page" : "false");
+  });
+
+  document.querySelectorAll("[data-app-page]").forEach((section) => {
+    const isActive = section.dataset.appPage === activePage;
+
+    section.classList.toggle("hidden", !isActive);
+    section.setAttribute("aria-hidden", isActive ? "false" : "true");
+
+    if (section instanceof HTMLDetailsElement) {
+      section.open = isActive;
+    }
+  });
+}
+
+function syncInputValueIfBlank(id, value) {
+  const input = document.getElementById(id);
+  if (!input || document.activeElement === input) {
+    return;
+  }
+
+  if (String(input.value ?? "").trim().length > 0) {
+    return;
+  }
+
+  input.value = value ?? "";
 }
 
 function focusGlobalFoodSearch() {
@@ -68,6 +162,25 @@ function focusGlobalFoodSearch() {
   }
 
   searchInput.focus({ preventScroll: true });
+}
+
+function setDayCopyStatus(message = "", isError = false) {
+  const status = document.getElementById("copyPreviousDayStatus");
+
+  if (!status) {
+    return;
+  }
+
+  status.classList.remove("hidden", "text-emerald-200", "text-rose-300");
+
+  if (!message) {
+    status.textContent = "";
+    status.classList.add("hidden");
+    return;
+  }
+
+  status.textContent = message;
+  status.classList.add(isError ? "text-rose-300" : "text-emerald-200");
 }
 
 function getFoodActionKey(food = {}) {
@@ -108,21 +221,11 @@ function getSelectedDay() {
 }
 
 function shouldShowOnboarding() {
-  return (
-    isProfileModalForcedOpen ||
-    !isProfileValid(state.userProfile) ||
-    !state.targets
-  );
+  return isProfileModalForcedOpen;
 }
 
 function requireProfile() {
-  const needsProfile = !isProfileValid(state.userProfile) || !state.targets;
-
-  if (needsProfile) {
-    isProfileModalForcedOpen = true;
-  }
-
-  return needsProfile;
+  return !isProfileValid(state.userProfile) || !state.targets;
 }
 
 function revalidateProfileState() {
@@ -184,6 +287,184 @@ function readProfileForm() {
       Math.max(3, safeNumber(getElementValue("profileMealsPerDay")) || 4),
     ),
   };
+}
+
+function seedMacroCalculatorFromProfile(profile = state.userProfile) {
+  if (!profile) {
+    return;
+  }
+
+  syncInputValueIfBlank("calcAge", profile.age || "");
+  syncInputValueIfBlank("calcWeight", profile.weight || "");
+  syncInputValueIfBlank("calcHeight", profile.height || "");
+  syncInputValueIfBlank("calcGender", profile.gender || "");
+  syncInputValueIfBlank("calcActivityLevel", profile.activityLevel || "");
+  syncInputValueIfBlank("calcGoal", profile.goal || "maintenance");
+  syncInputValueIfBlank("calcMealsPerDay", profile.mealsPerDay || 4);
+}
+
+function readMacroCalculatorForm() {
+  return {
+    name: state.userProfile?.name || "Macro calculator",
+    age: safeNumber(getElementValue("calcAge")),
+    weight: safeNumber(getElementValue("calcWeight")),
+    height: safeNumber(getElementValue("calcHeight")),
+    gender: String(getElementValue("calcGender")).trim().toLowerCase(),
+    goal: String(getElementValue("calcGoal") || "maintenance")
+      .trim()
+      .toLowerCase(),
+    activityLevel: String(getElementValue("calcActivityLevel"))
+      .trim()
+      .toLowerCase(),
+    mealsPerDay: Math.min(
+      6,
+      Math.max(3, safeNumber(getElementValue("calcMealsPerDay")) || 4),
+    ),
+    trainingHours: safeNumber(getElementValue("calcTrainingHours")),
+    neck: safeNumber(getElementValue("calcNeck")),
+    waist: safeNumber(getElementValue("calcWaist")),
+    hip: safeNumber(getElementValue("calcHip")),
+  };
+}
+
+function setMacroCalculatorMetric(id, value, suffix = "") {
+  const element = document.getElementById(id);
+  if (!element) {
+    return;
+  }
+
+  element.textContent =
+    value === null || value === undefined || value === ""
+      ? "--"
+      : `${value}${suffix}`;
+}
+
+function resetMacroCalculatorOutput(message) {
+  setMacroCalculatorMetric("macroCalcKcal", "--");
+  setMacroCalculatorMetric("macroCalcProt", "--");
+  setMacroCalculatorMetric("macroCalcCarb", "--");
+  setMacroCalculatorMetric("macroCalcFat", "--");
+  setMacroCalculatorMetric("macroCalcFiber", "--");
+  setMacroCalculatorMetric("macroCalcWater", "--");
+  setMacroCalculatorMetric("macroCalcBodyFat", "--");
+  setMacroCalculatorMetric("macroCalcLeanMass", "--");
+  setMacroCalculatorMetric("macroCalcFatMass", "--");
+
+  const status = document.getElementById("macroCalculatorStatus");
+  const meta = document.getElementById("macroCalculatorMeta");
+  const perMeal = document.getElementById("macroCalcPerMeal");
+  const recommendationTitle = document.getElementById(
+    "macroCalcRecommendationTitle",
+  );
+  const recommendationText = document.getElementById(
+    "macroCalcRecommendationText",
+  );
+
+  if (status) {
+    status.textContent = message;
+  }
+
+  if (meta) {
+    meta.textContent =
+      "Uses the Mifflin-St Jeor formula, an activity multiplier, and a goal adjustment.";
+  }
+
+  if (perMeal) {
+    perMeal.textContent =
+      "Add your stats first to see an easy per-meal breakdown.";
+  }
+
+  if (recommendationTitle) {
+    recommendationTitle.textContent = "Recommendation will appear here";
+  }
+
+  if (recommendationText) {
+    recommendationText.textContent =
+      "Add neck, waist, and hip for female entries to get the American Navy body-fat estimate and a recommendation.";
+  }
+}
+
+function renderMacroCalculator() {
+  const status = document.getElementById("macroCalculatorStatus");
+  if (!status) {
+    return;
+  }
+
+  seedMacroCalculatorFromProfile();
+
+  const profile = readMacroCalculatorForm();
+  const targets = calculateBaseMacros(profile);
+  const navyEstimate = calculateNavyBodyFat(profile);
+  const bodyFatRecommendation = getBodyFatRecommendation(profile, navyEstimate);
+
+  if (!targets) {
+    resetMacroCalculatorOutput(
+      "Complete age, weight, height, gender, activity, and goal to calculate your macros.",
+    );
+    return;
+  }
+
+  const mealsPerDay = Math.min(6, Math.max(3, safeNumber(profile.mealsPerDay) || 4));
+  const perMeal = document.getElementById("macroCalcPerMeal");
+  const meta = document.getElementById("macroCalculatorMeta");
+  const recommendationTitle = document.getElementById(
+    "macroCalcRecommendationTitle",
+  );
+  const recommendationText = document.getElementById(
+    "macroCalcRecommendationText",
+  );
+
+  setMacroCalculatorMetric("macroCalcKcal", Math.round(targets.kcal));
+  setMacroCalculatorMetric("macroCalcProt", targets.prot.toFixed(1), "g");
+  setMacroCalculatorMetric("macroCalcCarb", targets.carb.toFixed(1), "g");
+  setMacroCalculatorMetric("macroCalcFat", targets.fat.toFixed(1), "g");
+  setMacroCalculatorMetric("macroCalcFiber", targets.fiber.toFixed(1), "g");
+  setMacroCalculatorMetric("macroCalcWater", targets.water.toFixed(2), "L");
+
+  if (navyEstimate) {
+    setMacroCalculatorMetric("macroCalcBodyFat", navyEstimate.bodyFat.toFixed(1), "%");
+    setMacroCalculatorMetric("macroCalcLeanMass", navyEstimate.leanMass.toFixed(1), "kg");
+    setMacroCalculatorMetric("macroCalcFatMass", navyEstimate.fatMass.toFixed(1), "kg");
+  } else {
+    setMacroCalculatorMetric("macroCalcBodyFat", "--");
+    setMacroCalculatorMetric("macroCalcLeanMass", "--");
+    setMacroCalculatorMetric("macroCalcFatMass", "--");
+  }
+
+  status.textContent =
+    `Calculated for a ${profile.goal} goal at ${profile.activityLevel} activity.`;
+
+  if (meta) {
+    meta.textContent =
+      `BMR ${Math.round(targets.bmr)} kcal | TDEE ${Math.round(targets.tdee)} kcal | Activity x${targets.activityMultiplier}`;
+  }
+
+  if (perMeal) {
+    perMeal.textContent =
+      `${mealsPerDay} meal(s) per day: ` +
+      `${Math.round(targets.kcal / mealsPerDay)} kcal | ` +
+      `P ${(targets.prot / mealsPerDay).toFixed(1)}g | ` +
+      `C ${(targets.carb / mealsPerDay).toFixed(1)}g | ` +
+      `F ${(targets.fat / mealsPerDay).toFixed(1)}g per meal.`;
+  }
+
+  if (recommendationTitle && recommendationText) {
+    if (bodyFatRecommendation) {
+      recommendationTitle.textContent = bodyFatRecommendation.title;
+      recommendationText.textContent =
+        `${bodyFatRecommendation.message} Navy estimate: ${navyEstimate.bodyFat.toFixed(1)}% body fat, ${navyEstimate.category} range.`;
+    } else if (["male", "female"].includes(profile.gender)) {
+      recommendationTitle.textContent = "Add your Navy measurements";
+      recommendationText.textContent =
+        profile.gender === "female"
+          ? "Enter neck, waist, and hip circumference in cm to unlock the body-fat estimate and recommendation."
+          : "Enter neck and waist circumference in cm to unlock the body-fat estimate and recommendation.";
+    } else {
+      recommendationTitle.textContent = "Navy estimate unavailable";
+      recommendationText.textContent =
+        "The American Navy body-fat estimate in this calculator currently supports male and female entries only.";
+    }
+  }
 }
 
 function setFoodTagSelection(tags = []) {
@@ -248,7 +529,7 @@ function renderFoodImportStatus() {
       : source === "edamam"
         ? `Current source: Edamam${externalId ? ` (${externalId})` : ""}${lastExternalLabel}`
         : source === "usda"
-          ? `Current source: USDA${externalId ? ` (${externalId})` : ""}${lastExternalLabel}`
+          ? `Current source: legacy USDA entry${externalId ? ` (${externalId})` : ""}${lastExternalLabel}`
           : `Current source: manual${lastExternalLabel}`;
 }
 
@@ -369,10 +650,12 @@ function refreshDerivedState() {
 
 function renderAll() {
   renderProfileSummary();
+  renderMacroCalculator();
   renderApiConfig();
   renderSearchResults(state.lastExternalImport, {
     onAddFood: handleAddSearchResult,
     onAddFoodToDay: handleAddSearchResultToDay,
+    onChangePage: handleSearchPageChange,
   });
   renderFoodList({
     onEdit: handleEditFood,
@@ -401,6 +684,7 @@ function renderAll() {
   renderDashboard();
   renderCalendar();
   renderFoodImportStatus();
+  renderPageNavigation();
 }
 
 function persistAndRenderAll() {
@@ -412,6 +696,7 @@ function persistAndRenderAll() {
 function handleContextRefresh() {
   refreshDerivedState();
   saveToStorage(state);
+  setDayCopyStatus("");
   renderAll();
 }
 
@@ -449,11 +734,21 @@ function handleEditFood(id) {
   if (!food) return;
 
   document.getElementById("foodName").value = food.name;
-  document.getElementById("foodKcal").value = food.kcal;
-  document.getElementById("foodP").value = food.prot;
-  document.getElementById("foodC").value = food.carb;
-  document.getElementById("foodF").value = food.fat;
-  document.getElementById("foodFiber").value = food.fiber || "";
+  document.getElementById("foodKcal").value = formatInputNumber(food.kcal, {
+    decimals: 0,
+  });
+  document.getElementById("foodP").value = formatInputNumber(food.prot, {
+    decimals: 1,
+  });
+  document.getElementById("foodC").value = formatInputNumber(food.carb, {
+    decimals: 1,
+  });
+  document.getElementById("foodF").value = formatInputNumber(food.fat, {
+    decimals: 1,
+  });
+  document.getElementById("foodFiber").value = formatInputNumber(food.fiber, {
+    decimals: 1,
+  });
   document.getElementById("foodBarcode").value = food.barcode || "";
 
   setFoodTagSelection(food.tags || []);
@@ -485,6 +780,24 @@ function handleDeleteRecipe(id) {
 function handleRemoveDayFood(index) {
   removeFoodFromDay(index);
   persistAndRenderAll();
+}
+
+function handleCopyPreviousDay() {
+  const copyResult = copyPreviousDayToSelected();
+
+  if (!copyResult.copied) {
+    setDayCopyStatus(
+      `No daily data found on ${copyResult.previousDayKey} to copy.`,
+      true,
+    );
+    return;
+  }
+
+  refreshDerivedState();
+  saveToStorage(state);
+  loadDay();
+  renderAll();
+  setDayCopyStatus(`Copied daily data from ${copyResult.previousDayKey}.`);
 }
 
 function handleEatMeal(meal) {
@@ -640,6 +953,7 @@ function handleAddSearchResult(food) {
     query: state.lastExternalImport?.query || "",
     item: savedFood || food,
     items: nextItems,
+    pagination: state.lastExternalImport?.pagination || null,
     recentAction: "saved",
     recentFoodKey: getFoodActionKey(savedFood || food),
     message: `${savedFood?.name || food.name} was saved to your local database.`,
@@ -668,6 +982,7 @@ function handleAddSearchResultToDay(food, grams) {
       Array.isArray(state.lastExternalImport.items)
         ? state.lastExternalImport.items
         : [],
+    pagination: state.lastExternalImport?.pagination || null,
     recentAction: "logged",
     recentFoodKey: getFoodActionKey(food),
     recentGrams: Math.round(cleanGrams),
@@ -747,19 +1062,31 @@ function bindRecipeForm() {
 
 function bindFoodLog() {
   const quickAddButton = document.getElementById("quickAddFoodBtn");
-  if (!quickAddButton || quickAddButton.dataset.bound === "true") return;
+  const copyPreviousDayButton = document.getElementById("copyPreviousDayBtn");
 
-  quickAddButton.dataset.bound = "true";
-  quickAddButton.addEventListener("click", () => {
-    const foodId = String(getElementValue("quickFoodSelect")).trim();
-    const grams = safeNumber(getElementValue("quickFoodGrams"));
+  if (quickAddButton && quickAddButton.dataset.bound !== "true") {
+    quickAddButton.dataset.bound = "true";
+    quickAddButton.addEventListener("click", () => {
+      const foodId = String(getElementValue("quickFoodSelect")).trim();
+      const grams = safeNumber(getElementValue("quickFoodGrams"));
 
-    if (!foodId || grams <= 0) return;
+      if (!foodId || grams <= 0) return;
 
-    addFoodToDay(foodId, grams);
-    document.getElementById("quickFoodGrams").value = "";
-    persistAndRenderAll();
-  });
+      addFoodToDay(foodId, grams);
+      document.getElementById("quickFoodGrams").value = "";
+      persistAndRenderAll();
+    });
+  }
+
+  if (
+    copyPreviousDayButton &&
+    copyPreviousDayButton.dataset.bound !== "true"
+  ) {
+    copyPreviousDayButton.dataset.bound = "true";
+    copyPreviousDayButton.addEventListener("click", () => {
+      handleCopyPreviousDay();
+    });
+  }
 }
 
 function bindMealPlanner() {
@@ -821,11 +1148,21 @@ function bindOpenFoodFacts() {
     }
 
     document.getElementById("foodName").value = result.name;
-    document.getElementById("foodKcal").value = result.kcal;
-    document.getElementById("foodP").value = result.prot;
-    document.getElementById("foodC").value = result.carb;
-    document.getElementById("foodF").value = result.fat;
-    document.getElementById("foodFiber").value = result.fiber;
+    document.getElementById("foodKcal").value = formatInputNumber(result.kcal, {
+      decimals: 0,
+    });
+    document.getElementById("foodP").value = formatInputNumber(result.prot, {
+      decimals: 1,
+    });
+    document.getElementById("foodC").value = formatInputNumber(result.carb, {
+      decimals: 1,
+    });
+    document.getElementById("foodF").value = formatInputNumber(result.fat, {
+      decimals: 1,
+    });
+    document.getElementById("foodFiber").value = formatInputNumber(result.fiber, {
+      decimals: 1,
+    });
     document.getElementById("foodBarcode").value = result.barcode;
 
     setFoodTagSelection([]);
@@ -863,9 +1200,9 @@ function bindApiConfig() {
       item: null,
       items: [],
       message:
-        state.apiConfig.usdaApiKey || hasEdamamConfig(state.apiConfig)
+        hasEdamamConfig(state.apiConfig)
           ? "API settings saved."
-          : "API settings updated. USDA demo access stays available by default.",
+          : "Settings saved. Open Food Facts search is built in.",
     });
     saveToStorage(state);
     renderAll();
@@ -938,7 +1275,7 @@ function bindEdamamFoodSearch() {
         message:
           error instanceof Error
             ? error.message
-            : "Edamam search failed. The app still works with local and USDA data.",
+            : "Edamam search failed. The app still works with local and Open Food Facts data.",
       });
     } finally {
       searchButton.disabled = false;
@@ -949,6 +1286,81 @@ function bindEdamamFoodSearch() {
   });
 }
 
+async function runGlobalFoodSearch(page = 1) {
+  const searchButton = document.getElementById("searchAllApis");
+  const searchInput = document.getElementById("globalFoodSearch");
+
+  if (!searchButton || !searchInput) {
+    return;
+  }
+
+  const query = String(searchInput.value).trim();
+
+  if (!query) {
+    setLastExternalImport({
+      type: "global-food-search",
+      source: "manual",
+      query: "",
+      item: null,
+      items: [],
+      pagination: null,
+      message: "Type a food name to search.",
+    });
+    saveToStorage(state);
+    renderAll();
+    return;
+  }
+
+  searchButton.disabled = true;
+  searchButton.textContent = "Searching...";
+
+  try {
+    const result = await searchAllApis(query, state, { page });
+
+    setLastExternalImport({
+      type: "global-food-search",
+      source: "manual",
+      query,
+      item: null,
+      items: result.items,
+      pagination: result.pagination,
+      message: result.message,
+    });
+  } catch (error) {
+    setLastExternalImport({
+      type: "global-food-search",
+      source: "manual",
+      query,
+      item: null,
+      items: [],
+      pagination: null,
+      message:
+        error instanceof Error
+          ? error.message
+          : "Search failed. The app still works with local data.",
+    });
+  } finally {
+    searchButton.disabled = false;
+    searchButton.textContent = "Search";
+    saveToStorage(state);
+    renderAll();
+  }
+}
+
+function handleSearchPageChange(nextPage) {
+  const currentPage = Math.max(
+    1,
+    safeNumber(state.lastExternalImport?.pagination?.page) || 1,
+  );
+  const targetPage = Math.max(1, safeNumber(nextPage) || 1);
+
+  if (targetPage === currentPage) {
+    return;
+  }
+
+  runGlobalFoodSearch(targetPage);
+}
+
 function bindGlobalFoodSearch() {
   const searchButton = document.getElementById("searchAllApis");
   const searchInput = document.getElementById("globalFoodSearch");
@@ -957,60 +1369,9 @@ function bindGlobalFoodSearch() {
     return;
   }
 
-  const runSearch = async () => {
-    const query = String(searchInput.value).trim();
-
-    if (!query) {
-      setLastExternalImport({
-        type: "global-food-search",
-        source: "manual",
-        query: "",
-        item: null,
-        items: [],
-        message: "Type a food name to search.",
-      });
-      saveToStorage(state);
-      renderAll();
-      return;
-    }
-
-    searchButton.disabled = true;
-    searchButton.textContent = "Searching...";
-
-    try {
-      const result = await searchAllApis(query, state);
-
-      setLastExternalImport({
-        type: "global-food-search",
-        source: "manual",
-        query,
-        item: null,
-        items: result.items,
-        message: result.message,
-      });
-    } catch (error) {
-      setLastExternalImport({
-        type: "global-food-search",
-        source: "manual",
-        query,
-        item: null,
-        items: [],
-        message:
-          error instanceof Error
-            ? error.message
-            : "Search failed. The app still works with local data.",
-      });
-    } finally {
-      searchButton.disabled = false;
-      searchButton.textContent = "Search";
-      saveToStorage(state);
-      renderAll();
-    }
-  };
-
   searchButton.dataset.bound = "true";
   searchButton.addEventListener("click", () => {
-    runSearch();
+    runGlobalFoodSearch(1);
   });
 
   if (searchInput.dataset.bound !== "true") {
@@ -1018,7 +1379,7 @@ function bindGlobalFoodSearch() {
     searchInput.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
         event.preventDefault();
-        runSearch();
+        runGlobalFoodSearch(1);
       }
     });
   }
@@ -1094,6 +1455,54 @@ function bindProfileActions() {
   editProfileButton.addEventListener("click", () => {
     isProfileModalForcedOpen = true;
     renderAll();
+  });
+}
+
+function bindMacroCalculator() {
+  const calculateButton = document.getElementById("calculateMacrosBtn");
+
+  if (calculateButton && calculateButton.dataset.bound !== "true") {
+    calculateButton.dataset.bound = "true";
+    calculateButton.addEventListener("click", () => {
+      renderMacroCalculator();
+    });
+  }
+
+  MACRO_CALCULATOR_FIELDS.forEach(({ id, event }) => {
+    const element = document.getElementById(id);
+
+    if (!element || element.dataset.bound === "true") {
+      return;
+    }
+
+    element.dataset.bound = "true";
+    element.addEventListener(event, () => {
+      renderMacroCalculator();
+    });
+  });
+}
+
+function bindPageNavigation() {
+  const navigationButtons = document.querySelectorAll("[data-page-link]");
+
+  navigationButtons.forEach((button) => {
+    if (button.dataset.bound === "true") {
+      return;
+    }
+
+    button.dataset.bound = "true";
+    button.addEventListener("click", () => {
+      setActiveAppPage(button.dataset.pageLink);
+    });
+  });
+
+  if (document.body.dataset.pageNavBound === "true") {
+    return;
+  }
+
+  document.body.dataset.pageNavBound = "true";
+  window.addEventListener("popstate", () => {
+    renderPageNavigation();
   });
 }
 
@@ -1199,6 +1608,8 @@ async function init() {
   bindEdamamFoodSearch();
   bindGlobalFoodSearch();
   bindPantryAssistant();
+  bindMacroCalculator();
+  bindPageNavigation();
   bindProfileForm();
   bindProfileActions();
   bindBackupControls();
@@ -1209,6 +1620,7 @@ async function init() {
   clearFoodForm();
   refreshDerivedState();
   saveToStorage(state);
+  setActiveAppPage(getActiveAppPage(), { replace: true });
   renderAll();
   registerServiceWorker();
 }

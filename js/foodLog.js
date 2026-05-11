@@ -1,4 +1,4 @@
-import { sumEntryMacros } from "./algorithm.js";
+import { sumEntryMacros } from "./algorithm.js?v=navy2";
 import { createEmptyDay, getState, setState } from "./state.js";
 import { formatDate, safeNumber } from "./utils.js";
 
@@ -65,6 +65,40 @@ function buildExternalEntry(item = {}) {
     source: String(item.source || "manual"),
     rawExternal: item.rawExternal ?? item.raw ?? null,
   };
+}
+
+function cloneSerializable(value) {
+  try {
+    return JSON.parse(JSON.stringify(value));
+  } catch {
+    return null;
+  }
+}
+
+function cloneDay(day = createEmptyDay()) {
+  const fallbackDay = createEmptyDay();
+  const safeClone = cloneSerializable(day) || {};
+
+  return {
+    ...fallbackDay,
+    ...safeClone,
+    foods: Array.isArray(safeClone.foods) ? safeClone.foods : [],
+  };
+}
+
+function hasDayContent(day = createEmptyDay()) {
+  return (
+    safeNumber(day.kcal) > 0 ||
+    safeNumber(day.prot) > 0 ||
+    safeNumber(day.carb) > 0 ||
+    safeNumber(day.fat) > 0 ||
+    safeNumber(day.fiber) > 0 ||
+    safeNumber(day.peso) > 0 ||
+    safeNumber(day.agua) > 0 ||
+    String(day.notes ?? "").trim().length > 0 ||
+    String(day.dayType ?? "normal").trim().toLowerCase() !== "normal" ||
+    (Array.isArray(day.foods) && day.foods.length > 0)
+  );
 }
 
 export function recalculateDayMacros(dateValue) {
@@ -153,4 +187,33 @@ export function removeFoodFromDay(index) {
   });
 
   return recalculateDayMacros(dayKey);
+}
+
+export function copyPreviousDayToSelected() {
+  const currentState = getState();
+  const selectedDate = new Date(currentState.selectedDate);
+  const previousDate = new Date(selectedDate);
+
+  previousDate.setDate(previousDate.getDate() - 1);
+
+  const selectedDayKey = getDayKey(selectedDate);
+  const previousDayKey = getDayKey(previousDate);
+  const previousDay = currentState.days[previousDayKey];
+
+  if (!previousDay || !hasDayContent(previousDay)) {
+    return {
+      copied: false,
+      previousDayKey,
+      day: null,
+    };
+  }
+
+  const copiedDay = cloneDay(previousDay);
+  commitDay(selectedDayKey, copiedDay);
+
+  return {
+    copied: true,
+    previousDayKey,
+    day: copiedDay,
+  };
 }

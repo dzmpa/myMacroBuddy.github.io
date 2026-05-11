@@ -1,11 +1,42 @@
-import { hasEdamamConfig, searchFood as searchEdamamFood } from "./edamam.js";
-import { searchFoodsByQuery as searchOpenFoodFactsFoods } from "./openFoodFacts.js";
-import { searchFoods as searchUsdaFoods } from "./usdaFoodData.js";
+import {
+  extractOpenFoodFactsBarcode,
+  fetchFoodByBarcode,
+  searchFoodsByQuery as searchOpenFoodFactsFoods,
+} from "./openFoodFacts.js";
 import { safeNumber, uniqueStrings } from "./utils.js";
 
-const PRIMARY_RESULT_LIMIT = 16;
-const OFF_FALLBACK_THRESHOLD = 10;
-const EDAMAM_FALLBACK_THRESHOLD = 6;
+const LOCAL_RESULT_LIMIT = 8;
+const OFF_PAGE_SIZE = 12;
+
+function normalizeSearchText(value) {
+  return String(value ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+function getQueryTerms(query) {
+  return normalizeSearchText(query)
+    .split(/\s+/)
+    .filter(Boolean);
+}
+
+function buildSearchableText(food = {}) {
+  return normalizeSearchText(
+    [
+      food.name,
+      food.searchText,
+      Array.isArray(food.tags) ? food.tags.join(" ") : "",
+      food.barcode,
+      food.externalId,
+    ]
+      .map((value) => String(value || "").trim())
+      .filter(Boolean)
+      .join(" "),
+  );
+}
 
 function normalizeSearchResult(food = {}, overrides = {}) {
   const name = String(food.name ?? food.label ?? food.product_name ?? "").trim();
@@ -47,13 +78,12 @@ function normalizeSearchResult(food = {}, overrides = {}) {
 }
 
 function searchLocalFoods(query, foods = []) {
-  const normalizedQuery = String(query || "").trim().toLowerCase();
-  const queryTerms = normalizedQuery.split(/\s+/).filter(Boolean);
+  const queryTerms = getQueryTerms(query);
 
   return foods
     .filter((food) => {
-      const normalizedName = String(food.name || "").trim().toLowerCase();
-      return queryTerms.every((term) => normalizedName.includes(term));
+      const searchableText = buildSearchableText(food);
+      return queryTerms.every((term) => searchableText.includes(term));
     })
     .map((food) =>
       normalizeSearchResult(food, {
@@ -64,7 +94,32 @@ function searchLocalFoods(query, foods = []) {
       }),
     )
     .filter(Boolean)
-    .slice(0, 8);
+    .slice(0, LOCAL_RESULT_LIMIT);
+}
+
+function searchLocalFoodsByBarcode(barcode, foods = []) {
+  const cleanBarcode = String(barcode || "").trim();
+
+  if (!cleanBarcode) {
+    return [];
+  }
+
+  return foods
+    .filter((food) => {
+      const foodBarcode = String(food.barcode || "").trim();
+      const foodExternalId = String(food.externalId || "").trim();
+      return foodBarcode === cleanBarcode || foodExternalId === cleanBarcode;
+    })
+    .map((food) =>
+      normalizeSearchResult(food, {
+        source: food.source || "manual",
+        alreadySaved: true,
+        matchedSources: ["local", String(food.source || "manual").trim().toLowerCase()],
+        tags: food.tags || [],
+      }),
+    )
+    .filter(Boolean)
+    .slice(0, LOCAL_RESULT_LIMIT);
 }
 
 function getResultKey(result) {
@@ -131,11 +186,14 @@ function dedupeResults(results = []) {
 }
 
 function sortResults(results = [], query = "") {
-  const normalizedQuery = query.toLowerCase();
+  const normalizedQuery = normalizeSearchText(query);
+  const queryTerms = getQueryTerms(query);
 
   return [...results].sort((left, right) => {
-    const leftName = left.name.toLowerCase();
-    const rightName = right.name.toLowerCase();
+    const leftName = normalizeSearchText(left.name);
+    const rightName = normalizeSearchText(right.name);
+    const leftText = buildSearchableText(left);
+    const rightText = buildSearchableText(right);
     const leftExact = leftName === normalizedQuery ? 1 : 0;
     const rightExact = rightName === normalizedQuery ? 1 : 0;
     if (leftExact !== rightExact) {
@@ -146,6 +204,18 @@ function sortResults(results = [], query = "") {
     const rightStarts = rightName.startsWith(normalizedQuery) ? 1 : 0;
     if (leftStarts !== rightStarts) {
       return rightStarts - leftStarts;
+    }
+
+    const leftAllTerms = queryTerms.every((term) => leftText.includes(term)) ? 1 : 0;
+    const rightAllTerms = queryTerms.every((term) => rightText.includes(term)) ? 1 : 0;
+    if (leftAllTerms !== rightAllTerms) {
+      return rightAllTerms - leftAllTerms;
+    }
+
+    const leftMatchCount = queryTerms.filter((term) => leftText.includes(term)).length;
+    const rightMatchCount = queryTerms.filter((term) => rightText.includes(term)).length;
+    if (leftMatchCount !== rightMatchCount) {
+      return rightMatchCount - leftMatchCount;
     }
 
     if (left.alreadySaved !== right.alreadySaved) {
@@ -179,105 +249,289 @@ function normalizeExternalResults(items = []) {
     .filter(Boolean);
 }
 
-function buildSearchMessage(items = [], activeSources = [], failedSources = []) {
-  if (!items.length) {
-    return failedSources.length
-      ? `No foods found. Some sources were unavailable: ${failedSources.join(", ")}.`
-      : "No foods found in your local database, USDA, or fallback sources.";
+function filterExternalResultsByQuery(results = [], query = "") {
+  const queryTerms = getQueryTerms(query);
+
+  if (!queryTerms.length) {
+    return results;
   }
 
-  const sourcesLabel = activeSources.length
-    ? activeSources.join(", ")
-    : "your available sources";
+  const strongMatches = results.filter((result) => {
+    const searchableText = buildSearchableText(result);
+    return queryTerms.every((term) => searchableText.includes(term));
+  });
 
-  if (failedSources.length) {
-    return `Showing ${items.length} result(s) from ${sourcesLabel}. Some sources were unavailable: ${failedSources.join(", ")}.`;
+  if (strongMatches.length) {
+    return strongMatches;
   }
 
-  return `Showing ${items.length} result(s) from ${sourcesLabel}.`;
+  if (queryTerms.length > 1) {
+    return [];
+  }
+
+  const partialMatches = results.filter((result) => {
+    const searchableText = buildSearchableText(result);
+    return queryTerms.some((term) => searchableText.includes(term));
+  });
+
+  return partialMatches.length ? partialMatches : [];
 }
 
-export async function searchAllApis(query, sourceState) {
+function isSameFoodCandidate(left = {}, right = {}) {
+  if (left.barcode && right.barcode) {
+    return String(left.barcode) === String(right.barcode);
+  }
+
+  if (left.externalId && right.externalId && left.source === right.source) {
+    return String(left.externalId) === String(right.externalId);
+  }
+
+  return String(left.name || "").trim().toLowerCase() ===
+    String(right.name || "").trim().toLowerCase();
+}
+
+function findLocalMatch(result, foods = []) {
+  return (
+    foods
+      .map((food) =>
+        normalizeSearchResult(food, {
+          source: food.source || "manual",
+          externalId: food.externalId,
+          barcode: food.barcode,
+          tags: food.tags,
+          alreadySaved: true,
+          matchedSources: [
+            "local",
+            String(food.source || "manual").trim().toLowerCase(),
+          ],
+        }),
+      )
+      .find((localFood) => localFood && isSameFoodCandidate(localFood, result)) || null
+  );
+}
+
+function applyLocalMatchMetadata(results = [], foods = []) {
+  return results.map((result) => {
+    const localMatch = findLocalMatch(result, foods);
+
+    if (!localMatch) {
+      return result;
+    }
+
+    return {
+      ...result,
+      alreadySaved: true,
+      matchedSources: uniqueStrings([
+        ...(result.matchedSources || [String(result.source || "manual")]),
+        "local",
+        String(localMatch.source || "manual").trim().toLowerCase(),
+      ]),
+      tags: uniqueStrings([...(result.tags || []), ...(localMatch.tags || [])]),
+    };
+  });
+}
+
+function buildSearchMessage({
+  itemsCount = 0,
+  localCount = 0,
+  externalCount = 0,
+  page = 1,
+  totalPages = 1,
+  openFoodFactsAvailable = true,
+} = {}) {
+  if (!itemsCount) {
+    if (!openFoodFactsAvailable) {
+      return page > 1
+        ? "Open Food Facts is unavailable right now. Try the previous page or run the search again."
+        : "Open Food Facts is unavailable right now. Try again in a moment.";
+    }
+
+    return page > 1
+      ? `No more Open Food Facts results on page ${page}. Try the previous page or a different search.`
+      : "No foods found in your local database or Open Food Facts.";
+  }
+
+  const sourcesLabel =
+    page === 1 && localCount > 0 && externalCount > 0
+      ? "your local database and Open Food Facts"
+      : externalCount > 0
+        ? "Open Food Facts"
+        : "your local database";
+  const pageLabel = totalPages > 1 ? ` Page ${page} of ${totalPages}.` : "";
+  const localHint =
+    page === 1 && localCount > 0 && externalCount > 0
+      ? ` ${localCount} local match(es) stay pinned first.`
+      : "";
+
+  return `Showing ${itemsCount} result(s) from ${sourcesLabel}.${pageLabel}${localHint}`;
+}
+
+export async function searchAllApis(query, sourceState, options = {}) {
   const cleanQuery = String(query ?? "").trim();
+  const page = Math.max(1, safeNumber(options.page) || 1);
+  const offReference = extractOpenFoodFactsBarcode(cleanQuery);
+  const queryTerms = getQueryTerms(cleanQuery);
+  const previousPagination =
+    sourceState?.lastExternalImport?.query === cleanQuery
+      ? sourceState.lastExternalImport?.pagination || null
+      : null;
 
   if (!cleanQuery) {
     return {
       items: [],
       message: "Type a food name to search.",
+      pagination: null,
     };
   }
 
-  const activeSources = [];
-  const failedSources = [];
-  const localResults = searchLocalFoods(cleanQuery, sourceState.foods || []);
-  const aggregatedResults = [...localResults];
+  if (offReference?.barcode) {
+    const localBarcodeMatches = searchLocalFoodsByBarcode(
+      offReference.barcode,
+      sourceState.foods || [],
+    );
 
-  if (localResults.length) {
-    activeSources.push("your local database");
+    try {
+      const offResult = await fetchFoodByBarcode(offReference.barcode);
+
+      if (offResult?.error) {
+        return {
+          items: localBarcodeMatches,
+          message:
+            offReference.source === "url"
+              ? "That Open Food Facts link could not be loaded right now."
+              : offResult.error,
+          pagination: null,
+        };
+      }
+
+      const externalResults = applyLocalMatchMetadata(
+        normalizeExternalResults([offResult]),
+        sourceState.foods || [],
+      );
+      const items = sortResults(
+        dedupeResults([...localBarcodeMatches, ...externalResults]),
+        offResult.name || cleanQuery,
+      );
+
+      return {
+        items,
+        message:
+          offReference.source === "url"
+            ? `Loaded 1 exact Open Food Facts product from the pasted link.`
+            : `Loaded 1 exact Open Food Facts product from barcode ${offReference.barcode}.`,
+        pagination: null,
+      };
+    } catch {
+      return {
+        items: localBarcodeMatches,
+        message:
+          offReference.source === "url"
+            ? "That Open Food Facts link could not be loaded right now."
+            : "Open Food Facts is unavailable right now. Try again in a moment.",
+        pagination: null,
+      };
+    }
   }
+
+  const localResults = searchLocalFoods(cleanQuery, sourceState.foods || []);
+  const shouldPinLocalResults = page === 1 && localResults.length > 0;
 
   try {
-    const usdaResults = await searchUsdaFoods(cleanQuery, sourceState.apiConfig);
-    aggregatedResults.push(...usdaResults);
-
-    if (usdaResults.length) {
-      activeSources.push("USDA");
-    }
-  } catch (error) {
-    failedSources.push(
-      error instanceof Error && error.message.includes("rate-limited")
-        ? "USDA demo access (rate-limited)"
-        : "USDA",
+    const offPage = await searchOpenFoodFactsFoods(cleanQuery, {
+      page,
+      pageSize: OFF_PAGE_SIZE,
+    });
+    const externalResults = applyLocalMatchMetadata(
+      filterExternalResultsByQuery(
+        normalizeExternalResults(offPage.items),
+        cleanQuery,
+      ),
+      sourceState.foods || [],
     );
-  }
 
-  let normalizedItems = sortResults(
-    dedupeResults(normalizeExternalResults(aggregatedResults)),
-    cleanQuery,
-  );
-
-  if (normalizedItems.length < OFF_FALLBACK_THRESHOLD) {
-    try {
-      const offResults = await searchOpenFoodFactsFoods(cleanQuery);
-      normalizedItems = sortResults(
-        dedupeResults([
-          ...normalizedItems,
-          ...normalizeExternalResults(offResults),
-        ]),
-        cleanQuery,
-      );
-
-      if (offResults.length) {
-        activeSources.push("Open Food Facts");
-      }
-    } catch {
-      failedSources.push("Open Food Facts");
+    if (!externalResults.length && !localResults.length) {
+      return {
+        items: [],
+        message:
+          queryTerms.length > 1
+            ? "No foods matched every search term in Open Food Facts."
+            : "No foods found in your local database or Open Food Facts.",
+        pagination: {
+          page: 1,
+          pageSize: offPage.pageSize,
+          totalCount: 0,
+          totalPages: 1,
+          hasNextPage: false,
+          hasPreviousPage: false,
+          localCount: 0,
+          externalCount: 0,
+          localPinned: false,
+        },
+      };
     }
+
+    const items = sortResults(
+      dedupeResults(
+        shouldPinLocalResults
+          ? [...localResults, ...externalResults]
+          : externalResults,
+      ),
+      cleanQuery,
+    ).slice(
+      0,
+      shouldPinLocalResults ? LOCAL_RESULT_LIMIT + OFF_PAGE_SIZE : OFF_PAGE_SIZE,
+    );
+    const hasRelevantExternalMatches = externalResults.length > 0;
+    const totalPages = hasRelevantExternalMatches ? offPage.totalPages : 1;
+    const totalCount = hasRelevantExternalMatches ? offPage.totalCount : 0;
+
+    return {
+      items,
+      message: buildSearchMessage({
+        itemsCount: items.length,
+        localCount: localResults.length,
+        externalCount: externalResults.length,
+        page: offPage.page,
+        totalPages,
+        openFoodFactsAvailable: true,
+      }),
+      pagination: {
+        page: offPage.page,
+        pageSize: offPage.pageSize,
+        totalCount,
+        totalPages,
+        hasNextPage: hasRelevantExternalMatches ? offPage.hasNextPage : false,
+        hasPreviousPage: offPage.hasPreviousPage,
+        localCount: localResults.length,
+        externalCount: externalResults.length,
+        localPinned: shouldPinLocalResults,
+      },
+    };
+  } catch {
+    const fallbackItems = shouldPinLocalResults ? localResults : [];
+
+    return {
+      items: fallbackItems,
+      message: buildSearchMessage({
+        itemsCount: fallbackItems.length,
+        localCount: localResults.length,
+        externalCount: 0,
+        page,
+        totalPages: 1,
+        openFoodFactsAvailable: false,
+      }),
+      pagination: {
+        page,
+        pageSize: Math.max(1, safeNumber(previousPagination?.pageSize) || OFF_PAGE_SIZE),
+        totalCount: Math.max(0, safeNumber(previousPagination?.totalCount)),
+        totalPages: Math.max(1, safeNumber(previousPagination?.totalPages) || 1),
+        hasNextPage:
+          page < Math.max(1, safeNumber(previousPagination?.totalPages) || 1),
+        hasPreviousPage: page > 1,
+        localCount: localResults.length,
+        externalCount: 0,
+        localPinned: shouldPinLocalResults,
+      },
+    };
   }
-
-  if (normalizedItems.length < EDAMAM_FALLBACK_THRESHOLD && hasEdamamConfig(sourceState.apiConfig)) {
-    try {
-      const edamamResults = await searchEdamamFood(cleanQuery, sourceState.apiConfig);
-      normalizedItems = sortResults(
-        dedupeResults([
-          ...normalizedItems,
-          ...normalizeExternalResults(edamamResults),
-        ]),
-        cleanQuery,
-      );
-
-      if (edamamResults.length) {
-        activeSources.push("Edamam");
-      }
-    } catch {
-      failedSources.push("Edamam");
-    }
-  }
-
-  const items = normalizedItems.slice(0, PRIMARY_RESULT_LIMIT);
-
-  return {
-    items,
-    message: buildSearchMessage(items, uniqueStrings(activeSources), uniqueStrings(failedSources)),
-  };
 }
