@@ -7,6 +7,25 @@ import { safeNumber, uniqueStrings } from "./utils.js";
 
 const LOCAL_RESULT_LIMIT = 8;
 const OFF_PAGE_SIZE = 12;
+const QUERY_STOP_WORDS = new Set([
+  "a",
+  "as",
+  "o",
+  "os",
+  "de",
+  "da",
+  "do",
+  "das",
+  "dos",
+  "e",
+  "em",
+  "no",
+  "na",
+  "nos",
+  "nas",
+  "com",
+  "sem",
+]);
 
 function normalizeSearchText(value) {
   return String(value ?? "")
@@ -21,6 +40,16 @@ function getQueryTerms(query) {
   return normalizeSearchText(query)
     .split(/\s+/)
     .filter(Boolean);
+}
+
+function getSignificantQueryTerms(query) {
+  return getQueryTerms(query).filter(
+    (term) => term.length >= 3 && !QUERY_STOP_WORDS.has(term),
+  );
+}
+
+function getAccentlessQuery(query) {
+  return normalizeSearchText(query);
 }
 
 function buildSearchableText(food = {}) {
@@ -249,8 +278,12 @@ function normalizeExternalResults(items = []) {
     .filter(Boolean);
 }
 
-function filterExternalResultsByQuery(results = [], query = "") {
-  const queryTerms = getQueryTerms(query);
+function filterExternalResultsByQuery(
+  results = [],
+  query = "",
+  { allowPartialMultiWord = false } = {},
+) {
+  const queryTerms = getSignificantQueryTerms(query);
 
   if (!queryTerms.length) {
     return results;
@@ -265,7 +298,7 @@ function filterExternalResultsByQuery(results = [], query = "") {
     return strongMatches;
   }
 
-  if (queryTerms.length > 1) {
+  if (queryTerms.length > 1 && !allowPartialMultiWord) {
     return [];
   }
 
@@ -275,6 +308,22 @@ function filterExternalResultsByQuery(results = [], query = "") {
   });
 
   return partialMatches.length ? partialMatches : [];
+}
+
+async function fetchOffResultsForQueries(queries = []) {
+  const uniqueQueries = uniqueStrings(queries);
+  const settledResults = await Promise.allSettled(
+    uniqueQueries.map((query) =>
+      searchOpenFoodFactsFoods(query, {
+        page: 1,
+        pageSize: Math.min(8, OFF_PAGE_SIZE),
+      }),
+    ),
+  );
+
+  return settledResults
+    .filter((entry) => entry.status === "fulfilled")
+    .flatMap((entry) => entry.value.items || []);
 }
 
 function isSameFoodCandidate(left = {}, right = {}) {
@@ -371,6 +420,7 @@ export async function searchAllApis(query, sourceState, options = {}) {
   const page = Math.max(1, safeNumber(options.page) || 1);
   const offReference = extractOpenFoodFactsBarcode(cleanQuery);
   const queryTerms = getQueryTerms(cleanQuery);
+  const significantQueryTerms = getSignificantQueryTerms(cleanQuery);
   const previousPagination =
     sourceState?.lastExternalImport?.query === cleanQuery
       ? sourceState.lastExternalImport?.pagination || null
@@ -441,20 +491,41 @@ export async function searchAllApis(query, sourceState, options = {}) {
       page,
       pageSize: OFF_PAGE_SIZE,
     });
-    const externalResults = applyLocalMatchMetadata(
+    let externalResults = applyLocalMatchMetadata(
       filterExternalResultsByQuery(
         normalizeExternalResults(offPage.items),
         cleanQuery,
       ),
       sourceState.foods || [],
     );
+    let usedRelatedFallback = false;
+
+    if (!externalResults.length && significantQueryTerms.length > 1) {
+      const accentlessQuery = getAccentlessQuery(cleanQuery);
+      const rawLowerQuery = String(cleanQuery).trim().toLowerCase();
+      const fallbackQueries = [
+        accentlessQuery && accentlessQuery !== rawLowerQuery ? accentlessQuery : "",
+        significantQueryTerms.join(" "),
+        ...significantQueryTerms.slice(0, 2),
+      ];
+      const fallbackItems = await fetchOffResultsForQueries(fallbackQueries);
+      externalResults = applyLocalMatchMetadata(
+        filterExternalResultsByQuery(
+          normalizeExternalResults(fallbackItems),
+          cleanQuery,
+          { allowPartialMultiWord: true },
+        ),
+        sourceState.foods || [],
+      );
+      usedRelatedFallback = externalResults.length > 0;
+    }
 
     if (!externalResults.length && !localResults.length) {
       return {
         items: [],
         message:
-          queryTerms.length > 1
-            ? "No foods matched every search term in Open Food Facts."
+          significantQueryTerms.length > 1
+            ? "No foods matched the search terms in Open Food Facts."
             : "No foods found in your local database or Open Food Facts.",
         pagination: {
           page: 1,
@@ -481,27 +552,30 @@ export async function searchAllApis(query, sourceState, options = {}) {
       0,
       shouldPinLocalResults ? LOCAL_RESULT_LIMIT + OFF_PAGE_SIZE : OFF_PAGE_SIZE,
     );
-    const hasRelevantExternalMatches = externalResults.length > 0;
+    const hasRelevantExternalMatches = externalResults.length > 0 && !usedRelatedFallback;
     const totalPages = hasRelevantExternalMatches ? offPage.totalPages : 1;
     const totalCount = hasRelevantExternalMatches ? offPage.totalCount : 0;
+    const message = usedRelatedFallback
+      ? `No exact Open Food Facts match for every term. Showing the closest related results for "${cleanQuery}".`
+      : buildSearchMessage({
+          itemsCount: items.length,
+          localCount: localResults.length,
+          externalCount: externalResults.length,
+          page: offPage.page,
+          totalPages,
+          openFoodFactsAvailable: true,
+        });
 
     return {
       items,
-      message: buildSearchMessage({
-        itemsCount: items.length,
-        localCount: localResults.length,
-        externalCount: externalResults.length,
-        page: offPage.page,
-        totalPages,
-        openFoodFactsAvailable: true,
-      }),
+      message,
       pagination: {
         page: offPage.page,
         pageSize: offPage.pageSize,
         totalCount,
         totalPages,
         hasNextPage: hasRelevantExternalMatches ? offPage.hasNextPage : false,
-        hasPreviousPage: offPage.hasPreviousPage,
+        hasPreviousPage: hasRelevantExternalMatches ? offPage.hasPreviousPage : false,
         localCount: localResults.length,
         externalCount: externalResults.length,
         localPinned: shouldPinLocalResults,

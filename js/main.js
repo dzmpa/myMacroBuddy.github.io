@@ -32,7 +32,11 @@ import {
   copyPreviousDayToSelected,
   removeFoodFromDay,
 } from "./foodLog.js";
-import { fetchFoodByBarcode } from "./openFoodFacts.js";
+import {
+  extractOpenFoodFactsBrandFacet,
+  fetchBrandFoodsBatch,
+  fetchFoodByBarcode,
+} from "./openFoodFacts.js";
 import {
   addPantryItem,
   clearPantry,
@@ -193,6 +197,18 @@ function getFoodActionKey(food = {}) {
   }
 
   return String(food.name || "").trim().toLowerCase();
+}
+
+function getFoodImportIdentity(food = {}) {
+  if (food.barcode) {
+    return `barcode:${String(food.barcode).trim()}`;
+  }
+
+  if (food.externalId) {
+    return `${String(food.source || "manual").trim()}:${String(food.externalId).trim()}`;
+  }
+
+  return `name:${String(food.name || "").trim().toLowerCase()}`;
 }
 
 function parseJsonValue(rawValue, fallback = null) {
@@ -1295,6 +1311,7 @@ async function runGlobalFoodSearch(page = 1) {
   }
 
   const query = String(searchInput.value).trim();
+  const brandFacet = extractOpenFoodFactsBrandFacet(query);
 
   if (!query) {
     setLastExternalImport({
@@ -1315,6 +1332,51 @@ async function runGlobalFoodSearch(page = 1) {
   searchButton.textContent = "Searching...";
 
   try {
+    if (brandFacet) {
+      const beforeCount = state.foods.length;
+      const importedBatch = await fetchBrandFoodsBatch(brandFacet.brandTag, {
+        maxPages: 5,
+        maxItems: 120,
+        pageSize: 24,
+      });
+
+      const seenKeys = new Set();
+      const importedItems = importedBatch.items
+        .map((food) => addFood(food))
+        .filter(Boolean)
+        .filter((food) => {
+          const identity = getFoodImportIdentity(food);
+          if (seenKeys.has(identity)) {
+            return false;
+          }
+
+          seenKeys.add(identity);
+          return true;
+        })
+        .map((food) => ({
+          ...food,
+          alreadySaved: true,
+          matchedSources: ["local", "off"],
+        }));
+      const addedCount = Math.max(0, state.foods.length - beforeCount);
+      const reviewedCount = importedItems.length;
+
+      setLastExternalImport({
+        type: "global-food-search",
+        source: "off",
+        query,
+        item: null,
+        items: importedItems,
+        pagination: null,
+        message: reviewedCount
+          ? `Imported ${addedCount} new food(s) and refreshed ${reviewedCount - addedCount} existing one(s) from brand ${brandFacet.displayName}.`
+          : `No foods were imported from brand ${brandFacet.displayName}.`,
+      });
+
+      persistAndRenderAll();
+      return;
+    }
+
     const result = await searchAllApis(query, state, { page });
 
     setLastExternalImport({

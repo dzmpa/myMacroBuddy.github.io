@@ -3,6 +3,7 @@ import { safeNumber } from "./utils.js";
 const OFF_API_BASE = "https://world.openfoodfacts.org/api/v2";
 const OFF_TEXT_SEARCH_API = "https://search.openfoodfacts.org/search";
 const OFF_DEFAULT_PAGE_SIZE = 12;
+const OFF_BRAND_IMPORT_PAGE_SIZE = 24;
 const OFF_HEADERS = {
   Accept: "application/json",
   "User-Agent": "V6Fitness/6.0 (support@v6fitness.app)",
@@ -81,9 +82,6 @@ function normalizeOffProduct(product = {}) {
       product.product_name,
       product.generic_name_pt,
       product.generic_name,
-      product.brands,
-      product.categories,
-      product.labels,
     ]
       .map((value) => String(value || "").trim())
       .filter(Boolean)
@@ -172,6 +170,61 @@ export function extractOpenFoodFactsBarcode(value) {
   } catch {}
 
   return null;
+}
+
+function prettifyBrandTag(brandTag = "") {
+  return String(brandTag || "")
+    .split("-")
+    .map((part) =>
+      part ? `${part.charAt(0).toUpperCase()}${part.slice(1)}` : part,
+    )
+    .join(" ")
+    .trim();
+}
+
+export function extractOpenFoodFactsBrandFacet(value) {
+  const cleanValue = String(value ?? "").trim();
+
+  if (!cleanValue) {
+    return null;
+  }
+
+  try {
+    const url = new URL(cleanValue);
+    const hostname = String(url.hostname || "").toLowerCase();
+
+    if (!hostname.includes(OFF_HOST_MATCH)) {
+      return null;
+    }
+
+    const pathParts = url.pathname
+      .split("/")
+      .map((entry) => String(entry || "").trim())
+      .filter(Boolean);
+    const brandIndex = pathParts.findIndex(
+      (entry) => entry === "brands" && pathParts[pathParts.indexOf("facets")] === "facets",
+    );
+    const facetsIndex = pathParts.findIndex((entry) => entry === "facets");
+    const normalizedBrandIndex =
+      facetsIndex >= 0 && pathParts[facetsIndex + 1] === "brands"
+        ? facetsIndex + 1
+        : brandIndex;
+    const brandTag = String(pathParts[normalizedBrandIndex + 1] || "")
+      .trim()
+      .toLowerCase();
+
+    if (!brandTag) {
+      return null;
+    }
+
+    return {
+      brandTag,
+      displayName: prettifyBrandTag(decodeURIComponent(brandTag)),
+      source: "brand-facet-url",
+    };
+  } catch {
+    return null;
+  }
 }
 
 function createEmptySearchResult(page = 1, pageSize = OFF_DEFAULT_PAGE_SIZE) {
@@ -267,4 +320,104 @@ export async function searchFoodsByQuery(
   } catch {
     return createEmptySearchResult(normalizedPage, normalizedPageSize);
   }
+}
+
+export async function fetchFoodsByBrandTag(
+  brandTag,
+  { page = 1, pageSize = OFF_BRAND_IMPORT_PAGE_SIZE } = {},
+) {
+  const cleanBrandTag = String(brandTag ?? "").trim().toLowerCase();
+  const normalizedPage = Math.max(1, safeNumber(page) || 1);
+  const normalizedPageSize = Math.max(
+    1,
+    Math.min(50, safeNumber(pageSize) || OFF_BRAND_IMPORT_PAGE_SIZE),
+  );
+
+  if (!cleanBrandTag) {
+    return createEmptySearchResult(normalizedPage, normalizedPageSize);
+  }
+
+  const params = new URLSearchParams();
+  params.set("q", `brands_tags:${cleanBrandTag}`);
+  params.set("page", String(normalizedPage));
+  params.set("page_size", String(normalizedPageSize));
+  params.set(
+    "fields",
+    "code,product_name,product_name_pt,generic_name,generic_name_pt,nutriments",
+  );
+
+  try {
+    const response = await fetch(`${OFF_TEXT_SEARCH_API}?${params.toString()}`, {
+      headers: OFF_HEADERS,
+    });
+
+    if (!response.ok) {
+      return createEmptySearchResult(normalizedPage, normalizedPageSize);
+    }
+
+    const data = await response.json();
+    const products = Array.isArray(data.hits)
+      ? data.hits
+      : Array.isArray(data.products)
+        ? data.products
+        : [];
+    const items = products
+      .map(normalizeOffProduct)
+      .filter(Boolean);
+    const totalCount = Math.max(0, safeNumber(data.count));
+    const totalPages = Math.max(1, safeNumber(data.page_count) || 1);
+
+    return {
+      items,
+      page: normalizedPage,
+      pageSize: normalizedPageSize,
+      totalCount,
+      totalPages,
+      hasNextPage: normalizedPage < totalPages,
+      hasPreviousPage: normalizedPage > 1,
+    };
+  } catch {
+    return createEmptySearchResult(normalizedPage, normalizedPageSize);
+  }
+}
+
+export async function fetchBrandFoodsBatch(
+  brandTag,
+  { maxPages = 5, maxItems = 120, pageSize = OFF_BRAND_IMPORT_PAGE_SIZE } = {},
+) {
+  const cleanBrandTag = String(brandTag ?? "").trim().toLowerCase();
+  const normalizedMaxPages = Math.max(1, safeNumber(maxPages) || 1);
+  const normalizedMaxItems = Math.max(1, safeNumber(maxItems) || pageSize);
+  const normalizedPageSize = Math.max(1, safeNumber(pageSize) || OFF_BRAND_IMPORT_PAGE_SIZE);
+  const items = [];
+  let totalCount = 0;
+  let totalPages = 1;
+
+  for (let page = 1; page <= normalizedMaxPages; page += 1) {
+    const batch = await fetchFoodsByBrandTag(cleanBrandTag, {
+      page,
+      pageSize: normalizedPageSize,
+    });
+
+    totalCount = Math.max(totalCount, safeNumber(batch.totalCount));
+    totalPages = Math.max(totalPages, safeNumber(batch.totalPages) || 1);
+
+    if (!batch.items.length) {
+      break;
+    }
+
+    items.push(...batch.items);
+
+    if (items.length >= normalizedMaxItems || !batch.hasNextPage) {
+      break;
+    }
+  }
+
+  return {
+    brandTag: cleanBrandTag,
+    displayName: prettifyBrandTag(cleanBrandTag),
+    items: items.slice(0, normalizedMaxItems),
+    totalCount,
+    totalPages,
+  };
 }
