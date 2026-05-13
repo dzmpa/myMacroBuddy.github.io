@@ -1,8 +1,16 @@
-import { calculateRemaining, getEffectiveTargets } from "./algorithm.js?v=navy2";
+import {
+  calculateRemaining,
+  getEffectiveTargets,
+} from "./algorithm.js?v=navy2";
 import { createEmptyDay, getState, setState } from "./state.js";
 import { saveToStorage } from "./storage.js";
 import { renderCharts } from "./charts.js";
-import { formatDate, formatInputNumber, safeNumber } from "./utils.js";
+import {
+  debounce,
+  formatDate,
+  formatInputNumber,
+  safeNumber,
+} from "./utils.js";
 
 const FIELD_CONFIG = [
   { id: "kcal", numeric: true, event: "input" },
@@ -43,8 +51,16 @@ function bindInputs() {
     if (!element || element.dataset.bound === "true") return;
 
     element.dataset.bound = "true";
+
+    // Cria um debouncer independente para cada campo se for um evento de teclado ("input")
+    // 400ms é o "sweet spot" ideal para não parecer lento, mas poupar imensos recursos
+    const processInput =
+      event === "input"
+        ? debounce((value) => handleInputChange(id, value), 400)
+        : (value) => handleInputChange(id, value);
+
     element.addEventListener(event, () => {
-      handleInputChange(id, element.value);
+      processInput(element.value);
     });
   });
 }
@@ -54,7 +70,9 @@ function handleInputChange(field, rawValue) {
   const dayKey = formatDate(currentState.selectedDate);
   const currentDay = currentState.days[dayKey] || createEmptyDay();
   const fieldConfig = FIELD_CONFIG.find((config) => config.id === field);
-  const nextValue = fieldConfig?.numeric ? safeNumber(rawValue) : String(rawValue);
+  const nextValue = fieldConfig?.numeric
+    ? safeNumber(rawValue)
+    : String(rawValue);
 
   setState({
     days: {
@@ -135,9 +153,7 @@ export function renderDashboard() {
     Boolean(currentState.targets) &&
     Math.round(safeNumber(currentState.targets.kcal)) !==
       Math.round(safeNumber(target?.kcal));
-  const kcalRemaining = target
-    ? calculateRemaining(target.kcal, day.kcal)
-    : 0;
+  const kcalRemaining = target ? calculateRemaining(target.kcal, day.kcal) : 0;
 
   const selectedDateLabel = document.getElementById("selectedDateLabel");
   const kcalRemainingEl = document.getElementById("kcalRemaining");
@@ -150,15 +166,23 @@ export function renderDashboard() {
   const adaptiveTDEEInsightEl = document.getElementById("adaptiveTdeeInsight");
 
   if (selectedDateLabel) {
-    selectedDateLabel.textContent = formatSelectedDate(currentState.selectedDate);
+    selectedDateLabel.textContent = formatSelectedDate(
+      currentState.selectedDate,
+    );
   }
 
   if (kcalRemainingEl) {
     kcalRemainingEl.textContent = target
       ? Math.abs(Math.round(kcalRemaining))
       : "--";
-    kcalRemainingEl.classList.toggle("text-emerald-400", target && kcalRemaining >= 0);
-    kcalRemainingEl.classList.toggle("text-red-400", target && kcalRemaining < 0);
+    kcalRemainingEl.classList.toggle(
+      "text-emerald-400",
+      target && kcalRemaining >= 0,
+    );
+    kcalRemainingEl.classList.toggle(
+      "text-red-400",
+      target && kcalRemaining < 0,
+    );
   }
 
   if (kcalStatusEl) {

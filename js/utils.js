@@ -45,10 +45,17 @@ export function clamp(value, min, max) {
 
 export function uniqueStrings(values = []) {
   return Array.from(
-    new Set(
-      values
-        .map((value) => String(value ?? "").trim())
-        .filter(Boolean),
-    ),
+    new Set(values.map((value) => String(value ?? "").trim()).filter(Boolean)),
   );
+}
+export function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
 }
