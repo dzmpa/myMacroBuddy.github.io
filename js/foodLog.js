@@ -1,4 +1,5 @@
 import { sumEntryMacros } from "./algorithm.js?v=navy2";
+import { processDayGamification } from "./gamification.js";
 import { createEmptyDay, getState, setState } from "./state.js";
 import { formatDate, safeNumber } from "./utils.js";
 
@@ -108,11 +109,14 @@ export function recalculateDayMacros(dateValue) {
   const foods = Array.isArray(currentDay.foods) ? currentDay.foods : [];
   const totals = sumEntryMacros(foods);
 
-  return commitDay(dayKey, {
+  const nextDay = commitDay(dayKey, {
     ...currentDay,
     ...totals,
     foods,
   });
+
+  processDayGamification(dayKey);
+  return nextDay;
 }
 
 export function addFoodToDay(foodId, grams) {
