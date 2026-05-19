@@ -2,6 +2,7 @@ import { sumEntryMacros } from "./algorithm.js?v=navy2";
 import { processDayGamification } from "./gamification.js";
 import { createEmptyDay, getState, setState } from "./state.js";
 import { formatDate, safeNumber } from "./utils.js";
+import { showLevelUpNotification } from "./notifications.js";
 
 function getDayKey(dateValue) {
   return typeof dateValue === "string"
@@ -97,7 +98,9 @@ function hasDayContent(day = createEmptyDay()) {
     safeNumber(day.peso) > 0 ||
     safeNumber(day.agua) > 0 ||
     String(day.notes ?? "").trim().length > 0 ||
-    String(day.dayType ?? "normal").trim().toLowerCase() !== "normal" ||
+    String(day.dayType ?? "normal")
+      .trim()
+      .toLowerCase() !== "normal" ||
     (Array.isArray(day.foods) && day.foods.length > 0)
   );
 }
@@ -106,6 +109,7 @@ export function recalculateDayMacros(dateValue) {
   const currentState = getState();
   const dayKey = getDayKey(dateValue);
   const currentDay = getCurrentDay(currentState, dayKey);
+
   const foods = Array.isArray(currentDay.foods) ? currentDay.foods : [];
   const totals = sumEntryMacros(foods);
 
@@ -114,6 +118,18 @@ export function recalculateDayMacros(dateValue) {
     ...totals,
     foods,
   });
+
+  const gamificationResult = processDayGamification(dayKey);
+
+  if (gamificationResult.newlyUnlockedBadges?.length > 0) {
+    gamificationResult.newlyUnlockedBadges.forEach((badge) => {
+      showLevelUpNotification(
+        "Nova Conquista!",
+        `Desbloqueaste o badge: ${badge}`,
+        "🏅",
+      );
+    });
+  }
 
   processDayGamification(dayKey);
   return nextDay;
@@ -162,9 +178,7 @@ export function addMealToDay(meal) {
         (candidate) => candidate.id === item.foodId,
       );
 
-      return food
-        ? buildFoodEntry(food, item.grams)
-        : buildExternalEntry(item);
+      return food ? buildFoodEntry(food, item.grams) : buildExternalEntry(item);
     })
     .filter(Boolean);
 

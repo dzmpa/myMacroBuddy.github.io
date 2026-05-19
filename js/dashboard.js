@@ -154,6 +154,56 @@ export function renderDashboard() {
     Math.round(safeNumber(currentState.targets.kcal)) !==
       Math.round(safeNumber(target?.kcal));
   const kcalRemaining = target ? calculateRemaining(target.kcal, day.kcal) : 0;
+  const gamificationBannerEl = document.getElementById("gamificationBanner");
+  if (gamificationBannerEl) {
+    const gState = currentState.gamification;
+    if (gState) {
+      // Obter thresholds (precisas de importar ou replicar a array LEVEL_THRESHOLDS do gamification.js)
+      // Como atalho para a UI, podemos fazer um cálculo aproximado ou usar valores hardcoded para o progresso visual:
+      const LEVEL_THRESHOLDS = [
+        { level: 5, minXp: 1000 },
+        { level: 4, minXp: 500 },
+        { level: 3, minXp: 250 },
+        { level: 2, minXp: 100 },
+        { level: 1, minXp: 0 },
+      ];
+
+      const currentLevelObj =
+        LEVEL_THRESHOLDS.find((t) => t.level === gState.level) ||
+        LEVEL_THRESHOLDS[4];
+      const nextLevelObj = LEVEL_THRESHOLDS.find(
+        (t) => t.level === gState.level + 1,
+      );
+
+      let progress = 100;
+      if (nextLevelObj) {
+        const xpIntoLevel = gState.xp - currentLevelObj.minXp;
+        const xpRequired = nextLevelObj.minXp - currentLevelObj.minXp;
+        progress = Math.min(100, Math.round((xpIntoLevel / xpRequired) * 100));
+      }
+      gamificationBannerEl.innerHTML = `
+        <div class="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 p-4 mb-4">
+          <div class="flex items-center gap-4">
+            <div class="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20 shadow-inner">
+              Lvl ${gState.level}
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-white">XP: ${gState.xp}</p>
+              <div class="mt-1.5 h-1.5 w-28 rounded-full bg-slate-800 overflow-hidden">
+                <div class="h-full bg-emerald-500 transition-all duration-700 ease-out" style="width: ${progress}%"></div>
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-col items-end">
+            <span class="flex items-center gap-1.5 text-lg font-bold text-orange-400 drop-shadow-md">
+              🔥 ${gState.currentStreak}
+            </span>
+            <span class="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">Streak</span>
+          </div>
+        </div>
+      `;
+    }
+  }
 
   const selectedDateLabel = document.getElementById("selectedDateLabel");
   const kcalRemainingEl = document.getElementById("kcalRemaining");

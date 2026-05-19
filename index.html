@@ -5,13 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#020617" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
     <meta name="apple-mobile-web-app-title" content="V6 Fitness" />
     <meta
       name="description"
       content="Nutrition tracking with food search, daily logging, adaptive targets, and offline support."
     />
-    <title>V6 Fitness Dashboard</title>
+    <title>myMacroBuddy</title>
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png" />
     <script src="https://cdn.tailwindcss.com"></script>
@@ -30,7 +33,7 @@
               Macro calculator
             </p>
             <h1 class="text-3xl font-semibold tracking-tight sm:text-4xl">
-              V6 Macro Calculator
+              Macro Calculator
             </h1>
             <p class="max-w-2xl text-sm text-slate-300">
               Start with a simple daily macro target calculator. Food logging,
@@ -45,6 +48,7 @@
               Selected date
             </p>
             <p id="selectedDateLabel" class="mt-1 font-medium text-white"></p>
+            <div id="gamificationBanner" class="w-full"></div>
           </div>
         </div>
       </header>
@@ -53,7 +57,9 @@
         class="mb-8 rounded-[1.75rem] border border-slate-800 bg-slate-900/70 p-4 shadow-xl shadow-slate-950/30"
         aria-label="App pages"
       >
-        <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div
+          class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between"
+        >
           <div>
             <p class="text-xs uppercase tracking-[0.24em] text-slate-500">
               App pages
@@ -219,7 +225,9 @@
                 </label>
 
                 <label class="space-y-2">
-                  <span class="text-sm text-slate-300">Training hours (optional)</span>
+                  <span class="text-sm text-slate-300"
+                    >Training hours (optional)</span
+                  >
                   <input
                     id="calcTrainingHours"
                     type="number"
@@ -230,12 +238,17 @@
                   />
                 </label>
 
-                <div class="md:col-span-2 rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
-                  <p class="text-[11px] uppercase tracking-[0.2em] text-slate-500">
+                <div
+                  class="md:col-span-2 rounded-2xl border border-slate-800 bg-slate-950/60 p-4"
+                >
+                  <p
+                    class="text-[11px] uppercase tracking-[0.2em] text-slate-500"
+                  >
                     American Navy body-fat estimate
                   </p>
                   <p class="mt-2 text-sm text-slate-300">
-                    Add circumference measurements in cm for a body-fat estimate and a recommendation.
+                    Add circumference measurements in cm for a body-fat estimate
+                    and a recommendation.
                   </p>
 
                   <div class="mt-4 grid gap-4 md:grid-cols-3">
@@ -264,7 +277,9 @@
                     </label>
 
                     <label class="space-y-2">
-                      <span class="text-sm text-slate-300">Hip (cm, female only)</span>
+                      <span class="text-sm text-slate-300"
+                        >Hip (cm, female only)</span
+                      >
                       <input
                         id="calcHip"
                         type="number"
@@ -279,10 +294,16 @@
               </div>
 
               <div class="space-y-4">
-                <div class="rounded-[1.75rem] border border-emerald-500/20 bg-slate-950/60 p-5">
-                  <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div
+                  class="rounded-[1.75rem] border border-emerald-500/20 bg-slate-950/60 p-5"
+                >
+                  <div
+                    class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+                  >
                     <div>
-                      <p class="text-xs uppercase tracking-[0.2em] text-emerald-200/80">
+                      <p
+                        class="text-xs uppercase tracking-[0.2em] text-emerald-200/80"
+                      >
                         Daily targets
                       </p>
                       <h3 class="mt-1 text-2xl font-semibold text-white">
@@ -298,79 +319,211 @@
                     </button>
                   </div>
 
-                  <p id="macroCalculatorStatus" class="mt-4 text-sm text-slate-300">
-                    Enter your stats to calculate calories, macros, fiber, and water.
+                  <p
+                    id="macroCalculatorStatus"
+                    class="mt-4 text-sm text-slate-300"
+                  >
+                    Enter your stats to calculate calories, macros, fiber, and
+                    water.
                   </p>
-                  <p id="macroCalculatorMeta" class="mt-2 text-xs text-slate-500">
-                    Uses the Mifflin-St Jeor formula, an activity multiplier, and a goal adjustment.
+                  <p
+                    id="macroCalculatorMeta"
+                    class="mt-2 text-xs text-slate-500"
+                  >
+                    Uses the Mifflin-St Jeor formula, an activity multiplier,
+                    and a goal adjustment.
                   </p>
                 </div>
 
                 <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                  <article class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
-                    <p class="text-[11px] uppercase tracking-[0.2em] text-slate-500">Calories</p>
-                    <p id="macroCalcKcal" class="mt-2 text-3xl font-semibold text-white">--</p>
+                  <article
+                    class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4"
+                  >
+                    <p
+                      class="text-[11px] uppercase tracking-[0.2em] text-slate-500"
+                    >
+                      Calories
+                    </p>
+                    <p
+                      id="macroCalcKcal"
+                      class="mt-2 text-3xl font-semibold text-white"
+                    >
+                      --
+                    </p>
                     <p class="mt-1 text-xs text-slate-400">daily target</p>
                   </article>
-                  <article class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
-                    <p class="text-[11px] uppercase tracking-[0.2em] text-slate-500">Protein</p>
-                    <p id="macroCalcProt" class="mt-2 text-3xl font-semibold text-white">--</p>
+                  <article
+                    class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4"
+                  >
+                    <p
+                      class="text-[11px] uppercase tracking-[0.2em] text-slate-500"
+                    >
+                      Protein
+                    </p>
+                    <p
+                      id="macroCalcProt"
+                      class="mt-2 text-3xl font-semibold text-white"
+                    >
+                      --
+                    </p>
                     <p class="mt-1 text-xs text-slate-400">grams per day</p>
                   </article>
-                  <article class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
-                    <p class="text-[11px] uppercase tracking-[0.2em] text-slate-500">Carbs</p>
-                    <p id="macroCalcCarb" class="mt-2 text-3xl font-semibold text-white">--</p>
+                  <article
+                    class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4"
+                  >
+                    <p
+                      class="text-[11px] uppercase tracking-[0.2em] text-slate-500"
+                    >
+                      Carbs
+                    </p>
+                    <p
+                      id="macroCalcCarb"
+                      class="mt-2 text-3xl font-semibold text-white"
+                    >
+                      --
+                    </p>
                     <p class="mt-1 text-xs text-slate-400">grams per day</p>
                   </article>
-                  <article class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
-                    <p class="text-[11px] uppercase tracking-[0.2em] text-slate-500">Fat</p>
-                    <p id="macroCalcFat" class="mt-2 text-3xl font-semibold text-white">--</p>
+                  <article
+                    class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4"
+                  >
+                    <p
+                      class="text-[11px] uppercase tracking-[0.2em] text-slate-500"
+                    >
+                      Fat
+                    </p>
+                    <p
+                      id="macroCalcFat"
+                      class="mt-2 text-3xl font-semibold text-white"
+                    >
+                      --
+                    </p>
                     <p class="mt-1 text-xs text-slate-400">grams per day</p>
                   </article>
-                  <article class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
-                    <p class="text-[11px] uppercase tracking-[0.2em] text-slate-500">Fiber</p>
-                    <p id="macroCalcFiber" class="mt-2 text-3xl font-semibold text-white">--</p>
+                  <article
+                    class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4"
+                  >
+                    <p
+                      class="text-[11px] uppercase tracking-[0.2em] text-slate-500"
+                    >
+                      Fiber
+                    </p>
+                    <p
+                      id="macroCalcFiber"
+                      class="mt-2 text-3xl font-semibold text-white"
+                    >
+                      --
+                    </p>
                     <p class="mt-1 text-xs text-slate-400">grams per day</p>
                   </article>
-                  <article class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
-                    <p class="text-[11px] uppercase tracking-[0.2em] text-slate-500">Water</p>
-                    <p id="macroCalcWater" class="mt-2 text-3xl font-semibold text-white">--</p>
+                  <article
+                    class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4"
+                  >
+                    <p
+                      class="text-[11px] uppercase tracking-[0.2em] text-slate-500"
+                    >
+                      Water
+                    </p>
+                    <p
+                      id="macroCalcWater"
+                      class="mt-2 text-3xl font-semibold text-white"
+                    >
+                      --
+                    </p>
                     <p class="mt-1 text-xs text-slate-400">liters per day</p>
                   </article>
                 </div>
 
-                <div class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
-                  <p class="text-[11px] uppercase tracking-[0.2em] text-slate-500">Per meal split</p>
+                <div
+                  class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4"
+                >
+                  <p
+                    class="text-[11px] uppercase tracking-[0.2em] text-slate-500"
+                  >
+                    Per meal split
+                  </p>
                   <p id="macroCalcPerMeal" class="mt-2 text-sm text-slate-300">
                     Add your stats first to see an easy per-meal breakdown.
                   </p>
                 </div>
 
                 <div class="grid gap-3 sm:grid-cols-3">
-                  <article class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
-                    <p class="text-[11px] uppercase tracking-[0.2em] text-slate-500">Body fat</p>
-                    <p id="macroCalcBodyFat" class="mt-2 text-3xl font-semibold text-white">--</p>
-                    <p class="mt-1 text-xs text-slate-400">American Navy estimate</p>
+                  <article
+                    class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4"
+                  >
+                    <p
+                      class="text-[11px] uppercase tracking-[0.2em] text-slate-500"
+                    >
+                      Body fat
+                    </p>
+                    <p
+                      id="macroCalcBodyFat"
+                      class="mt-2 text-3xl font-semibold text-white"
+                    >
+                      --
+                    </p>
+                    <p class="mt-1 text-xs text-slate-400">
+                      American Navy estimate
+                    </p>
                   </article>
-                  <article class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
-                    <p class="text-[11px] uppercase tracking-[0.2em] text-slate-500">Lean mass</p>
-                    <p id="macroCalcLeanMass" class="mt-2 text-3xl font-semibold text-white">--</p>
-                    <p class="mt-1 text-xs text-slate-400">estimated kilograms</p>
+                  <article
+                    class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4"
+                  >
+                    <p
+                      class="text-[11px] uppercase tracking-[0.2em] text-slate-500"
+                    >
+                      Lean mass
+                    </p>
+                    <p
+                      id="macroCalcLeanMass"
+                      class="mt-2 text-3xl font-semibold text-white"
+                    >
+                      --
+                    </p>
+                    <p class="mt-1 text-xs text-slate-400">
+                      estimated kilograms
+                    </p>
                   </article>
-                  <article class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
-                    <p class="text-[11px] uppercase tracking-[0.2em] text-slate-500">Fat mass</p>
-                    <p id="macroCalcFatMass" class="mt-2 text-3xl font-semibold text-white">--</p>
-                    <p class="mt-1 text-xs text-slate-400">estimated kilograms</p>
+                  <article
+                    class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4"
+                  >
+                    <p
+                      class="text-[11px] uppercase tracking-[0.2em] text-slate-500"
+                    >
+                      Fat mass
+                    </p>
+                    <p
+                      id="macroCalcFatMass"
+                      class="mt-2 text-3xl font-semibold text-white"
+                    >
+                      --
+                    </p>
+                    <p class="mt-1 text-xs text-slate-400">
+                      estimated kilograms
+                    </p>
                   </article>
                 </div>
 
-                <div class="rounded-2xl border border-sky-500/20 bg-sky-500/10 p-4">
-                  <p class="text-[11px] uppercase tracking-[0.2em] text-sky-200/80">Recommendation</p>
-                  <p id="macroCalcRecommendationTitle" class="mt-2 text-base font-semibold text-white">
+                <div
+                  class="rounded-2xl border border-sky-500/20 bg-sky-500/10 p-4"
+                >
+                  <p
+                    class="text-[11px] uppercase tracking-[0.2em] text-sky-200/80"
+                  >
+                    Recommendation
+                  </p>
+                  <p
+                    id="macroCalcRecommendationTitle"
+                    class="mt-2 text-base font-semibold text-white"
+                  >
                     Recommendation will appear here
                   </p>
-                  <p id="macroCalcRecommendationText" class="mt-2 text-sm text-slate-300">
-                    Add neck, waist, and hip for female entries to get the American Navy body-fat estimate and a recommendation.
+                  <p
+                    id="macroCalcRecommendationText"
+                    class="mt-2 text-sm text-slate-300"
+                  >
+                    Add neck, waist, and hip for female entries to get the
+                    American Navy body-fat estimate and a recommendation.
                   </p>
                 </div>
               </div>
@@ -387,8 +540,8 @@
               Log today and track progress
             </h2>
             <p class="max-w-3xl text-sm text-slate-400">
-              Everything important for today lives here: remaining targets, quick
-              logging, and your day foods.
+              Everything important for today lives here: remaining targets,
+              quick logging, and your day foods.
             </p>
           </div>
 
@@ -401,7 +554,9 @@
                   class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between"
                 >
                   <div>
-                    <p class="text-xs uppercase tracking-[0.24em] text-slate-500">
+                    <p
+                      class="text-xs uppercase tracking-[0.24em] text-slate-500"
+                    >
                       Daily dashboard
                     </p>
                     <h3 class="mt-1 text-2xl font-semibold text-white">
@@ -411,7 +566,9 @@
                   <div
                     class="rounded-[1.75rem] border border-emerald-500/20 bg-emerald-500/10 px-5 py-4"
                   >
-                    <p class="text-xs uppercase tracking-[0.24em] text-emerald-200/80">
+                    <p
+                      class="text-xs uppercase tracking-[0.24em] text-emerald-200/80"
+                    >
                       Calories left
                     </p>
                     <p
@@ -424,32 +581,57 @@
                 </div>
 
                 <div class="grid gap-4 md:grid-cols-4">
-                  <div class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
-                    <p class="text-xs uppercase tracking-[0.2em] text-slate-500">
+                  <div
+                    class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4"
+                  >
+                    <p
+                      class="text-xs uppercase tracking-[0.2em] text-slate-500"
+                    >
                       Calorie status
                     </p>
                     <p id="kcalStatus" class="mt-2 text-sm text-slate-300"></p>
                   </div>
 
-                  <div class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
-                    <p class="text-xs uppercase tracking-[0.2em] text-slate-500">
+                  <div
+                    class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4"
+                  >
+                    <p
+                      class="text-xs uppercase tracking-[0.2em] text-slate-500"
+                    >
                       Macros
                     </p>
-                    <p id="macroSummary" class="mt-2 text-sm text-slate-300"></p>
+                    <p
+                      id="macroSummary"
+                      class="mt-2 text-sm text-slate-300"
+                    ></p>
                   </div>
 
-                  <div class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
-                    <p class="text-xs uppercase tracking-[0.2em] text-slate-500">
+                  <div
+                    class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4"
+                  >
+                    <p
+                      class="text-xs uppercase tracking-[0.2em] text-slate-500"
+                    >
                       Day
                     </p>
-                    <p id="dayMetaSummary" class="mt-2 text-sm text-slate-300"></p>
+                    <p
+                      id="dayMetaSummary"
+                      class="mt-2 text-sm text-slate-300"
+                    ></p>
                   </div>
 
-                  <div class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
-                    <p class="text-xs uppercase tracking-[0.2em] text-slate-500">
+                  <div
+                    class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4"
+                  >
+                    <p
+                      class="text-xs uppercase tracking-[0.2em] text-slate-500"
+                    >
                       Active targets
                     </p>
-                    <p id="targetSummary" class="mt-2 text-sm text-slate-300"></p>
+                    <p
+                      id="targetSummary"
+                      class="mt-2 text-sm text-slate-300"
+                    ></p>
                   </div>
                 </div>
 
@@ -540,14 +722,21 @@
                 </div>
 
                 <div class="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
-                  <div class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
-                    <p class="text-xs uppercase tracking-[0.2em] text-slate-500">
+                  <div
+                    class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4"
+                  >
+                    <p
+                      class="text-xs uppercase tracking-[0.2em] text-slate-500"
+                    >
                       Context and insight
                     </p>
                     <p id="dayTypeSummary" class="mt-2 text-sm text-slate-300">
                       normal
                     </p>
-                    <p id="adaptiveTdeeInsight" class="mt-3 text-sm text-slate-300">
+                    <p
+                      id="adaptiveTdeeInsight"
+                      class="mt-3 text-sm text-slate-300"
+                    >
                       Adaptive TDEE: not enough data yet.
                     </p>
                   </div>
@@ -566,8 +755,12 @@
                     ></textarea>
                   </label>
 
-                  <div class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
-                    <p class="text-xs uppercase tracking-[0.2em] text-slate-500">
+                  <div
+                    class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4"
+                  >
+                    <p
+                      class="text-xs uppercase tracking-[0.2em] text-slate-500"
+                    >
                       Notes preview
                     </p>
                     <p id="notesPreview" class="mt-2 text-sm text-slate-300">
@@ -582,10 +775,14 @@
                   class="rounded-[1.75rem] border border-slate-800 bg-slate-950/70 p-5"
                 >
                   <div class="mb-4">
-                    <p class="text-xs uppercase tracking-[0.24em] text-slate-500">
+                    <p
+                      class="text-xs uppercase tracking-[0.24em] text-slate-500"
+                    >
                       Food log
                     </p>
-                    <div class="mt-1 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div
+                      class="mt-1 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+                    >
                       <h3 class="text-xl font-semibold text-white">
                         Quick log
                       </h3>
@@ -598,9 +795,13 @@
                       </button>
                     </div>
                     <p class="mt-3 text-xs text-slate-400">
-                      Copies food, notes, and daily metrics from the previous calendar day.
+                      Copies food, notes, and daily metrics from the previous
+                      calendar day.
                     </p>
-                    <p id="copyPreviousDayStatus" class="mt-2 hidden text-xs"></p>
+                    <p
+                      id="copyPreviousDayStatus"
+                      class="mt-2 hidden text-xs"
+                    ></p>
                   </div>
 
                   <div class="flex flex-col gap-3 sm:flex-row">
@@ -663,27 +864,41 @@
             </div>
 
             <div class="mt-4 flex flex-wrap gap-2 text-[11px] text-slate-400">
-              <span class="rounded-full border border-slate-800 bg-slate-950/70 px-3 py-1">
+              <span
+                class="rounded-full border border-slate-800 bg-slate-950/70 px-3 py-1"
+              >
                 `Enter` runs search
               </span>
-              <span class="rounded-full border border-slate-800 bg-slate-950/70 px-3 py-1">
+              <span
+                class="rounded-full border border-slate-800 bg-slate-950/70 px-3 py-1"
+              >
                 Open Food Facts powers external food search
               </span>
-              <span class="rounded-full border border-slate-800 bg-slate-950/70 px-3 py-1">
+              <span
+                class="rounded-full border border-slate-800 bg-slate-950/70 px-3 py-1"
+              >
                 Barcode import stays optional
               </span>
-              <span class="rounded-full border border-slate-800 bg-slate-950/70 px-3 py-1">
+              <span
+                class="rounded-full border border-slate-800 bg-slate-950/70 px-3 py-1"
+              >
                 Browse more with Previous and Next page
               </span>
-              <span class="rounded-full border border-slate-800 bg-slate-950/70 px-3 py-1">
+              <span
+                class="rounded-full border border-slate-800 bg-slate-950/70 px-3 py-1"
+              >
                 Open Food Facts product links work too
               </span>
             </div>
 
             <p id="globalFoodSearchStatus" class="mt-4 text-sm text-slate-300">
-              Search foods by name, barcode, or paste an Open Food Facts product link.
+              Search foods by name, barcode, or paste an Open Food Facts product
+              link.
             </p>
-            <div id="searchResultsMeta" class="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4"></div>
+            <div
+              id="searchResultsMeta"
+              class="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4"
+            ></div>
             <div id="searchResults" class="mt-4 grid gap-3"></div>
             <div id="searchResultsPagination" class="mt-4 hidden"></div>
           </section>
@@ -719,7 +934,7 @@
                 type="button"
                 class="rounded-full border border-sky-500/40 bg-sky-500/10 px-4 py-2 text-sm font-semibold text-sky-200 transition hover:border-sky-400 hover:bg-sky-500/20"
               >
-                  Refresh plan
+                Refresh plan
               </button>
             </div>
 
@@ -771,7 +986,10 @@
                 </div>
               </div>
 
-              <p id="monthLabel" class="mb-4 text-sm font-semibold text-slate-300"></p>
+              <p
+                id="monthLabel"
+                class="mb-4 text-sm font-semibold text-slate-300"
+              ></p>
               <div id="calendar" class="grid grid-cols-7 gap-2"></div>
             </section>
 
@@ -819,7 +1037,9 @@
           class="rounded-[2rem] border border-slate-800 bg-slate-900/50 p-6 opacity-80 shadow-xl shadow-slate-950/30 transition hover:opacity-100"
         >
           <summary class="cursor-pointer list-none">
-            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div
+              class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
+            >
               <div>
                 <p class="text-xs uppercase tracking-[0.28em] text-slate-500">
                   Settings
@@ -841,7 +1061,9 @@
               >
                 <div class="mb-4 flex items-center justify-between gap-3">
                   <div>
-                    <p class="text-xs uppercase tracking-[0.24em] text-slate-500">
+                    <p
+                      class="text-xs uppercase tracking-[0.24em] text-slate-500"
+                    >
                       Perfil
                     </p>
                     <h3 class="mt-1 text-2xl font-semibold text-white">
@@ -888,21 +1110,24 @@
                   </button>
                 </div>
 
-                <p id="edamamFoodStatus" class="mt-4 text-sm text-slate-300"></p>
+                <p
+                  id="edamamFoodStatus"
+                  class="mt-4 text-sm text-slate-300"
+                ></p>
                 <div id="edamamFoodResults" class="mt-4 grid gap-3"></div>
               </section>
 
               <section
                 class="rounded-[1.75rem] border border-slate-800 bg-slate-950/70 p-6"
               >
-                  <div class="mb-4">
-                    <p class="text-xs uppercase tracking-[0.24em] text-slate-500">
-                      APIs
-                    </p>
-                    <h3 class="mt-1 text-2xl font-semibold text-white">
-                      Nutrition APIs
-                    </h3>
-                  </div>
+                <div class="mb-4">
+                  <p class="text-xs uppercase tracking-[0.24em] text-slate-500">
+                    APIs
+                  </p>
+                  <h3 class="mt-1 text-2xl font-semibold text-white">
+                    Nutrition APIs
+                  </h3>
+                </div>
 
                 <div class="grid gap-3">
                   <input
@@ -928,7 +1153,10 @@
                 </div>
 
                 <p id="apiConfigStatus" class="mt-4 text-sm text-slate-300"></p>
-                <p id="edamamConfigWarning" class="mt-2 text-xs text-slate-500"></p>
+                <p
+                  id="edamamConfigWarning"
+                  class="mt-2 text-xs text-slate-500"
+                ></p>
               </section>
 
               <section
@@ -938,7 +1166,9 @@
                   class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div>
-                    <p class="text-xs uppercase tracking-[0.24em] text-slate-500">
+                    <p
+                      class="text-xs uppercase tracking-[0.24em] text-slate-500"
+                    >
                       Despensa
                     </p>
                     <h3 class="mt-1 text-2xl font-semibold text-white">
@@ -1034,19 +1264,47 @@
                   <div>
                     <div class="mb-2 flex items-center justify-between gap-3">
                       <span class="text-sm text-slate-300">Manual tags</span>
-                      <span id="foodImportStatus" class="text-xs text-slate-500"></span>
+                      <span
+                        id="foodImportStatus"
+                        class="text-xs text-slate-500"
+                      ></span>
                     </div>
                     <div
                       id="foodTags"
                       class="grid grid-cols-2 gap-2 text-xs text-slate-300"
                     >
-                        <label><input type="checkbox" value="protein" class="foodTag" /> Protein</label>
-                        <label><input type="checkbox" value="carb" class="foodTag" /> Carbs</label>
-                        <label><input type="checkbox" value="fat" class="foodTag" /> Fat</label>
-                        <label><input type="checkbox" value="main" class="foodTag" /> Main meal</label>
-                        <label><input type="checkbox" value="snack" class="foodTag" /> Snack</label>
-                        <label><input type="checkbox" value="cut" class="foodTag" /> Cut</label>
-                        <label><input type="checkbox" value="bulk" class="foodTag" /> Bulk</label>
+                      <label
+                        ><input
+                          type="checkbox"
+                          value="protein"
+                          class="foodTag"
+                        />
+                        Protein</label
+                      >
+                      <label
+                        ><input type="checkbox" value="carb" class="foodTag" />
+                        Carbs</label
+                      >
+                      <label
+                        ><input type="checkbox" value="fat" class="foodTag" />
+                        Fat</label
+                      >
+                      <label
+                        ><input type="checkbox" value="main" class="foodTag" />
+                        Main meal</label
+                      >
+                      <label
+                        ><input type="checkbox" value="snack" class="foodTag" />
+                        Snack</label
+                      >
+                      <label
+                        ><input type="checkbox" value="cut" class="foodTag" />
+                        Cut</label
+                      >
+                      <label
+                        ><input type="checkbox" value="bulk" class="foodTag" />
+                        Bulk</label
+                      >
                     </div>
                   </div>
 
@@ -1086,7 +1344,9 @@
                   <p class="text-xs uppercase tracking-[0.24em] text-slate-500">
                     Recipes
                   </p>
-                  <h3 class="mt-1 text-2xl font-semibold text-white">Receitas</h3>
+                  <h3 class="mt-1 text-2xl font-semibold text-white">
+                    Receitas
+                  </h3>
                 </div>
 
                 <div class="grid gap-3">
@@ -1118,7 +1378,10 @@
                 </div>
 
                 <ul id="recipeBuilderList" class="mt-4 grid gap-3 text-sm"></ul>
-                <p id="recipeBuilderTotals" class="mt-4 text-sm text-slate-300"></p>
+                <p
+                  id="recipeBuilderTotals"
+                  class="mt-4 text-sm text-slate-300"
+                ></p>
 
                 <button
                   id="saveRecipeBtn"
