@@ -1,6 +1,7 @@
+import { calculateFiberTarget } from "./algorithm.js?v=navy2";
 import { createEmptyDay, getState, setState } from "./state.js";
 import { saveToStorage } from "./storage.js";
-import { formatDate, safeNumber } from "./utils.js";
+import { formatDate, safeNumber, uniqueStrings } from "./utils.js";
 
 const LEVEL_THRESHOLDS = [
   { level: 5, minXp: 1000 },
@@ -103,6 +104,50 @@ export function checkStreaks(
   };
 }
 
+export function evaluateBadges(
+  currentState = {},
+  currentDay = createEmptyDay(),
+  dailyXp = 0,
+) {
+  const qualifiedBadges = [];
+  const safeTargets =
+    currentState?.targets && typeof currentState.targets === "object"
+      ? currentState.targets
+      : null;
+  const proteinTarget = safeNumber(safeTargets?.prot);
+  const fiberTarget =
+    safeNumber(safeTargets?.fiber) ||
+    calculateFiberTarget(safeNumber(safeTargets?.kcal));
+
+  if (
+    safeNumber(currentState?.gamification?.xp) > 0 ||
+    safeNumber(dailyXp) > 0
+  ) {
+    qualifiedBadges.push("FIRST_BLOOD");
+  }
+
+  if (
+    proteinTarget > 0 &&
+    Math.abs(safeNumber(currentDay?.prot) - proteinTarget) <= 3
+  ) {
+    qualifiedBadges.push("PROTEIN_MASTER");
+  }
+
+  if (safeNumber(currentState?.gamification?.currentStreak) >= 7) {
+    qualifiedBadges.push("IRON_STREAK_7");
+  }
+
+  if (
+    safeNumber(currentDay?.kcal) > 0 &&
+    fiberTarget > 0 &&
+    safeNumber(currentDay?.fiber) >= fiberTarget
+  ) {
+    qualifiedBadges.push("FIBER_KING");
+  }
+
+  return uniqueStrings(qualifiedBadges);
+}
+
 export function processDayGamification(dateValue) {
   const currentState = getState();
   const dateKey = formatDate(dateValue || currentState.selectedDate);
@@ -119,24 +164,42 @@ export function processDayGamification(dateValue) {
     currentState.gamification,
     currentState.days,
   );
+  const unlockedBadges = Array.isArray(currentState.gamification?.badges)
+    ? currentState.gamification.badges
+    : [];
   const nextGamification = {
     ...(currentState.gamification || {}),
     xp: totalXp,
     level: nextLevel,
     currentStreak: streakState.currentStreak,
     lastLoggedDate: streakState.lastLoggedDate,
-    badges: Array.isArray(currentState.gamification?.badges)
-      ? currentState.gamification.badges
-      : [],
+    badges: unlockedBadges,
+  };
+  const badgeEvaluationState = {
+    ...currentState,
+    gamification: nextGamification,
+  };
+  const qualifiedBadges = evaluateBadges(
+    badgeEvaluationState,
+    currentDay,
+    dailyXp,
+  );
+  const newlyUnlockedBadges = qualifiedBadges.filter(
+    (badgeId) => !unlockedBadges.includes(badgeId),
+  );
+  const finalGamification = {
+    ...nextGamification,
+    badges: uniqueStrings([...unlockedBadges, ...newlyUnlockedBadges]),
   };
 
   setState({
-    gamification: nextGamification,
+    gamification: finalGamification,
   });
   saveToStorage(getState());
 
   return {
-    ...nextGamification,
+    ...finalGamification,
     dailyXp,
+    newlyUnlockedBadges,
   };
 }
