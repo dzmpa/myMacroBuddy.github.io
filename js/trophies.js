@@ -12,16 +12,63 @@ export const BADGE_DICTIONARY = {
     title: "Macro Sniper",
     description: "Hit your daily protein target within a strict 3g margin.",
   },
+  GLYCOGEN_MASTER: {
+    icon: "🍚",
+    title: "Glycogen Master",
+    description:
+      "Hit your daily carbohydrate target within a 5g margin to fuel your workouts.",
+  },
+  FAT_ARCHITECT: {
+    icon: "🥑",
+    title: "Fat Architect",
+    description:
+      "Hit your daily fat target within a 3g margin for optimal hormone function.",
+  },
+  CALORIC_BULLSEYE: {
+    icon: "🎯",
+    title: "Caloric Bullseye",
+    description:
+      "Hit your daily calorie target within a strict 50 kcal margin.",
+  },
+  FIBER_KING: {
+    icon: "🥦",
+    title: "Fiber King",
+    description: "Meet or exceed your calculated daily fiber target.",
+  },
+  HYDRO_ENGINE: {
+    icon: "💧",
+    title: "Hydro Engine",
+    description: "Meet or exceed your daily water intake target.",
+  },
+  CONSISTENT_FUEL: {
+    icon: "🔋",
+    title: "Consistent Fuel",
+    description:
+      "Log at least 4 items in a single day, proving you track every detail.",
+  },
+  THE_PPL_CYCLE: {
+    icon: "🔄",
+    title: "The PPL Cycle",
+    description:
+      "Maintain a perfect daily food logging streak for 3 consecutive days.",
+  },
   IRON_DISCIPLINE_7: {
     icon: "⛓️",
     title: "Iron Discipline",
     description:
       "Maintain a perfect daily food logging streak for 7 consecutive days.",
   },
-  FIBER_KING: {
-    icon: "🥦",
-    title: "Fiber King",
-    description: "Meet or exceed your calculated daily fiber target.",
+  UNBREAKABLE_30: {
+    icon: "🛡️",
+    title: "Unbreakable",
+    description:
+      "Maintain a perfect daily food logging streak for 30 consecutive days.",
+  },
+  CENTURY_CLUB: {
+    icon: "👑",
+    title: "Century Club",
+    description:
+      "Accumulate a total of 1000 XP through unwavering consistency.",
   },
 };
 

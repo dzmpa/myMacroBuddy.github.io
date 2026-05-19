@@ -114,18 +114,23 @@ export function evaluateBadges(
     currentState?.targets && typeof currentState.targets === "object"
       ? currentState.targets
       : null;
+
   const proteinTarget = safeNumber(safeTargets?.prot);
+  const carbTarget = safeNumber(safeTargets?.carbs); // Ajusta se usares 'carbo'
+  const fatTarget = safeNumber(safeTargets?.fat); // Ajusta se usares 'lip'
+  const calorieTarget = safeNumber(safeTargets?.kcal);
+  const waterTarget = safeNumber(safeTargets?.water);
   const fiberTarget =
     safeNumber(safeTargets?.fiber) ||
     calculateFiberTarget(safeNumber(safeTargets?.kcal));
 
-  if (
-    safeNumber(currentState?.gamification?.xp) > 0 ||
-    safeNumber(dailyXp) > 0
-  ) {
-    qualifiedBadges.push("THE_FIRST_REP");
-  }
+  const currentStreak = safeNumber(currentState?.gamification?.currentStreak);
+  const totalXp = safeNumber(currentState?.gamification?.xp);
 
+  // 1. THE FIRST REP
+  if (totalXp > 0 || dailyXp > 0) qualifiedBadges.push("THE_FIRST_REP");
+
+  // 2. MACRO SNIPER (Protein)
   if (
     proteinTarget > 0 &&
     Math.abs(safeNumber(currentDay?.prot) - proteinTarget) <= 3
@@ -133,10 +138,29 @@ export function evaluateBadges(
     qualifiedBadges.push("MACRO_SNIPER");
   }
 
-  if (safeNumber(currentState?.gamification?.currentStreak) >= 7) {
-    qualifiedBadges.push("IRON_DISCIPLINE_7");
+  // 3. GLYCOGEN MASTER (Carbs)
+  if (
+    carbTarget > 0 &&
+    Math.abs(safeNumber(currentDay?.carbs) - carbTarget) <= 5
+  ) {
+    qualifiedBadges.push("GLYCOGEN_MASTER");
   }
 
+  // 4. FAT ARCHITECT (Fats)
+  if (fatTarget > 0 && Math.abs(safeNumber(currentDay?.fat) - fatTarget) <= 3) {
+    qualifiedBadges.push("FAT_ARCHITECT");
+  }
+
+  // 5. CALORIC BULLSEYE
+  if (
+    calorieTarget > 0 &&
+    safeNumber(currentDay?.kcal) > 0 &&
+    Math.abs(safeNumber(currentDay?.kcal) - calorieTarget) <= 50
+  ) {
+    qualifiedBadges.push("CALORIC_BULLSEYE");
+  }
+
+  // 6. FIBER KING
   if (
     safeNumber(currentDay?.kcal) > 0 &&
     fiberTarget > 0 &&
@@ -144,6 +168,29 @@ export function evaluateBadges(
   ) {
     qualifiedBadges.push("FIBER_KING");
   }
+
+  // 7. HYDRO ENGINE
+  if (waterTarget > 0 && safeNumber(currentDay?.agua) >= waterTarget) {
+    qualifiedBadges.push("HYDRO_ENGINE");
+  }
+
+  // 8. CONSISTENT FUEL
+  if (Array.isArray(currentDay?.foods) && currentDay.foods.length >= 4) {
+    qualifiedBadges.push("CONSISTENT_FUEL");
+  }
+
+  // 9. THE PPL CYCLE (3 Days)
+  if (currentStreak >= 3) qualifiedBadges.push("THE_PPL_CYCLE");
+
+  // 10. IRON DISCIPLINE (7 Days)
+  if (currentStreak >= 7) qualifiedBadges.push("IRON_DISCIPLINE_7");
+
+  // 11. UNBREAKABLE (30 Days)
+  if (currentStreak >= 30) qualifiedBadges.push("UNBREAKABLE_30");
+
+  // 12. CENTURY CLUB (1000 XP)
+  if (totalXp >= 1000) qualifiedBadges.push("CENTURY_CLUB");
+
   return uniqueStrings(qualifiedBadges);
 }
 

@@ -66,6 +66,9 @@ import {
   renderSearchResults,
 } from "./ui.js";
 import { formatDate, formatInputNumber, safeNumber } from "./utils.js";
+import { getState, setState } from "./state.js";
+import { formatDate } from "./utils.js";
+import { renderDashboard } from "./dashboard.js";
 
 let isProfileModalForcedOpen = false;
 const MACRO_CALCULATOR_FIELDS = [
@@ -257,7 +260,9 @@ function readCompletedBootstrapBrandImports() {
 }
 
 function markBootstrapBrandImportCompleted(brandTag) {
-  const cleanBrandTag = String(brandTag || "").trim().toLowerCase();
+  const cleanBrandTag = String(brandTag || "")
+    .trim()
+    .toLowerCase();
 
   if (!cleanBrandTag) {
     return;
@@ -830,7 +835,12 @@ function setLastExternalImport(payload) {
 async function runBootstrapBrandImports() {
   const completedImports = readCompletedBootstrapBrandImports();
   const pendingImports = BOOTSTRAP_BRAND_IMPORTS.filter(
-    ({ brandTag }) => !completedImports[String(brandTag || "").trim().toLowerCase()],
+    ({ brandTag }) =>
+      !completedImports[
+        String(brandTag || "")
+          .trim()
+          .toLowerCase()
+      ],
   );
 
   if (!pendingImports.length) {
@@ -856,7 +866,10 @@ async function runBootstrapBrandImports() {
       pageSize: 50,
     });
 
-    if (!Array.isArray(importedBatch.items) || importedBatch.items.length === 0) {
+    if (
+      !Array.isArray(importedBatch.items) ||
+      importedBatch.items.length === 0
+    ) {
       setLastExternalImport({
         type: "global-food-search",
         source: "off",
@@ -1857,5 +1870,43 @@ async function init() {
   await runBootstrapBrandImports();
   registerServiceWorker();
 }
+// 1. Forçar a data de hoje sempre que a app é recarregada do zero
+function forceTodayOnLoad() {
+  const todayStr = formatDate(new Date());
+  setState({ selectedDate: todayStr });
+}
+
+// 2. O "Despertador" para o iPhone: detetar quando a app volta ao primeiro plano
+function setupVisibilityWakeup() {
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+      const currentState = getState();
+      const todayStr = formatDate(new Date());
+
+      // Se a app acordou e a data que está no ecrã já não é a data de hoje real
+      if (currentState.selectedDate !== todayStr) {
+        // Atualiza o estado para hoje
+        setState({ selectedDate: todayStr });
+
+        // Corre a gamificação em background para atualizar a streak (caso tenhas falhado ontem, ela quebra agora)
+        import("./gamification.js").then((module) => {
+          module.processDayGamification(todayStr);
+        });
+
+        // Volta a renderizar a interface para mostrar os dados de hoje
+        if (typeof renderDashboard === "function") {
+          renderDashboard();
+        }
+
+        // Se tiveres uma função para renderizar o calendário/datas, chama-a aqui também
+        // if (typeof renderCalendar === 'function') renderCalendar();
+      }
+    }
+  });
+}
+
+// Executar ambas as proteções
+forceTodayOnLoad();
+setupVisibilityWakeup();
 
 init();
