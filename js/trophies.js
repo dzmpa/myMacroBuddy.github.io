@@ -1,28 +1,27 @@
+// js/trophies.js
 import { getState } from "./state.js";
 
 export const BADGE_DICTIONARY = {
   THE_FIRST_REP: {
     icon: "🏗️",
     title: "The First Rep",
-    description: "You logged your very first meal. The foundation is set.",
+    description: "Log your very first meal inside the application.",
   },
   MACRO_SNIPER: {
     icon: "🥩",
     title: "Macro Sniper",
-    description:
-      "Hit your daily protein target with surgical precision (within a 3g margin).",
+    description: "Hit your daily protein target within a strict 3g margin.",
   },
   IRON_DISCIPLINE_7: {
     icon: "⛓️",
     title: "Iron Discipline",
     description:
-      "Maintained a perfect daily logging streak for 7 consecutive days.",
+      "Maintain a perfect daily food logging streak for 7 consecutive days.",
   },
   FIBER_KING: {
     icon: "🥦",
     title: "Fiber King",
-    description:
-      "Hit your daily fiber target, ensuring optimal digestion and health.",
+    description: "Meet or exceed your calculated daily fiber target.",
   },
 };
 
@@ -47,13 +46,13 @@ export function renderTrophyRoom() {
       `;
       } else {
         return `
-        <div class="flex flex-col items-center p-5 rounded-3xl border border-slate-700 bg-slate-900/60 opacity-60 grayscale text-center">
-          <div class="text-5xl mb-3 relative">
+        <div class="flex flex-col items-center p-5 rounded-3xl border border-slate-800/60 bg-slate-950/40 opacity-50 grayscale text-center relative overflow-hidden">
+          <div class="text-5xl mb-3 relative inline-block">
             ${badge.icon}
-            <div class="absolute inset-0 flex items-center justify-center bg-slate-950/50 rounded-full text-2xl backdrop-blur-[2px]">🔒</div>
+            <div class="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center bg-slate-900 border border-slate-700 rounded-full text-[10px]">🔒</div>
           </div>
-          <h4 class="text-sm font-bold text-slate-400 mb-2">Bloqueado</h4>
-          <p class="text-xs text-slate-500">Continua a manter o rigor no registo para descobrir...</p>
+          <h4 class="text-sm font-bold text-slate-400 mb-1">${badge.title}</h4>
+          <p class="text-xs text-slate-500 leading-relaxed italic">Requirement: ${badge.description}</p>
         </div>
       `;
       }
@@ -74,7 +73,6 @@ export function toggleTrophyModal(forceOpen) {
     modal.classList.add("flex");
     document.body.classList.add("overflow-hidden");
 
-    // Liga o botão de fechar automaticamente (e de forma segura, apenas uma vez)
     const closeBtn = document.getElementById("closeTrophyModalBtn");
     if (closeBtn && closeBtn.dataset.bound !== "true") {
       closeBtn.dataset.bound = "true";
