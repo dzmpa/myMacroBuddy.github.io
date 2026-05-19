@@ -89,6 +89,15 @@ const APP_PAGES = [
   "progress",
   "settings",
 ];
+const BOOTSTRAP_BRAND_IMPORTS = [
+  {
+    brandTag: "continente",
+    displayName: "Continente",
+    sourceUrl: "https://world.openfoodfacts.org/facets/brands/continente",
+  },
+];
+const BOOTSTRAP_BRAND_IMPORTS_STORAGE_KEY =
+  "fitnessDashboardBootstrapBrandImportsV1";
 
 function getElementValue(id) {
   return document.getElementById(id)?.value ?? "";
@@ -234,6 +243,37 @@ function parseJsonValue(rawValue, fallback = null) {
   } catch {
     return fallback;
   }
+}
+
+function readCompletedBootstrapBrandImports() {
+  try {
+    const rawValue = localStorage.getItem(BOOTSTRAP_BRAND_IMPORTS_STORAGE_KEY);
+    const parsedValue = rawValue ? JSON.parse(rawValue) : {};
+
+    return parsedValue && typeof parsedValue === "object" ? parsedValue : {};
+  } catch {
+    return {};
+  }
+}
+
+function markBootstrapBrandImportCompleted(brandTag) {
+  const cleanBrandTag = String(brandTag || "").trim().toLowerCase();
+
+  if (!cleanBrandTag) {
+    return;
+  }
+
+  try {
+    const nextCompletedImports = {
+      ...readCompletedBootstrapBrandImports(),
+      [cleanBrandTag]: new Date().toISOString(),
+    };
+
+    localStorage.setItem(
+      BOOTSTRAP_BRAND_IMPORTS_STORAGE_KEY,
+      JSON.stringify(nextCompletedImports),
+    );
+  } catch {}
 }
 
 function emptyRecipeSuggestions(message = "") {
@@ -785,6 +825,85 @@ function setLastExternalImport(payload) {
       ...payload,
     },
   });
+}
+
+async function runBootstrapBrandImports() {
+  const completedImports = readCompletedBootstrapBrandImports();
+  const pendingImports = BOOTSTRAP_BRAND_IMPORTS.filter(
+    ({ brandTag }) => !completedImports[String(brandTag || "").trim().toLowerCase()],
+  );
+
+  if (!pendingImports.length) {
+    return;
+  }
+
+  for (const pendingImport of pendingImports) {
+    setLastExternalImport({
+      type: "global-food-search",
+      source: "off",
+      query: pendingImport.sourceUrl,
+      item: null,
+      items: [],
+      pagination: null,
+      message: `Importing ${pendingImport.displayName} foods into your local database...`,
+    });
+    updateUI(["search"]);
+
+    const beforeCount = state.foods.length;
+    const importedBatch = await fetchBrandFoodsBatch(pendingImport.brandTag, {
+      maxPages: 60,
+      maxItems: 3000,
+      pageSize: 50,
+    });
+
+    if (!Array.isArray(importedBatch.items) || importedBatch.items.length === 0) {
+      setLastExternalImport({
+        type: "global-food-search",
+        source: "off",
+        query: pendingImport.sourceUrl,
+        item: null,
+        items: [],
+        pagination: null,
+        message: `Could not import ${pendingImport.displayName} foods right now. Refresh and try again in a moment.`,
+      });
+      saveToStorage(state);
+      updateUI(["search"]);
+      continue;
+    }
+
+    const seenKeys = new Set();
+    const importedItems = importedBatch.items
+      .map((food) => addFood(food))
+      .filter(Boolean)
+      .filter((food) => {
+        const identity = getFoodImportIdentity(food);
+        if (seenKeys.has(identity)) {
+          return false;
+        }
+
+        seenKeys.add(identity);
+        return true;
+      })
+      .map((food) => ({
+        ...food,
+        alreadySaved: true,
+        matchedSources: ["local", "off"],
+      }));
+    const addedCount = Math.max(0, state.foods.length - beforeCount);
+    const refreshedCount = Math.max(0, importedItems.length - addedCount);
+
+    markBootstrapBrandImportCompleted(pendingImport.brandTag);
+    setLastExternalImport({
+      type: "global-food-search",
+      source: "off",
+      query: pendingImport.sourceUrl,
+      item: null,
+      items: importedItems,
+      pagination: null,
+      message: `Imported ${addedCount} new ${pendingImport.displayName} food(s) and refreshed ${refreshedCount} existing one(s).`,
+    });
+    persistAndUpdate(["foods", "search"]);
+  }
 }
 
 function handleEditFood(id) {
@@ -1386,9 +1505,9 @@ async function runGlobalFoodSearch(page = 1) {
     if (brandFacet) {
       const beforeCount = state.foods.length;
       const importedBatch = await fetchBrandFoodsBatch(brandFacet.brandTag, {
-        maxPages: 5,
-        maxItems: 120,
-        pageSize: 24,
+        maxPages: 60,
+        maxItems: 3000,
+        pageSize: 50,
       });
 
       const seenKeys = new Set();
@@ -1735,6 +1854,7 @@ async function init() {
   saveToStorage(state);
   setActiveAppPage(getActiveAppPage(), { replace: true });
   updateUI(["all"]);
+  await runBootstrapBrandImports();
   registerServiceWorker();
 }
 

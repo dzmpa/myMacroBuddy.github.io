@@ -344,17 +344,19 @@ function normalizeAdaptiveTDEE(rawAdaptiveTDEE, days, profile) {
 }
 
 function normalizeFood(rawFood = {}) {
+  const sourceFood =
+    rawFood && typeof rawFood === "object" ? rawFood : {};
   const baseFood = {
-    id: String(rawFood.id ?? crypto.randomUUID()),
-    name: String(rawFood.name ?? "").trim(),
-    kcal: safeNumber(rawFood.kcal),
-    prot: safeNumber(rawFood.prot),
-    carb: safeNumber(rawFood.carb),
-    fat: safeNumber(rawFood.fat),
-    fiber: safeNumber(rawFood.fiber),
-    source: normalizeFoodSource(rawFood.source),
-    externalId: String(rawFood.externalId ?? rawFood.foodId ?? "").trim(),
-    barcode: String(rawFood.barcode ?? rawFood.code ?? "").trim(),
+    id: String(sourceFood.id ?? crypto.randomUUID()),
+    name: String(sourceFood.name ?? "").trim(),
+    kcal: safeNumber(sourceFood.kcal),
+    prot: safeNumber(sourceFood.prot),
+    carb: safeNumber(sourceFood.carb),
+    fat: safeNumber(sourceFood.fat),
+    fiber: safeNumber(sourceFood.fiber),
+    source: normalizeFoodSource(sourceFood.source),
+    externalId: String(sourceFood.externalId ?? sourceFood.foodId ?? "").trim(),
+    barcode: String(sourceFood.barcode ?? sourceFood.code ?? "").trim(),
   };
 
   if (!baseFood.name) {
@@ -370,7 +372,7 @@ function normalizeFood(rawFood = {}) {
     rawExternal:
       baseFood.source === "edamam"
         ? null
-        : cloneSerializable(rawFood.rawExternal ?? rawFood.raw),
+        : cloneSerializable(sourceFood.rawExternal ?? sourceFood.raw),
   };
 }
 
