@@ -182,26 +182,38 @@ export function renderDashboard() {
         progress = Math.min(100, Math.round((xpIntoLevel / xpRequired) * 100));
       }
       gamificationBannerEl.innerHTML = `
-        <div class="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 p-4 mb-4">
-          <div class="flex items-center gap-4">
-            <div class="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20 shadow-inner">
-              Lvl ${gState.level}
-            </div>
-            <div>
-              <p class="text-sm font-semibold text-white">XP: ${gState.xp}</p>
-              <div class="mt-1.5 h-1.5 w-28 rounded-full bg-slate-800 overflow-hidden">
-                <div class="h-full bg-emerald-500 transition-all duration-700 ease-out" style="width: ${progress}%"></div>
-              </div>
-            </div>
-          </div>
-          <div class="flex flex-col items-end">
-            <span class="flex items-center gap-1.5 text-lg font-bold text-orange-400 drop-shadow-md">
-              🔥 ${gState.currentStreak}
-            </span>
-            <span class="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">Streak</span>
-          </div>
+  <div class="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 p-4 mb-4">
+    <div class="flex items-center gap-4">
+      <div class="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20 shadow-inner">
+        Lvl ${gState.level}
+      </div>
+      <div>
+        <p class="text-sm font-semibold text-white">XP: ${gState.xp}</p>
+        <div class="mt-1.5 h-1.5 w-28 rounded-full bg-slate-800 overflow-hidden">
+          <div class="h-full bg-emerald-500 transition-all duration-700 ease-out" style="width: ${progress}%"></div>
         </div>
-      `;
+      </div>
+    </div>
+    <div class="flex flex-col items-end gap-1">
+      <span class="flex items-center gap-1.5 text-lg font-bold text-orange-400 drop-shadow-md">
+        🔥 ${gState.currentStreak}
+      </span>
+      <button id="openTrophyBtn" type="button" class="text-[10px] uppercase tracking-widest font-semibold text-slate-400 hover:text-emerald-300 transition flex items-center gap-1">
+        Troféus <span>🏆</span>
+      </button>
+    </div>
+  </div>
+`;
+
+      // Liga o botão de abrir ao modal
+      const openBtn = document.getElementById("openTrophyBtn");
+      if (openBtn) {
+        openBtn.addEventListener("click", () => {
+          import("./trophies.js").then((module) =>
+            module.toggleTrophyModal(true),
+          );
+        });
+      }
     }
   }
 

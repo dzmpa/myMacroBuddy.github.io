@@ -32,8 +32,7 @@ function getLoggedDayKeys(daysState = {}) {
 }
 
 export function calculateDailyXP(day = createEmptyDay(), targets = null) {
-  const safeDay =
-    day && typeof day === "object" ? day : createEmptyDay();
+  const safeDay = day && typeof day === "object" ? day : createEmptyDay();
   const safeTargets = targets && typeof targets === "object" ? targets : null;
 
   if (!hasLoggedFood(safeDay)) {
@@ -49,7 +48,10 @@ export function calculateDailyXP(day = createEmptyDay(), targets = null) {
     return Math.max(0, xp - 15);
   }
 
-  if (proteinTarget > 0 && Math.abs(safeNumber(safeDay.prot) - proteinTarget) <= 5) {
+  if (
+    proteinTarget > 0 &&
+    Math.abs(safeNumber(safeDay.prot) - proteinTarget) <= 5
+  ) {
     xp += 25;
   }
 
@@ -75,9 +77,7 @@ export function checkStreaks(
   daysState = {},
 ) {
   const normalizedDateKey = formatDate(
-    currentDateKey ||
-      gamificationState?.lastLoggedDate ||
-      new Date(),
+    currentDateKey || gamificationState?.lastLoggedDate || new Date(),
   );
   const loggedDayKeys = getLoggedDayKeys(daysState);
   const loggedDaySet = new Set(loggedDayKeys);
@@ -123,18 +123,18 @@ export function evaluateBadges(
     safeNumber(currentState?.gamification?.xp) > 0 ||
     safeNumber(dailyXp) > 0
   ) {
-    qualifiedBadges.push("FIRST_BLOOD");
+    qualifiedBadges.push("THE_FIRST_REP");
   }
 
   if (
     proteinTarget > 0 &&
     Math.abs(safeNumber(currentDay?.prot) - proteinTarget) <= 3
   ) {
-    qualifiedBadges.push("PROTEIN_MASTER");
+    qualifiedBadges.push("MACRO_SNIPER");
   }
 
   if (safeNumber(currentState?.gamification?.currentStreak) >= 7) {
-    qualifiedBadges.push("IRON_STREAK_7");
+    qualifiedBadges.push("IRON_DISCIPLINE_7");
   }
 
   if (
@@ -144,7 +144,6 @@ export function evaluateBadges(
   ) {
     qualifiedBadges.push("FIBER_KING");
   }
-
   return uniqueStrings(qualifiedBadges);
 }
 

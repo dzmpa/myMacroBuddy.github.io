@@ -30,7 +30,7 @@
         >
           <div class="space-y-2">
             <p class="text-xs uppercase tracking-[0.32em] text-emerald-300/80">
-              Macro calculator
+              myMacroBuddy
             </p>
             <h1 class="text-3xl font-semibold tracking-tight sm:text-4xl">
               Macro Calculator
@@ -40,7 +40,39 @@
               search, and planning still live below when you need them.
             </p>
           </div>
+          <div
+            id="trophyModal"
+            class="hidden fixed inset-0 z-[150] flex-col justify-end bg-slate-950/80 backdrop-blur-sm transition-opacity sm:justify-center sm:p-4"
+          >
+            <div
+              class="flex h-[85vh] w-full flex-col overflow-hidden rounded-t-3xl bg-slate-900 border-t border-slate-700 shadow-2xl sm:h-auto sm:max-h-[85vh] sm:max-w-2xl sm:rounded-3xl sm:border"
+            >
+              <div
+                class="flex items-center justify-between border-b border-slate-800 bg-slate-950/50 p-4"
+              >
+                <div>
+                  <h2 class="text-lg font-bold text-white">Trophy Room</h2>
+                  <p class="text-xs text-slate-400">
+                    Your history of discipline and consistency.
+                  </p>
+                </div>
+                <button
+                  id="closeTrophyModalBtn"
+                  type="button"
+                  class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white transition"
+                >
+                  ✕
+                </button>
+              </div>
 
+              <div class="flex-1 overflow-y-auto p-4 sm:p-6">
+                <div
+                  id="trophyGrid"
+                  class="grid grid-cols-2 gap-4 sm:grid-cols-3"
+                ></div>
+              </div>
+            </div>
+          </div>
           <div
             class="rounded-2xl border border-slate-800 bg-slate-950/50 px-4 py-3 text-sm text-slate-300"
           >
