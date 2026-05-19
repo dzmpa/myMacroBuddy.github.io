@@ -16,6 +16,14 @@ const defaultApiConfig = {
   edamamAppKey: "",
 };
 
+const defaultGamificationTemplate = {
+  xp: 0,
+  level: 1,
+  currentStreak: 0,
+  lastLoggedDate: null,
+  badges: [],
+};
+
 export function createEmptyDay() {
   return {
     kcal: 0,
@@ -46,6 +54,13 @@ export function createEmptyRecipeSuggestions() {
   };
 }
 
+export function createEmptyGamification() {
+  return {
+    ...defaultGamificationTemplate,
+    badges: [...defaultGamificationTemplate.badges],
+  };
+}
+
 export function getDefaultUserProfileTemplate() {
   return { ...defaultUserProfileTemplate };
 }
@@ -71,6 +86,7 @@ export function createInitialState() {
     apiConfig: getDefaultApiConfig(),
     recipeSuggestions: createEmptyRecipeSuggestions(),
     lastExternalImport: null,
+    gamification: createEmptyGamification(),
   };
 }
 

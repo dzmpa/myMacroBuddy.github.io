@@ -7,6 +7,7 @@ import {
 import { inferTags, mergeTags } from "./food.js";
 import {
   createEmptyDay,
+  createEmptyGamification,
   createEmptyPantry,
   createEmptyRecipeSuggestions,
   createInitialState,
@@ -561,6 +562,34 @@ function normalizeRecipeSuggestions(rawSuggestions) {
   };
 }
 
+function normalizeGamification(rawGamification) {
+  const defaultValue = createEmptyGamification();
+  const source =
+    rawGamification && typeof rawGamification === "object"
+      ? rawGamification
+      : {};
+  const normalizedLastLoggedDate = source.lastLoggedDate
+    ? new Date(source.lastLoggedDate)
+    : null;
+
+  return {
+    xp: Math.max(0, Math.floor(safeNumber(source.xp ?? defaultValue.xp))),
+    level: Math.max(1, Math.floor(safeNumber(source.level ?? defaultValue.level) || 1)),
+    currentStreak: Math.max(
+      0,
+      Math.floor(safeNumber(source.currentStreak ?? defaultValue.currentStreak)),
+    ),
+    lastLoggedDate:
+      normalizedLastLoggedDate &&
+      !Number.isNaN(normalizedLastLoggedDate.getTime())
+        ? normalizedLastLoggedDate.toISOString()
+        : defaultValue.lastLoggedDate,
+    badges: uniqueStrings(
+      Array.isArray(source.badges) ? source.badges : defaultValue.badges,
+    ),
+  };
+}
+
 function normalizeSearchPagination(rawPagination) {
   if (!rawPagination || typeof rawPagination !== "object") {
     return null;
@@ -719,6 +748,7 @@ function sanitizeState(rawState = {}) {
       normalizedFoods,
     ),
     apiConfig: normalizeApiConfig(rawState.apiConfig),
+    gamification: normalizeGamification(rawState.gamification),
     recipeSuggestions: normalizeRecipeSuggestions(
       rawState.recipeSuggestions ?? rawState.pantrySuggestions,
     ),
