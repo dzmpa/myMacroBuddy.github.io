@@ -1909,4 +1909,10 @@ function setupVisibilityWakeup() {
 forceTodayOnLoad();
 setupVisibilityWakeup();
 
-init();
+init().then(() => {
+  try {
+    if (typeof window.navigate === 'function') window.navigate('dashboard');
+  } catch (e) {
+    // ignore
+  }
+});

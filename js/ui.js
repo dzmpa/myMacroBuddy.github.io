@@ -926,3 +926,36 @@ export function renderOnboardingModal({ isOpen }) {
   overlay.setAttribute("aria-hidden", String(!isOpen));
   document.body.classList.toggle("overflow-hidden", Boolean(isOpen));
 }
+
+// High-level view renderers used by the router
+export function renderSettings() {
+  try {
+    renderProfileSummary();
+  } catch (e) {
+    console.error('renderSettings: profile summary failed', e);
+  }
+
+  try {
+    renderApiConfig();
+  } catch (e) {
+    console.error('renderSettings: api config failed', e);
+  }
+
+  try {
+    // These renderers are safe to call even if their containers are not present
+    renderFoodList();
+    renderRecipesList();
+    renderPantryList();
+    renderPantrySuggestions();
+  } catch (e) {
+    console.error('renderSettings: auxiliary renderers failed', e);
+  }
+}
+
+export function renderDiary() {
+  try {
+    renderDayFoods();
+  } catch (e) {
+    console.error('renderDiary: renderDayFoods failed', e);
+  }
+}
