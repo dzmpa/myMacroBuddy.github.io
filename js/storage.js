@@ -146,7 +146,19 @@ async function persistSerializedState(rawValue) {
 function queueStorageWrite(rawValue) {
   storageRuntime.writeQueue = storageRuntime.writeQueue
     .catch(() => {})
-    .then(() => persistSerializedState(rawValue));
+    .then(async () => {
+      // Ensure IndexedDB is initialized before attempting writes to avoid
+      // race conditions where the DB handle is not ready yet.
+      if (storageRuntime.driver !== "localstorage" && isIndexedDbAvailable()) {
+        try {
+          await getDatabase();
+        } catch (e) {
+          // If DB init fails, persistSerializedState will fallback to localStorage
+        }
+      }
+
+      return persistSerializedState(rawValue);
+    });
 
   return storageRuntime.writeQueue;
 }

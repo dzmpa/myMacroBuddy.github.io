@@ -1,6 +1,15 @@
 // js/trophies.js
 import { getState } from "./state.js";
 
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
 export const BADGE_DICTIONARY = {
   THE_FIRST_REP: {
     icon: "🏗️",
@@ -87,8 +96,8 @@ export function renderTrophyRoom() {
         return `
         <div class="flex flex-col items-center p-5 rounded-3xl border border-emerald-500/50 bg-slate-800 shadow-[0_0_20px_rgba(16,185,129,0.15)] text-center transition-transform hover:scale-105">
           <div class="text-5xl mb-3 drop-shadow-md">${badge.icon}</div>
-          <h4 class="text-sm font-bold text-white mb-2 tracking-wide">${badge.title}</h4>
-          <p class="text-xs text-emerald-100/80 leading-relaxed">${badge.description}</p>
+          <h4 class="text-sm font-bold text-white mb-2 tracking-wide">${escapeHtml(badge.title)}</h4>
+          <p class="text-xs text-emerald-100/80 leading-relaxed">${escapeHtml(badge.description)}</p>
         </div>
       `;
       } else {
@@ -98,8 +107,8 @@ export function renderTrophyRoom() {
             ${badge.icon}
             <div class="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center bg-slate-900 border border-slate-700 rounded-full text-[10px]">🔒</div>
           </div>
-          <h4 class="text-sm font-bold text-slate-400 mb-1">${badge.title}</h4>
-          <p class="text-xs text-slate-500 leading-relaxed italic">Requirement: ${badge.description}</p>
+          <h4 class="text-sm font-bold text-slate-400 mb-1">${escapeHtml(badge.title)}</h4>
+          <p class="text-xs text-slate-500 leading-relaxed italic">Requirement: ${escapeHtml(badge.description)}</p>
         </div>
       `;
       }

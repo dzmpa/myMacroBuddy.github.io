@@ -97,6 +97,9 @@ export function renderWeightChart(days = {}) {
     },
     options: baseOptions(),
   });
+  try {
+    canvas.dataset.renderedAt = String(Date.now());
+  } catch {}
 }
 
 export function renderMacroChart(day = {}, target = {}) {
@@ -138,6 +141,9 @@ export function renderMacroChart(day = {}, target = {}) {
     },
     options: baseOptions(),
   });
+  try {
+    canvas.dataset.renderedAt = String(Date.now());
+  } catch {}
 }
 
 export function renderCharts(day, target, days) {

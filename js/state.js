@@ -90,13 +90,43 @@ export function createInitialState() {
   };
 }
 
-export const state = createInitialState();
+export let state = createInitialState();
+
+function isPlainObject(v) {
+  return v && typeof v === "object" && !Array.isArray(v) && !(v instanceof Date);
+}
+
+function deepMerge(target, patch) {
+  if (!isPlainObject(patch)) {
+    if (Array.isArray(patch)) return patch.slice();
+    return patch;
+  }
+
+  const base = isPlainObject(target) ? { ...target } : {};
+
+  for (const key of Object.keys(patch)) {
+    const p = patch[key];
+    const t = target ? target[key] : undefined;
+
+    if (isPlainObject(p)) {
+      base[key] = deepMerge(isPlainObject(t) ? t : {}, p);
+    } else if (Array.isArray(p)) {
+      base[key] = p.slice();
+    } else {
+      base[key] = p;
+    }
+  }
+
+  return base;
+}
 
 export function getState() {
   return state;
 }
 
 export function setState(patch) {
-  Object.assign(state, patch);
+  // produce a brand-new state tree by deep-merging the current state
+  const next = deepMerge(state, patch);
+  state = next; // reassign exported binding so importers see updated object
   return state;
 }

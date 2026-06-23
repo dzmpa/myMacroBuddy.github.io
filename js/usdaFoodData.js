@@ -1,4 +1,5 @@
 import { safeNumber, uniqueStrings } from "./utils.js";
+import { parseNumberOrNull, isValidNutrientEntry, isValidUSDAFood } from "./validators.js";
 
 const USDA_API_BASE = "https://api.nal.usda.gov/fdc/v1";
 const USDA_DEFAULT_API_KEY = "DEMO_KEY";
@@ -65,6 +66,8 @@ function getNutrientMeta(entry = {}) {
   };
 }
 
+// nutrient validation delegated to js/validators.js
+
 function resolveNutrientAmount(foodNutrients = [], definition = {}) {
   const wantedIds = new Set((definition.ids || []).map((value) => safeNumber(value)));
   const wantedNames = new Set(
@@ -87,9 +90,9 @@ export function normalizeFoodResult(food = {}) {
   const externalId = String(food.fdcId ?? food.externalId ?? "").trim();
   const nutrients = Array.isArray(food.foodNutrients) ? food.foodNutrients : [];
 
-  if (!name || !externalId) {
-    return null;
-  }
+  // Use the centralized USDA food validator which ensures required fields
+  // and nutrient entries are parseable.
+  if (!isValidUSDAFood(food)) return null;
 
   return {
     id: `usda:${externalId}`,

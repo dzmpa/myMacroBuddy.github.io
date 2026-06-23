@@ -49,6 +49,25 @@ function normalizeFoodHit(hit = {}) {
     return null;
   }
 
+  function parseNumberOrNull(value) {
+    if (value === null || value === undefined) return null;
+    if (typeof value === "number") return Number.isFinite(value) ? value : null;
+    const s = String(value).trim();
+    if (s === "") return null;
+    const n = Number(s);
+    return Number.isFinite(n) ? n : null;
+  }
+
+  const nutrientKeys = ["ENERC_KCAL", "PROCNT", "CHOCDF", "FAT", "FIBTG"];
+  for (const k of nutrientKeys) {
+    if (Object.prototype.hasOwnProperty.call(nutrients, k)) {
+      const parsed = parseNumberOrNull(nutrients[k]);
+      if (parsed === null && String(nutrients[k]).trim() !== "") {
+        return null;
+      }
+    }
+  }
+
   return {
     source: "edamam",
     name,

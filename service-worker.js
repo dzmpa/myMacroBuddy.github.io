@@ -63,45 +63,70 @@ self.addEventListener("fetch", (event) => {
     requestUrl.pathname.endsWith(".css") ||
     requestUrl.pathname.endsWith(".html");
 
+  // Stale-While-Revalidate strategy for app shell and documents:
+  // - Return cached response immediately when available
+  // - Fetch from network in background and update cache
+  // - Fallback to cached index.html if nothing available
+  const staleWhileRevalidate = async (request) => {
+    const cache = await caches.open(CACHE_NAME);
+    const cachedResponse = await cache.match(request);
+
+    const networkFetch = fetch(request)
+      .then((networkResponse) => {
+        if (networkResponse && networkResponse.ok) {
+          try {
+            cache.put(request, networkResponse.clone());
+          } catch (e) {
+            // ignore cache put failures
+          }
+        }
+        return networkResponse;
+      })
+      .catch(() => null);
+
+    // Return cache immediately if present, otherwise wait for network
+    if (cachedResponse) {
+      // kick off background update but don't block response
+      void networkFetch;
+      return cachedResponse;
+    }
+
+    const net = await networkFetch;
+    return net || (await caches.match("./index.html"));
+  };
+
   if (isDocument || isAppShellAsset) {
-    event.respondWith(
-      fetch(event.request)
-        .then((networkResponse) => {
-          const responseClone = networkResponse.clone();
-
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseClone);
-          });
-
-          return networkResponse;
-        })
-        .catch(async () => {
-          const cachedResponse = await caches.match(event.request);
-          return cachedResponse || caches.match("./index.html");
-        }),
-    );
+    event.respondWith(staleWhileRevalidate(event.request));
     return;
   }
 
+  // For other assets use cache-first with background update
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
+        // update cache in background
+        fetch(event.request)
+          .then((networkResponse) => {
+            if (networkResponse && networkResponse.ok) {
+              caches.open(CACHE_NAME).then((cache) => cache.put(event.request, networkResponse.clone()));
+            }
+          })
+          .catch(() => {});
+
         return cachedResponse;
       }
 
       return fetch(event.request)
         .then((networkResponse) => {
-          const responseClone = networkResponse.clone();
-
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseClone);
-          });
-
+          if (networkResponse && networkResponse.ok) {
+            const responseClone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseClone);
+            });
+          }
           return networkResponse;
         })
-        .catch(() => {
-          return caches.match("./index.html");
-        });
+        .catch(() => caches.match("./index.html"));
     }),
   );
 });
