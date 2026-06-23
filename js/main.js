@@ -65,6 +65,7 @@ import {
   renderRecipesList,
   renderSearchResults,
 } from "./ui.js";
+import { initSearch, querySearch, refreshSearchIndex } from "./search.js";
 import { formatDate, formatInputNumber, safeNumber } from "./utils.js";
 import { getState, setState } from "./state.js";
 import { formatDate } from "./utils.js";
@@ -1627,6 +1628,54 @@ function bindGlobalFoodSearch() {
         runGlobalFoodSearch(1);
       }
     });
+    // Debounced, in-memory local search-as-you-type
+    if (!searchInput.dataset.debounceBound) {
+      searchInput.dataset.debounceBound = "true";
+      let searchTimeout = null;
+      searchInput.addEventListener("input", (ev) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          const q = String(searchInput.value || "").trim();
+          if (q.length < 2) {
+            // Clear local quick results if query too short
+            setLastExternalImport({
+              type: "global-food-search",
+              source: "local",
+              query: q,
+              item: null,
+              items: [],
+              pagination: null,
+              message: "Type 2+ characters to search local foods.",
+            });
+            updateUI(["search"]);
+            return;
+          }
+
+          try {
+            const results = querySearch(q, { limit: 50 });
+            const enriched = results.map((r) => ({
+              ...r,
+              alreadySaved: true,
+              matchedSources: ["local"],
+            }));
+
+            setLastExternalImport({
+              type: "global-food-search",
+              source: "local",
+              query: q,
+              item: null,
+              items: enriched,
+              pagination: null,
+              message: `${enriched.length} local result(s)`,
+            });
+            updateUI(["search"]);
+          } catch (e) {
+            // ignore search errors
+            console.error('local search error', e);
+          }
+        }, 300);
+      });
+    }
   }
 }
 
@@ -1851,6 +1900,8 @@ async function init() {
   bindOpenFoodFacts();
   bindApiConfig();
   bindEdamamFoodSearch();
+  // Initialize in-memory search index for instant local search
+  await initSearch();
   bindGlobalFoodSearch();
   bindPantryAssistant();
   bindMacroCalculator();
