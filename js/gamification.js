@@ -116,8 +116,8 @@ export function evaluateBadges(
       : null;
 
   const proteinTarget = safeNumber(safeTargets?.prot);
-  const carbTarget = safeNumber(safeTargets?.carbs); // Ajusta se usares 'carbo'
-  const fatTarget = safeNumber(safeTargets?.fat); // Ajusta se usares 'lip'
+  const carbTarget = safeNumber(safeTargets?.carb); // FIX: was safeTargets?.carbs (wrong field name)
+  const fatTarget = safeNumber(safeTargets?.fat);
   const calorieTarget = safeNumber(safeTargets?.kcal);
   const waterTarget = safeNumber(safeTargets?.water);
   const fiberTarget =
@@ -138,10 +138,10 @@ export function evaluateBadges(
     qualifiedBadges.push("MACRO_SNIPER");
   }
 
-  // 3. GLYCOGEN MASTER (Carbs)
+  // 3. GLYCOGEN MASTER (Carbs) — FIX: was currentDay?.carbs (wrong field name)
   if (
     carbTarget > 0 &&
-    Math.abs(safeNumber(currentDay?.carbs) - carbTarget) <= 5
+    Math.abs(safeNumber(currentDay?.carb) - carbTarget) <= 5
   ) {
     qualifiedBadges.push("GLYCOGEN_MASTER");
   }

@@ -23,120 +23,76 @@
 
   <body class="min-h-screen bg-slate-950 text-slate-100">
     <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-      <div class="app-container">
+      <div class="app-container pb-24">
         <main id="app-view">
+          <div class="mb-4">
+            <div class="rounded-2xl border border-slate-800 bg-slate-950/50 px-4 py-3 text-sm text-slate-300 inline-block">
+              <p class="text-xs uppercase tracking-[0.24em] text-slate-500">Selected date</p>
+              <p id="selectedDateLabel" class="mt-1 font-medium text-white"></p>
+            </div>
+          </div>
           <section id="view-dashboard" class="view">
             <div id="view-dashboard-content">
       <header
         class="mb-6 rounded-[2rem] border border-slate-800 bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950 p-6 shadow-2xl shadow-slate-950/50"
       >
-        <div
-          class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between"
-        >
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div class="space-y-2">
-            <p class="text-xs uppercase tracking-[0.32em] text-emerald-300/80">
-              myMacroBuddy
-            </p>
-            <h1 class="text-3xl font-semibold tracking-tight sm:text-4xl">
-              Macro Calculator
-            </h1>
-            <p class="max-w-2xl text-sm text-slate-300">
-              Start with a simple daily macro target calculator. Food logging,
-              search, and planning still live below when you need them.
-            </p>
+            <p class="text-xs uppercase tracking-[0.32em] text-emerald-300/80">myMacroBuddy</p>
+            <h1 class="text-3xl font-semibold tracking-tight sm:text-4xl">Macro Calculator</h1>
+            <p class="max-w-2xl text-sm text-slate-300">Start with a simple daily macro target calculator. Food logging, search, and planning still live below when you need them.</p>
           </div>
-          <div
-            id="trophyModal"
-          
-                    <p class="mt-1 text-xs text-slate-400">grams per day</p>
-                  </article>
-                  <article
-                    class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4"
-                  >
-                    <p
-                      class="text-[11px] uppercase tracking-[0.2em] text-slate-500"
-                    >
-                      Water
-                    </p>
-                    <p
-                      id="macroCalcWater"
-                      class="mt-2 text-3xl font-semibold text-white"
-                    >
-                      --
-                    </p>
-                    <p class="mt-1 text-xs text-slate-400">liters per day</p>
-                  </article>
-                </div>
 
-                <div
-                  class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4"
-                >
-                  <p
-                    class="text-[11px] uppercase tracking-[0.2em] text-slate-500"
-                  >
-                    Per meal split
-                  </p>
-                  <p id="macroCalcPerMeal" class="mt-2 text-sm text-slate-300">
-                    Add your stats first to see an easy per-meal breakdown.
-                  </p>
-                </div>
+          <div class="flex flex-col items-end gap-3">
+            <div class="flex gap-2">
+              <button id="calculateMacrosBtn" type="button" class="rounded-2xl bg-emerald-500 px-4 py-2 font-semibold text-slate-950">Calculate</button>
+              <button id="openTrophyBtn" type="button" class="rounded-2xl border border-slate-700 px-4 py-2 text-sm text-slate-200">Trophies</button>
+            </div>
 
-                <div class="grid gap-3 sm:grid-cols-3">
-                  <article
-                    class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4"
-                  >
-                    <p
-                      class="text-[11px] uppercase tracking-[0.2em] text-slate-500"
-                    >
-                      Body fat
-                    </p>
-                    <p
-                      id="macroCalcBodyFat"
-                      class="mt-2 text-3xl font-semibold text-white"
-                    >
-                      --
-                    </p>
-                    <p class="mt-1 text-xs text-slate-400">
-                      American Navy estimate
-                    </p>
-                  </article>
-                  <article
-                    class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4"
-                  >
-                    <p
-                      class="text-[11px] uppercase tracking-[0.2em] text-slate-500"
-                    >
-                      Lean mass
-                    </p>
-                    <p
-                      id="macroCalcLeanMass"
-                      class="mt-2 text-3xl font-semibold text-white"
-                    >
-                      --
-                    </p>
-                    <p class="mt-1 text-xs text-slate-400">
-                      estimated kilograms
-                    </p>
-                  </article>
-                  <article
-                    class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4"
-                  >
-                    <p
-                      class="text-[11px] uppercase tracking-[0.2em] text-slate-500"
-                    >
-                      Fat mass
-                    </p>
-                    <p
-                      id="macroCalcFatMass"
-                      class="mt-2 text-3xl font-semibold text-white"
-                    >
-                      --
-                    </p>
-                    <p class="mt-1 text-xs text-slate-400">
-                      estimated kilograms
-                    </p>
-                  </article>
-                </div>
+            <div class="grid gap-3 grid-cols-2 sm:grid-cols-3">
+              <div class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
+                <p class="text-[11px] uppercase tracking-[0.2em] text-slate-500">Calories left</p>
+                <p id="kcalRemainingHeader" class="mt-2 text-3xl font-semibold text-white">0</p>
+                <p class="mt-1 text-xs text-slate-400">remaining kcal</p>
+              </div>
+              <div class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
+                <p class="text-[11px] uppercase tracking-[0.2em] text-slate-500">Water</p>
+                <p id="macroCalcWater" class="mt-2 text-3xl font-semibold text-white">--</p>
+                <p class="mt-1 text-xs text-slate-400">liters per day</p>
+              </div>
+              <div class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
+                <p class="text-[11px] uppercase tracking-[0.2em] text-slate-500">Per meal split</p>
+                <p id="macroCalcPerMeal" class="mt-2 text-sm text-slate-300">Add your stats first to see an easy per-meal breakdown.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      
+
+      <div class="grid gap-3 grid-cols-2 sm:grid-cols-5 mb-4">
+        <div class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4 text-center">
+          <p class="text-xs text-slate-400">Kcal</p>
+          <p id="macroCalcKcal" class="mt-1 text-lg font-semibold text-white">--</p>
+        </div>
+        <div class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4 text-center">
+          <p class="text-xs text-slate-400">Protein</p>
+          <p id="macroCalcProt" class="mt-1 text-lg font-semibold text-white">--</p>
+        </div>
+        <div class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4 text-center">
+          <p class="text-xs text-slate-400">Carb</p>
+          <p id="macroCalcCarb" class="mt-1 text-lg font-semibold text-white">--</p>
+        </div>
+        <div class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4 text-center">
+          <p class="text-xs text-slate-400">Fat</p>
+          <p id="macroCalcFat" class="mt-1 text-lg font-semibold text-white">--</p>
+        </div>
+        <div class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4 text-center">
+          <p class="text-xs text-slate-400">Fiber</p>
+          <p id="macroCalcFiber" class="mt-1 text-lg font-semibold text-white">--</p>
+        </div>
+      </div>
 
                 <div
                   class="rounded-2xl border border-sky-500/20 bg-sky-500/10 p-4"
@@ -214,7 +170,7 @@
                   </div>
                 </div>
 
-                <div class="grid gap-4 md:grid-cols-4">
+                <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
                   <div
                     class="rounded-2xl border border-slate-800 bg-slate-950/60 p-4"
                   >
@@ -438,10 +394,10 @@
                     ></p>
                   </div>
 
-                  <div class="flex flex-col gap-3 sm:flex-row">
+                  <div class="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto_auto] sm:items-center">
                     <select
                       id="quickFoodSelect"
-                      class="flex-1 rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
+                      class="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
                     ></select>
                     <input
                       id="quickFoodGrams"
@@ -1626,6 +1582,18 @@
             Save profile
           </button>
         </form>
+      </div>
+    </div>
+
+    <!-- Trophy modal (hidden by default) -->
+    <div id="trophyModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-slate-950/80 px-4 py-6" aria-hidden="true">
+      <div class="w-full max-w-4xl rounded-[1.25rem] border border-slate-800 bg-slate-900 p-6 shadow-2xl shadow-slate-950/60">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold text-white">Trophy Room</h3>
+          <button id="closeTrophyModalBtn" type="button" class="rounded-full border border-slate-700 px-3 py-1 text-sm text-slate-200">Close</button>
+        </div>
+
+        <div id="trophyGrid" class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"></div>
       </div>
     </div>
 

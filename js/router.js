@@ -32,15 +32,17 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // Delegate clicks for elements with `data-page-link` to the router
 document.addEventListener('click', (ev) => {
-  const btn = ev.target.closest && ev.target.closest('[data-page-link]');
+  if (!ev || !ev.target) return;
+  const btn = ev.target.closest ? ev.target.closest('[data-page-link]') : null;
   if (!btn) return;
 
-  const page = btn.getAttribute('data-page-link');
+  const page = btn.dataset && btn.dataset.pageLink ? btn.dataset.pageLink : btn.getAttribute('data-page-link');
   if (!page) return;
 
   try {
-    // prevent default for anchors if any
-    if (ev.target.tagName === 'A') ev.preventDefault();
+    // If the clickable element is inside an <a> or is an <a>, prevent navigation
+    const anchor = btn.tagName === 'A' ? btn : btn.closest ? btn.closest('a') : null;
+    if (anchor) ev.preventDefault();
   } catch (e) {
     // ignore
   }

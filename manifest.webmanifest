@@ -1,6 +1,6 @@
 {
-  "name": "V6 Fitness Dashboard",
-  "short_name": "V6 Fitness",
+  "name": "myMacroBuddy",
+  "short_name": "MacroBuddy",
   "description": "Nutrition tracking with food search, daily logging, adaptive targets, and offline support.",
   "id": "./",
   "start_url": "./",

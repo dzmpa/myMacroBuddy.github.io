@@ -126,12 +126,10 @@ function updateAdaptiveTDEEInsight(currentState) {
     : "Adaptive TDEE: not enough data yet.";
 }
 
-function updateGamificationBanner(currentState) {
-  const gamificationBannerEl = document.getElementById("gamificationBanner");
-  if (!gamificationBannerEl) return;
-  const gState = currentState.gamification;
-  if (!gState) return;
-
+// FIX: single source of truth for gamification banner HTML.
+// Previously this block was duplicated between updateGamificationBanner()
+// and renderDashboard(), causing the two to drift out of sync.
+function buildGamificationBannerHTML(gState) {
   const LEVEL_THRESHOLDS = [
     { level: 5, minXp: 1000 },
     { level: 4, minXp: 500 },
@@ -150,7 +148,7 @@ function updateGamificationBanner(currentState) {
     progress = Math.min(100, Math.round((xpIntoLevel / xpRequired) * 100));
   }
 
-  gamificationBannerEl.innerHTML = `
+  return `
   <div class="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 p-4 mb-4">
     <div class="flex items-center gap-4">
       <div class="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20 shadow-inner">
@@ -173,6 +171,15 @@ function updateGamificationBanner(currentState) {
     </div>
   </div>
 `;
+}
+
+function updateGamificationBanner(currentState) {
+  const gamificationBannerEl = document.getElementById("gamificationBanner");
+  if (!gamificationBannerEl) return;
+  const gState = currentState.gamification;
+  if (!gState) return;
+
+  gamificationBannerEl.innerHTML = buildGamificationBannerHTML(gState);
 
   const openBtn = document.getElementById("openTrophyBtn");
   if (openBtn) {
@@ -208,8 +215,6 @@ function bindInputs() {
 
     element.dataset.bound = "true";
 
-    // Cria um debouncer independente para cada campo se for um evento de teclado ("input")
-    // 400ms é o "sweet spot" ideal para não parecer lento, mas poupar imensos recursos
     const processInput =
       event === "input"
         ? debounce((value) => handleInputChange(id, value), 400)
@@ -219,6 +224,27 @@ function bindInputs() {
       processInput(element.value);
     });
   });
+}
+
+// FIX: renderWarnings was broken — the template literal was left open and
+// code from handleInputChange had leaked inside it. Restored as a proper function.
+function renderWarnings(warnings = []) {
+  const container = document.getElementById("safetyWarnings");
+  if (!container) return;
+
+  if (!warnings.length) {
+    container.innerHTML = "";
+    return;
+  }
+
+  container.innerHTML = warnings
+    .map(
+      (w) => `
+      <div class="rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
+        ${w.message}
+      </div>`,
+    )
+    .join("");
 }
 
 function handleInputChange(field, rawValue) {
@@ -241,18 +267,7 @@ function handleInputChange(field, rawValue) {
   });
 
   saveToStorage(getState());
-  renderDashboard();
-  onDayUpdated();
-}
 
-function renderWarnings(warnings = []) {
-  const container = document.getElementById("safetyWarnings");
-  if (!container) {
-    return;
-  }
-
-  if (!warnings.length) {
-    container.innerHTML = `
   // Granular updates: only re-render the pieces affected by this field
   const nextState = getState();
   const nextDay = nextState.days[dayKey] || createEmptyDay();
@@ -316,74 +331,15 @@ export function renderDashboard() {
   const currentState = getState();
   const day = getSelectedDay(currentState);
   const target = getEffectiveTargets(currentState);
+  const kcalRemaining = target ? calculateRemaining(target.kcal, day.kcal) : 0;
   const hasSoftAdjustment =
     Boolean(currentState.adaptiveTDEE) &&
     Boolean(currentState.targets) &&
     Math.round(safeNumber(currentState.targets.kcal)) !==
       Math.round(safeNumber(target?.kcal));
-  const kcalRemaining = target ? calculateRemaining(target.kcal, day.kcal) : 0;
-  const gamificationBannerEl = document.getElementById("gamificationBanner");
-  if (gamificationBannerEl) {
-    const gState = currentState.gamification;
-    if (gState) {
-      // Obter thresholds (precisas de importar ou replicar a array LEVEL_THRESHOLDS do gamification.js)
-      // Como atalho para a UI, podemos fazer um cálculo aproximado ou usar valores hardcoded para o progresso visual:
-      const LEVEL_THRESHOLDS = [
-        { level: 5, minXp: 1000 },
-        { level: 4, minXp: 500 },
-        { level: 3, minXp: 250 },
-        { level: 2, minXp: 100 },
-        { level: 1, minXp: 0 },
-      ];
 
-      const currentLevelObj =
-        LEVEL_THRESHOLDS.find((t) => t.level === gState.level) ||
-        LEVEL_THRESHOLDS[4];
-      const nextLevelObj = LEVEL_THRESHOLDS.find(
-        (t) => t.level === gState.level + 1,
-      );
-
-      let progress = 100;
-      if (nextLevelObj) {
-        const xpIntoLevel = gState.xp - currentLevelObj.minXp;
-        const xpRequired = nextLevelObj.minXp - currentLevelObj.minXp;
-        progress = Math.min(100, Math.round((xpIntoLevel / xpRequired) * 100));
-      }
-      gamificationBannerEl.innerHTML = `
-  <div class="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 p-4 mb-4">
-    <div class="flex items-center gap-4">
-      <div class="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20 shadow-inner">
-        Lvl ${gState.level}
-      </div>
-      <div>
-        <p class="text-sm font-semibold text-white">XP: ${gState.xp}</p>
-        <div class="mt-1.5 h-1.5 w-28 rounded-full bg-slate-800 overflow-hidden">
-          <div class="h-full bg-emerald-500 transition-all duration-700 ease-out" style="width: ${progress}%"></div>
-        </div>
-      </div>
-    </div>
-    <div class="flex flex-col items-end gap-1">
-      <span class="flex items-center gap-1.5 text-lg font-bold text-orange-400 drop-shadow-md">
-        🔥 ${gState.currentStreak}
-      </span>
-      <button id="openTrophyBtn" type="button" class="text-[10px] uppercase tracking-widest font-semibold text-slate-400 hover:text-emerald-300 transition flex items-center gap-1">
-        Troféus <span>🏆</span>
-      </button>
-    </div>
-  </div>
-`;
-
-      // Liga o botão de abrir ao modal
-      const openBtn = document.getElementById("openTrophyBtn");
-      if (openBtn) {
-        openBtn.addEventListener("click", () => {
-          import("./trophies.js").then((module) =>
-            module.toggleTrophyModal(true),
-          );
-        });
-      }
-    }
-  }
+  // Gamification banner — delegated to updateGamificationBanner to avoid duplication
+  updateGamificationBanner(currentState);
 
   const selectedDateLabel = document.getElementById("selectedDateLabel");
   const kcalRemainingEl = document.getElementById("kcalRemaining");
@@ -396,23 +352,15 @@ export function renderDashboard() {
   const adaptiveTDEEInsightEl = document.getElementById("adaptiveTdeeInsight");
 
   if (selectedDateLabel) {
-    selectedDateLabel.textContent = formatSelectedDate(
-      currentState.selectedDate,
-    );
+    selectedDateLabel.textContent = formatSelectedDate(currentState.selectedDate);
   }
 
   if (kcalRemainingEl) {
     kcalRemainingEl.textContent = target
       ? Math.abs(Math.round(kcalRemaining))
       : "--";
-    kcalRemainingEl.classList.toggle(
-      "text-emerald-400",
-      target && kcalRemaining >= 0,
-    );
-    kcalRemainingEl.classList.toggle(
-      "text-red-400",
-      target && kcalRemaining < 0,
-    );
+    kcalRemainingEl.classList.toggle("text-emerald-400", target && kcalRemaining >= 0);
+    kcalRemainingEl.classList.toggle("text-red-400", target && kcalRemaining < 0);
   }
 
   if (kcalStatusEl) {
@@ -421,7 +369,6 @@ export function renderDashboard() {
         "Complete your profile to unlock live targets and daily remaining calories.";
     } else {
       const consumed = Math.round(safeNumber(day.kcal));
-
       if (kcalRemaining >= 0) {
         kcalStatusEl.innerHTML = `Consumed <strong>${consumed}</strong> kcal. <strong>${Math.round(kcalRemaining)}</strong> left.`;
       } else {
