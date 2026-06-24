@@ -28,7 +28,7 @@
           <div class="mb-4">
             <div class="rounded-2xl border border-slate-800 bg-slate-950/50 px-4 py-3 text-sm text-slate-300 inline-block">
               <p class="text-xs uppercase tracking-[0.24em] text-slate-500">Selected date</p>
-              <p id="selectedDateLabel" class="mt-1 font-medium text-white"></p>
+              <p id="selectedDateLabel" class="mt-1 font-medium text-white">—</p>
             </div>
           </div>
           <section id="view-dashboard" class="view">
@@ -614,7 +614,7 @@
                 </div>
 
                 <div class="h-[280px]">
-                  <canvas id="macroChart"></canvas>
+                  <canvas id="macroChart" data-rendered-at="0"></canvas>
                 </div>
               </section>
             </section>
@@ -1590,7 +1590,7 @@
       <div class="w-full max-w-4xl rounded-[1.25rem] border border-slate-800 bg-slate-900 p-6 shadow-2xl shadow-slate-950/60">
         <div class="flex items-center justify-between">
           <h3 class="text-lg font-semibold text-white">Trophy Room</h3>
-          <button id="closeTrophyModalBtn" type="button" class="rounded-full border border-slate-700 px-3 py-1 text-sm text-slate-200">Close</button>
+          <button id="closeTrophyModalBtn" type="button" class="rounded-full border border-slate-700 px-3 py-1 text-sm text-slate-200" onclick="(function(){try{const m=document.getElementById('trophyModal');if(m){m.classList.add('hidden');m.classList.remove('flex');m.setAttribute('aria-hidden','true');document.body.classList.remove('overflow-hidden');}}catch(e){} })()">Close</button>
         </div>
 
         <div id="trophyGrid" class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"></div>

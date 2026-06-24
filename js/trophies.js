@@ -119,24 +119,31 @@ export function renderTrophyRoom() {
 export function toggleTrophyModal(forceOpen) {
   const modal = document.getElementById("trophyModal");
   if (!modal) return;
+  // Determine current visibility more robustly (computed style may differ from classes)
+  const computedHidden = (typeof window !== 'undefined')
+    ? window.getComputedStyle(modal).display === 'none'
+    : modal.classList.contains("hidden");
 
-  const isHidden = modal.classList.contains("hidden");
+  const isHidden = modal.classList.contains("hidden") || computedHidden;
   const willOpen = forceOpen !== undefined ? forceOpen : isHidden;
 
   if (willOpen) {
     renderTrophyRoom();
     modal.classList.remove("hidden");
     modal.classList.add("flex");
+    modal.setAttribute("aria-hidden", "false");
     document.body.classList.add("overflow-hidden");
-
-    const closeBtn = document.getElementById("closeTrophyModalBtn");
-    if (closeBtn && closeBtn.dataset.bound !== "true") {
-      closeBtn.dataset.bound = "true";
-      closeBtn.addEventListener("click", () => toggleTrophyModal(false));
-    }
   } else {
     modal.classList.add("hidden");
     modal.classList.remove("flex");
+    modal.setAttribute("aria-hidden", "true");
     document.body.classList.remove("overflow-hidden");
+  }
+
+  // Always ensure close button is bound once, regardless of how modal was opened
+  const closeBtn = document.getElementById("closeTrophyModalBtn");
+  if (closeBtn && closeBtn.dataset.bound !== "true") {
+    closeBtn.dataset.bound = "true";
+    closeBtn.addEventListener("click", () => toggleTrophyModal(false));
   }
 }
