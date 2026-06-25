@@ -28,20 +28,22 @@ jobs:
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
-      - name: Prepare static site
-        run: |
-          mkdir -p _site
-          cp index.html _site/index.html
-          cp manifest.webmanifest _site/manifest.webmanifest
-          cp service-worker.js _site/service-worker.js
-          cp .nojekyll _site/.nojekyll
-          cp -R assets _site/assets
-          cp -R js _site/js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build with Vite
+        run: npm run build
 
       - name: Upload static site artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: _site
+          path: dist
 
       - name: Deploy to GitHub Pages
         id: deployment
