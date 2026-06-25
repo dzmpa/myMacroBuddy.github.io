@@ -1,0 +1,1 @@
+fetch('https://api.github.com/repos/dzmpa/myMacroBuddy.github.io/actions/runs/28180297674/jobs').then(r=>r.json()).then(async d=>{for(const j of d.jobs){const r=await fetch('https://api.github.com/repos/dzmpa/myMacroBuddy.github.io/check-runs/'+j.id);console.log(await r.json())}})

@@ -8,7 +8,7 @@ import { bindBackupControls } from "./controllers/backup.js";
 import { bindRecipeForm } from "./recipes.js";
 import { bindOpenFoodFacts } from "./openFoodFacts.js";
 import { bindEdamamFoodSearch } from "./edamam.js";
-import { bindGlobalFoodSearch } from "./foodSearch.js";
+import { searchAllApis } from "./foodSearch.js";
 import { bindMealPlanner } from "./mealPlanner.js";
 import { bindFoodLog } from "./foodLog.js";
 import { bindPantryAssistant } from "./pantry.js";
@@ -92,6 +92,7 @@ import {
   loginAccount,
   registerAccount,
   logout,
+  ensureAdminAccount,
 } from "./auth.js";
 
 // Active account storage key — set after login/register
@@ -766,6 +767,30 @@ function handleAddSearchResultToDay(food, grams) {
 
 
 
+export function bindGlobalFoodSearch() {
+  const searchButton = document.getElementById("searchAllApis");
+  const searchInput = document.getElementById("globalFoodSearch");
+
+  if (!searchButton || !searchInput || searchButton.dataset.bound === "true") {
+    return;
+  }
+
+  searchButton.dataset.bound = "true";
+  searchButton.addEventListener("click", () => {
+    runGlobalFoodSearch(1);
+  });
+
+  if (searchInput.dataset.bound !== "true") {
+    searchInput.dataset.bound = "true";
+    searchInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        runGlobalFoodSearch(1);
+      }
+    });
+  }
+}
+
 async function runGlobalFoodSearch(page = 1) {
   const searchButton = document.getElementById("searchAllApis");
   const searchInput = document.getElementById("globalFoodSearch");
@@ -955,6 +980,7 @@ export async function bootApp(account) {
 
 
 async function init() {
+  await ensureAdminAccount();
   // ── Auth gate ──────────────────────────────────────────────────────────────
   const activeUsername = getActiveSession();
 

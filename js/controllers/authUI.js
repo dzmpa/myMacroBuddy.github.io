@@ -118,6 +118,10 @@ export async function handleAuthLogin(setActiveStorageKeyFn, loadFromStorageFn) 
 
   setAuthButtonLoading("authLoginSubmitBtn", true);
   try {
+    if (!username.trim() || !password.trim()) {
+      throw new Error("Por favor preenche o nome de utilizador e a palavra-passe.");
+    }
+
     const account = await loginAccount(username, password, remember);
     const activeStorageKey = getAccountStorageKey(account.username);
     setActiveStorageKeyFn(activeStorageKey);

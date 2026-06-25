@@ -121,17 +121,17 @@ export async function registerAccount({ username, password, email, firstName, la
   const clean = normalizeUsername(username);
 
   if (!clean || clean.length < 3)
-    throw new Error("Username must be at least 3 characters.");
+    throw new Error("O nome de utilizador deve ter pelo menos 3 caracteres.");
   if (!/^[a-z0-9_.+-]+$/.test(clean))
-    throw new Error("Username can only contain letters, numbers, _, ., + or -.");
+    throw new Error("O nome de utilizador apenas pode conter letras, números, _, ., + ou -.");
   if (!password || String(password).length < 6)
-    throw new Error("Password must be at least 6 characters.");
+    throw new Error("A palavra-passe deve ter pelo menos 6 caracteres.");
   if (!email || !String(email).includes("@"))
-    throw new Error("Please enter a valid email address.");
+    throw new Error("Por favor, introduz um endereço de email válido.");
 
   const accounts = readAccounts();
   if (accounts[clean])
-    throw new Error("That username is already taken. Please choose another.");
+    throw new Error("Esse nome de utilizador já está a ser utilizado. Por favor, escolhe outro.");
 
   const passwordHash = await hashPassword(password);
 
@@ -159,11 +159,11 @@ export async function loginAccount(username, password, rememberMe = false) {
   const account = accounts[clean];
 
   if (!account)
-    throw new Error("Account not found. Check your username and try again.");
+    throw new Error("Conta não encontrada. Verifica o nome de utilizador e tenta novamente.");
 
   const hash = await hashPassword(password);
   if (hash !== account.passwordHash)
-    throw new Error("Incorrect password. Please try again.");
+    throw new Error("Palavra-passe incorreta. Tenta novamente.");
 
   try { sessionStorage.setItem(SESSION_KEY, clean); } catch {}
 
@@ -184,4 +184,23 @@ export async function loginAccount(username, password, rememberMe = false) {
 export function logout() {
   try { sessionStorage.removeItem(SESSION_KEY); } catch {}
   try { localStorage.removeItem(SESSION_KEY); } catch {}
+}
+
+/**
+ * Creates a default 'admin' account if it doesn't already exist.
+ */
+export async function ensureAdminAccount() {
+  const accounts = readAccounts();
+  if (!accounts["admin"]) {
+    const passwordHash = await hashPassword("admin");
+    accounts["admin"] = {
+      username: "admin",
+      firstName: "Admin",
+      lastName: "Test",
+      email: "admin@example.com",
+      passwordHash,
+      createdAt: new Date().toISOString(),
+    };
+    writeAccounts(accounts);
+  }
 }
