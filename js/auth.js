@@ -36,7 +36,9 @@ function writeAccounts(accounts) {
 }
 
 function normalizeUsername(username) {
-  return String(username ?? "").trim().toLowerCase();
+  return String(username ?? "")
+    .trim()
+    .toLowerCase();
 }
 
 // ---------------------------------------------------------------------------
@@ -96,7 +98,11 @@ export function hasAnyAccounts() {
  */
 export function hasLegacyData() {
   return LEGACY_DATA_KEYS.some((key) => {
-    try { return !!localStorage.getItem(key); } catch { return false; }
+    try {
+      return !!localStorage.getItem(key);
+    } catch {
+      return false;
+    }
   });
 }
 
@@ -117,13 +123,21 @@ export function readLegacyData() {
  * Registers a new account. Throws a human-readable Error on validation failure.
  * @returns {string} The normalised username.
  */
-export async function registerAccount({ username, password, email, firstName, lastName }) {
+export async function registerAccount({
+  username,
+  password,
+  email,
+  firstName,
+  lastName,
+}) {
   const clean = normalizeUsername(username);
 
   if (!clean || clean.length < 3)
     throw new Error("O nome de utilizador deve ter pelo menos 3 caracteres.");
   if (!/^[a-z0-9_.+-]+$/.test(clean))
-    throw new Error("O nome de utilizador apenas pode conter letras, números, _, ., + ou -.");
+    throw new Error(
+      "O nome de utilizador apenas pode conter letras, números, _, ., + ou -.",
+    );
   if (!password || String(password).length < 6)
     throw new Error("A palavra-passe deve ter pelo menos 6 caracteres.");
   if (!email || !String(email).includes("@"))
@@ -131,7 +145,9 @@ export async function registerAccount({ username, password, email, firstName, la
 
   const accounts = readAccounts();
   if (accounts[clean])
-    throw new Error("Esse nome de utilizador já está a ser utilizado. Por favor, escolhe outro.");
+    throw new Error(
+      "Esse nome de utilizador já está a ser utilizado. Por favor, escolhe outro.",
+    );
 
   const passwordHash = await hashPassword(password);
 
@@ -139,7 +155,9 @@ export async function registerAccount({ username, password, email, firstName, la
     username: clean,
     firstName: String(firstName ?? "").trim(),
     lastName: String(lastName ?? "").trim(),
-    email: String(email ?? "").trim().toLowerCase(),
+    email: String(email ?? "")
+      .trim()
+      .toLowerCase(),
     passwordHash,
     createdAt: new Date().toISOString(),
   };
@@ -159,13 +177,17 @@ export async function loginAccount(username, password, rememberMe = false) {
   const account = accounts[clean];
 
   if (!account)
-    throw new Error("Conta não encontrada. Verifica o nome de utilizador e tenta novamente.");
+    throw new Error(
+      "Conta não encontrada. Verifica o nome de utilizador e tenta novamente.",
+    );
 
   const hash = await hashPassword(password);
   if (hash !== account.passwordHash)
     throw new Error("Palavra-passe incorreta. Tenta novamente.");
 
-  try { sessionStorage.setItem(SESSION_KEY, clean); } catch {}
+  try {
+    sessionStorage.setItem(SESSION_KEY, clean);
+  } catch {}
 
   try {
     if (rememberMe) {
@@ -182,8 +204,12 @@ export async function loginAccount(username, password, rememberMe = false) {
  * Clears the active session from both storages.
  */
 export function logout() {
-  try { sessionStorage.removeItem(SESSION_KEY); } catch {}
-  try { localStorage.removeItem(SESSION_KEY); } catch {}
+  try {
+    sessionStorage.removeItem(SESSION_KEY);
+  } catch {}
+  try {
+    localStorage.removeItem(SESSION_KEY);
+  } catch {}
 }
 
 /**
