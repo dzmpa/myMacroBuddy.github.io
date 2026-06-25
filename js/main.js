@@ -982,4 +982,49 @@ async function init() {
   await bootApp(account);
 }
 
-init();
+// 1. Forçar a data de hoje sempre que a app é recarregada do zero
+function forceTodayOnLoad() {
+  const todayStr = formatDate(new Date());
+  setState({ selectedDate: todayStr });
+}
+
+// 2. O "Despertador" para o iPhone: detetar quando a app volta ao primeiro plano
+function setupVisibilityWakeup() {
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+      const currentState = getState();
+      const todayStr = formatDate(new Date());
+
+      // Se a app acordou e a data que está no ecrã já não é a data de hoje real
+      if (currentState.selectedDate !== todayStr) {
+        // Atualiza o estado para hoje
+        setState({ selectedDate: todayStr });
+
+        // Corre a gamificação em background para atualizar a streak (caso tenhas falhado ontem, ela quebra agora)
+        import("./gamification.js").then((module) => {
+          module.processDayGamification(todayStr);
+        });
+
+        // Volta a renderizar a interface para mostrar os dados de hoje
+        if (typeof renderDashboard === "function") {
+          renderDashboard();
+        }
+
+        // Se tiveres uma função para renderizar o calendário/datas, chama-a aqui também
+        // if (typeof renderCalendar === 'function') renderCalendar();
+      }
+    }
+  });
+}
+
+// Executar ambas as proteções
+forceTodayOnLoad();
+setupVisibilityWakeup();
+
+init().then(() => {
+  try {
+    if (typeof window.navigate === 'function') window.navigate('dashboard');
+  } catch (e) {
+    // ignore
+  }
+});
