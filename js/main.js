@@ -1,7 +1,7 @@
 
 import { bindPageNavigation, getActiveAppPage, setActiveAppPage } from "./core/router.js";
 import { bindProfileForm, bindProfileActions, requireProfile, revalidateProfileState, shouldShowOnboarding } from "./controllers/profile.js";
-import { bindMacroCalculator } from "./controllers/macroCalculator.js";
+import { bindMacroCalculator, renderMacroCalculator } from "./controllers/macroCalculator.js";
 import { bindFoodForm, clearFoodForm } from "./controllers/foodForm.js";
 import { bindAuthOverlay, bindLogoutButton, dismissAuthOverlay, updateUserBadge } from "./controllers/authUI.js";
 import { bindBackupControls } from "./controllers/backup.js";
@@ -916,6 +916,8 @@ function handleSearchPageChange(nextPage) {
 export async function bootApp(account) {
   updateUserBadge(account);
   dismissAuthOverlay();
+  
+  forceTodayOnLoad();
 
   revalidateProfileState();
   requireProfile();
@@ -1018,7 +1020,6 @@ function setupVisibilityWakeup() {
 }
 
 // Executar ambas as proteções
-forceTodayOnLoad();
 setupVisibilityWakeup();
 
 init().then(() => {

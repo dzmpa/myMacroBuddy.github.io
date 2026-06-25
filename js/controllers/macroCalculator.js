@@ -334,4 +334,7 @@ export function bindMacroCalculator() {
     applyCalcUnitMode("imperial");
     renderMacroCalculator();
   });
+
+  // Seed the calculator inputs from the user profile on startup
+  renderMacroCalculator();
 }

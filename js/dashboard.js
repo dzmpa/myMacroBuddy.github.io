@@ -505,6 +505,12 @@ export function renderDashboard() {
   const dayTypeSummaryEl = document.getElementById("dayTypeSummary");
   const targetSummaryEl = document.getElementById("targetSummary");
   const adaptiveTDEEInsightEl = document.getElementById("adaptiveTdeeInsight");
+  const todayWelcomeMessageEl = document.getElementById("todayWelcomeMessage");
+
+  if (todayWelcomeMessageEl) {
+    const firstName = currentState.userProfile?.name?.split(" ")[0] || "User";
+    todayWelcomeMessageEl.textContent = `Welcome, ${firstName}`;
+  }
 
   if (selectedDateLabel) {
     selectedDateLabel.textContent = formatSelectedDate(currentState.selectedDate);
@@ -568,4 +574,9 @@ export function renderDashboard() {
 
   renderWarnings(currentState.safetyWarnings || []);
   renderCharts(day, target || {}, currentState.days);
+}
+
+export function initDashboard(config = {}) {
+  if (config.onDayUpdated) onDayUpdated = config.onDayUpdated;
+  bindInputs();
 }
