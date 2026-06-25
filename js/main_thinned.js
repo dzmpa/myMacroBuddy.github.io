@@ -920,8 +920,8 @@ async function bootApp(account) {
   bindPantryAssistant();
   bindMacroCalculator();
   bindPageNavigation();
-  bindProfileForm();
-  bindProfileActions();
+  bindProfileForm(persistAndUpdate, getSelectedDay);
+  bindProfileActions(updateUI);
   bindBackupControls();
 
   initDashboard({ onDayUpdated: handleContextRefresh });

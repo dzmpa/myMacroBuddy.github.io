@@ -1,5 +1,6 @@
 import { safeNumber } from "./utils.js";
 import { isValidOFFProduct } from "./validators.js";
+import { state } from "./state.js";
 
 const OFF_API_BASE = "https://world.openfoodfacts.org/api/v2";
 const OFF_API_SEARCH_BASE = `${OFF_API_BASE}/search`;
@@ -295,8 +296,16 @@ export async function searchFoodsByQuery(
     return createEmptySearchResult(normalizedPage, normalizedPageSize);
   }
 
+  const country = state.userProfile?.shoppingCountry;
+  const brand = state.userProfile?.shoppingBrand;
+
+  let queryText = cleanQuery;
+  if (brand && !cleanQuery.toLowerCase().includes(brand.toLowerCase())) {
+    queryText = `${brand} ${cleanQuery}`;
+  }
+
   const proxyParams = new URLSearchParams();
-  proxyParams.set("q", cleanQuery);
+  proxyParams.set("q", country ? `${queryText} countries_tags:${country}` : queryText);
   proxyParams.set("page", String(normalizedPage));
   proxyParams.set("page_size", String(normalizedPageSize));
   proxyParams.set("langs", "pt,en");
@@ -307,7 +316,10 @@ export async function searchFoodsByQuery(
   );
 
   const apiParams = new URLSearchParams();
-  apiParams.set("search_terms", cleanQuery);
+  apiParams.set("search_terms", queryText);
+  if (country) {
+    apiParams.set("countries_tags_en", country);
+  }
   apiParams.set("page", String(normalizedPage));
   apiParams.set("page_size", String(normalizedPageSize));
   apiParams.set(

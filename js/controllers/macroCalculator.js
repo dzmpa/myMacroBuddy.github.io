@@ -1,7 +1,8 @@
-import { state } from "../state.js";
+import { state, setState } from "../state.js";
 import { calculateBaseMacros, calculateNavyBodyFat, getBodyFatRecommendation } from "../algorithm.js?v=navy2";
 import { lbsToKg, kgToLbs, ftInToCm, cmToFtIn, inToCm, cmToIn } from "../core/units.js";
 import { safeNumber, getElementValue, syncInputValueIfBlank } from "../utils.js";
+import { persistAndUpdate } from "../main.js";
 
 export let calcUnitMode = "metric"; // "metric" | "imperial"
 
@@ -314,17 +315,56 @@ export function renderMacroCalculator() {
   }
 }
 
+export function saveMacroCalculator() {
+  const profile = readMacroCalculatorForm();
+  
+  if (profile.age > 0 && profile.weight > 0 && profile.height > 0 && profile.gender) {
+    const targets = calculateBaseMacros(profile);
+    
+    // Save to global state and trigger persistence/UI updates
+    setState({ userProfile: profile, targets });
+  } else {
+    // Save partially filled profile
+    setState({ userProfile: profile });
+  }
+  
+  persistAndUpdate(["profile", "day"]);
+  
+  // Render immediately to show the output and possible success state locally
+  renderMacroCalculator();
+}
+
 export function bindMacroCalculator() {
   const calcForm = document.getElementById("macroCalculatorForm");
   if (calcForm) {
-    calcForm.addEventListener("input", renderMacroCalculator);
+    const handleInput = () => {
+      renderMacroCalculator();
+    };
+    calcForm.addEventListener("input", handleInput);
+    
+    // Auto-save the inputs (partially or fully) as the user types so they don't lose them
+    calcForm.addEventListener("input", () => {
+      const profile = readMacroCalculatorForm();
+      setState({ userProfile: Object.assign({}, state.userProfile || {}, profile) });
+      // We don't trigger a full persistAndUpdate here to avoid input lag, but we can save silently
+      import("../storage.js").then(({ saveToStorage }) => {
+         import("../auth.js").then(({ getActiveAccount, getAccountStorageKey }) => {
+            const username = getActiveAccount()?.username;
+            if (username) {
+              const activeKey = getAccountStorageKey(username);
+              saveToStorage(state, activeKey);
+            }
+         });
+      });
+    });
+
     calcForm.addEventListener("submit", (e) => {
       e.preventDefault();
-      renderMacroCalculator();
+      saveMacroCalculator();
     });
   }
 
-  document.getElementById("calculateMacrosBtn")?.addEventListener("click", renderMacroCalculator);
+  document.getElementById("calculateMacrosBtn")?.addEventListener("click", saveMacroCalculator);
 
   document.getElementById("calcUnitMetric")?.addEventListener("click", () => {
     applyCalcUnitMode("metric");

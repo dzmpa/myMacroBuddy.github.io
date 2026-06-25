@@ -2,7 +2,7 @@
 import { bindPageNavigation, getActiveAppPage, setActiveAppPage } from "./core/router.js";
 import { bindProfileForm, bindProfileActions, requireProfile, revalidateProfileState, shouldShowOnboarding } from "./controllers/profile.js";
 import { bindMacroCalculator, renderMacroCalculator } from "./controllers/macroCalculator.js";
-import { bindFoodForm, clearFoodForm } from "./controllers/foodForm.js";
+import { bindFoodForm, clearFoodForm, renderFoodImportStatus } from "./controllers/foodForm.js";
 import { bindAuthOverlay, bindLogoutButton, dismissAuthOverlay, updateUserBadge } from "./controllers/authUI.js";
 import { bindBackupControls } from "./controllers/backup.js";
 import { bindRecipeForm } from "./recipes.js";
@@ -934,8 +934,8 @@ export async function bootApp(account) {
   bindPantryAssistant();
   bindMacroCalculator();
   bindPageNavigation();
-  bindProfileForm();
-  bindProfileActions();
+  bindProfileForm(persistAndUpdate, getSelectedDay);
+  bindProfileActions(updateUI);
   bindBackupControls();
 
   initDashboard({ onDayUpdated: handleContextRefresh });
@@ -994,7 +994,7 @@ function forceTodayOnLoad() {
 function setupVisibilityWakeup() {
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "visible") {
-      const currentState = getState();
+      const currentState = state;
       const todayStr = formatDate(new Date());
 
       // Se a app acordou e a data que está no ecrã já não é a data de hoje real
@@ -1007,13 +1007,7 @@ function setupVisibilityWakeup() {
           module.processDayGamification(todayStr);
         });
 
-        // Volta a renderizar a interface para mostrar os dados de hoje
-        if (typeof renderDashboard === "function") {
-          renderDashboard();
-        }
-
-        // Se tiveres uma função para renderizar o calendário/datas, chama-a aqui também
-        // if (typeof renderCalendar === 'function') renderCalendar();
+        updateUI(["day", "calendar"]);
       }
     }
   });
@@ -1023,6 +1017,7 @@ function setupVisibilityWakeup() {
 setupVisibilityWakeup();
 
 init().then(() => {
+  forceTodayOnLoad();
   try {
     if (typeof window.navigate === 'function') window.navigate('dashboard');
   } catch (e) {

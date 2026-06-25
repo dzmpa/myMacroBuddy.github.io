@@ -4,6 +4,7 @@ import {
 } from "./algorithm.js?v=navy2";
 import { createEmptyDay, getState, setState } from "./state.js";
 import { saveToStorage } from "./storage.js";
+import { getActiveAccount, getActiveSession } from "./auth.js";
 import { renderCharts } from "./charts.js";
 import {
   debounce,
@@ -493,6 +494,13 @@ export function renderDashboard() {
     Math.round(safeNumber(currentState.targets.kcal)) !==
       Math.round(safeNumber(target?.kcal));
 
+  const welcomeMessageElem = document.getElementById("todayWelcomeMessage");
+  if (welcomeMessageElem) {
+    const account = getActiveAccount();
+    const displayName = currentState.userProfile?.name || account?.firstName || account?.username || "User";
+    welcomeMessageElem.textContent = `Welcome, ${displayName}`;
+  }
+
   // Gamification banner — delegated to updateGamificationBanner to avoid duplication
   updateGamificationBanner(currentState);
 
@@ -508,7 +516,11 @@ export function renderDashboard() {
   const todayWelcomeMessageEl = document.getElementById("todayWelcomeMessage");
 
   if (todayWelcomeMessageEl) {
-    const firstName = currentState.userProfile?.name?.split(" ")[0] || "User";
+    let firstName = currentState.userProfile?.name?.split(" ")[0];
+    if (!firstName) {
+      const activeAccount = getActiveAccount();
+      firstName = activeAccount?.firstName || getActiveSession() || "User";
+    }
     todayWelcomeMessageEl.textContent = `Welcome, ${firstName}`;
   }
 

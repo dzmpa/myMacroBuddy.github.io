@@ -175,6 +175,8 @@ export function renderProfileSummary(profile = state.userProfile) {
   syncInputValue("profileGoal", profile?.goal || "maintenance");
   syncInputValue("profileActivityLevel", profile?.activityLevel || "");
   syncInputValue("profileMealsPerDay", profile?.mealsPerDay || 4);
+  syncInputValue("profileShoppingCountry", profile?.shoppingCountry || "");
+  syncInputValue("profileShoppingBrand", profile?.shoppingBrand || "");
 
   if (!profile || !state.targets) {
     summary.innerHTML = `

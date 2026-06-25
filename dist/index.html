@@ -16,7 +16,7 @@
     />
     <title>myMacroBuddy</title>
     <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png" />
-    <script type="module" crossorigin src="./assets/index-ClQ7N3BS.js"></script>
+    <script type="module" crossorigin src="./assets/index-LgtvOBN5.js"></script>
     <link rel="stylesheet" crossorigin href="./assets/index-CE7-Ds_1.css">
   <link rel="manifest" href="./manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="./registerSW.js"></script></head>
 
@@ -2059,6 +2059,62 @@
               <option value="6">6</option>
             </select>
           </label>
+
+          <hr class="border-slate-800" />
+          
+          <div class="space-y-4">
+            <h4 class="text-sm font-medium text-emerald-400">Shopping Preferences</h4>
+            <p class="text-xs text-slate-400">Used to prioritize Open Food Facts search results.</p>
+            
+            <label class="block space-y-2">
+              <span class="text-sm text-slate-300">Country</span>
+              <select
+                id="profileShoppingCountry"
+                class="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
+              >
+                <option value="">Global / No Preference</option>
+                <option value="portugal">Portugal</option>
+                <option value="brazil">Brazil</option>
+                <option value="united-kingdom">United Kingdom</option>
+                <option value="united-states">United States</option>
+                <option value="spain">Spain</option>
+                <option value="france">France</option>
+                <option value="germany">Germany</option>
+              </select>
+            </label>
+
+            <label class="block space-y-2">
+              <span class="text-sm text-slate-300">Supermarket Brand</span>
+              <select
+                id="profileShoppingBrand"
+                class="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-emerald-500"
+              >
+                <option value="">None / Any</option>
+                <optgroup label="Portugal">
+                  <option value="continente">Continente</option>
+                  <option value="pingo-doce">Pingo Doce</option>
+                  <option value="mercadona">Mercadona</option>
+                  <option value="lidl">Lidl</option>
+                  <option value="aldi">Aldi</option>
+                  <option value="auchan">Auchan</option>
+                  <option value="intermarche">Intermarché</option>
+                  <option value="minipreco">Minipreço</option>
+                  <option value="spar">Spar</option>
+                </optgroup>
+                <optgroup label="UK / Global">
+                  <option value="tesco">Tesco</option>
+                  <option value="sainsburys">Sainsbury's</option>
+                  <option value="asda">Asda</option>
+                  <option value="morrisons">Morrisons</option>
+                  <option value="waitrose">Waitrose</option>
+                  <option value="walmart">Walmart</option>
+                  <option value="target">Target</option>
+                  <option value="trader-joes">Trader Joe's</option>
+                  <option value="whole-foods">Whole Foods</option>
+                </optgroup>
+              </select>
+            </label>
+          </div>
 
           <button
             id="saveProfileBtn"

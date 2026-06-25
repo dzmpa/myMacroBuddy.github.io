@@ -122,6 +122,8 @@ export function readProfileForm() {
       6,
       Math.max(3, safeNumber(getElementValue("profileMealsPerDay")) || 4),
     ),
+    shoppingCountry: String(getElementValue("profileShoppingCountry") || "").trim(),
+    shoppingBrand: String(getElementValue("profileShoppingBrand") || "").trim(),
   };
 }
 
@@ -198,7 +200,12 @@ export function bindProfileActions(updateUIFn) {
 
   editProfileButton.dataset.bound = "true";
   editProfileButton.addEventListener("click", () => {
-    isProfileModalForcedOpen = true;
-    updateUIFn(["all"]);
+    try {
+      isProfileModalForcedOpen = true;
+      updateUIFn(["all"]);
+    } catch (e) {
+      alert("Error opening profile: " + e.message + "\\n" + e.stack);
+      console.error(e);
+    }
   });
 }
