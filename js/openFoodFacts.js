@@ -9,7 +9,6 @@ const OFF_DEFAULT_PAGE_SIZE = 12;
 const OFF_BRAND_IMPORT_PAGE_SIZE = 24;
 const OFF_HEADERS = {
   Accept: "application/json",
-  "User-Agent": "V6Fitness/6.0 (support@v6fitness.app)",
 };
 const OFF_HOST_MATCH = "openfoodfacts.org";
 

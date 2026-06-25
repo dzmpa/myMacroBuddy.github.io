@@ -8,7 +8,7 @@ import { bindBackupControls } from "./controllers/backup.js";
 import { bindRecipeForm } from "./recipes.js";
 import { bindOpenFoodFacts } from "./openFoodFacts.js";
 import { bindEdamamFoodSearch } from "./edamam.js";
-import { searchAllApis } from "./foodSearch.js";
+
 import { bindMealPlanner } from "./mealPlanner.js";
 import { bindFoodLog } from "./foodLog.js";
 import { bindPantryAssistant } from "./pantry.js";
