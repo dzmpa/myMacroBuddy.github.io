@@ -59,3 +59,18 @@ export function debounce(func, wait) {
     timeout = setTimeout(later, wait);
   };
 }
+
+export function getElementValue(id) {
+  return document.getElementById(id)?.value ?? "";
+}
+
+export function syncInputValueIfBlank(id, value) {
+  const input = document.getElementById(id);
+  if (!input || document.activeElement === input) {
+    return;
+  }
+  const isBlank = !input.value || String(input.value).trim() === "";
+  if (isBlank) {
+    input.value = value;
+  }
+}

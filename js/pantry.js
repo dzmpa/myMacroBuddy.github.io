@@ -408,3 +408,48 @@ export async function suggestRecipesFromPantry(
     generatedAt: new Date().toISOString(),
   };
 }
+
+export function bindPantryAssistant() {
+  const pantryList = document.getElementById("pantryFoodList");
+  const suggestButton = document.getElementById("suggestPantryRecipesBtn");
+  const clearButton = document.getElementById("clearPantryBtn");
+
+  if (pantryList && pantryList.dataset.bound !== "true") {
+    pantryList.dataset.bound = "true";
+    pantryList.addEventListener("change", (event) => {
+      const target = event.target;
+
+      if (
+        target instanceof HTMLInputElement &&
+        target.matches("[data-pantry-food-id]")
+      ) {
+        if (target.checked) {
+          addPantryItem(target.value);
+        } else {
+          removePantryItem(target.value);
+        }
+
+        resetRecipeSuggestions();
+        saveToStorage(state, activeStorageKey);
+        updateUI(["all"]);
+      }
+    });
+  }
+
+  if (suggestButton && suggestButton.dataset.bound !== "true") {
+    suggestButton.dataset.bound = "true";
+    suggestButton.addEventListener("click", () => {
+      handleSuggestPantryRecipes();
+    });
+  }
+
+  if (clearButton && clearButton.dataset.bound !== "true") {
+    clearButton.dataset.bound = "true";
+    clearButton.addEventListener("click", () => {
+      clearPantry();
+      resetRecipeSuggestions("Despensa limpa.");
+      saveToStorage(state, activeStorageKey);
+      updateUI(["all"]);
+    });
+  }
+}

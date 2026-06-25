@@ -235,3 +235,29 @@ export function copyPreviousDayToSelected() {
     day: copiedDay,
   };
 }
+
+export function bindFoodLog() {
+  const quickAddButton = document.getElementById("quickAddFoodBtn");
+  const copyPreviousDayButton = document.getElementById("copyPreviousDayBtn");
+
+  if (quickAddButton && quickAddButton.dataset.bound !== "true") {
+    quickAddButton.dataset.bound = "true";
+    quickAddButton.addEventListener("click", () => {
+      const foodId = String(getElementValue("quickFoodSelect")).trim();
+      const grams = safeNumber(getElementValue("quickFoodGrams"));
+
+      if (!foodId || grams <= 0) return;
+
+      addFoodToDay(foodId, grams);
+      document.getElementById("quickFoodGrams").value = "";
+      persistAndUpdate(["day"]);
+    });
+  }
+
+  if (copyPreviousDayButton && copyPreviousDayButton.dataset.bound !== "true") {
+    copyPreviousDayButton.dataset.bound = "true";
+    copyPreviousDayButton.addEventListener("click", () => {
+      handleCopyPreviousDay();
+    });
+  }
+}

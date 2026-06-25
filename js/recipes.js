@@ -73,3 +73,35 @@ export function deleteRecipe(id) {
     recipes: currentState.recipes.filter((recipe) => recipe.id !== id),
   });
 }
+
+export function bindRecipeForm() {
+  const addIngredientButton = document.getElementById("addIngredientBtn");
+  const saveRecipeButton = document.getElementById("saveRecipeBtn");
+
+  if (addIngredientButton && addIngredientButton.dataset.bound !== "true") {
+    addIngredientButton.dataset.bound = "true";
+    addIngredientButton.addEventListener("click", () => {
+      const foodId = String(getElementValue("recipeFoodSelect")).trim();
+      const grams = safeNumber(getElementValue("recipeFoodGrams"));
+
+      if (!foodId || grams <= 0) return;
+
+      addToBuilder(foodId, grams);
+      document.getElementById("recipeFoodGrams").value = "";
+      persistAndUpdate(["recipes"]);
+    });
+  }
+
+  if (saveRecipeButton && saveRecipeButton.dataset.bound !== "true") {
+    saveRecipeButton.dataset.bound = "true";
+    saveRecipeButton.addEventListener("click", () => {
+      const name = String(getElementValue("recipeName")).trim();
+      if (!name) return;
+
+      saveRecipe(name);
+      document.getElementById("recipeName").value = "";
+      resetRecipeSuggestions();
+      persistAndUpdate(["recipes"]);
+    });
+  }
+}

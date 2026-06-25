@@ -482,3 +482,91 @@ export async function fetchBrandFoodsBatch(
     totalPages,
   };
 }
+
+export function bindOpenFoodFacts() {
+  const importButton = document.getElementById("btnFetchOFF");
+  const barcodeInput = document.getElementById("foodBarcode");
+
+  if (!importButton || !barcodeInput || importButton.dataset.bound === "true") {
+    return;
+  }
+
+  importButton.dataset.bound = "true";
+  importButton.addEventListener("click", async () => {
+    const barcode = String(barcodeInput.value).trim();
+    if (!barcode) {
+      setLastExternalImport({
+        type: "off-error",
+        source: "off",
+        barcode: "",
+        item: null,
+        items: [],
+        message: "Enter a barcode first.",
+      });
+      saveToStorage(state, activeStorageKey);
+      updateUI(["all"]);
+      return;
+    }
+
+    importButton.disabled = true;
+    importButton.textContent = "Loading...";
+
+    const result = await fetchFoodByBarcode(barcode);
+
+    importButton.disabled = false;
+    importButton.textContent = "Import from OFF";
+
+    if (result.error) {
+      setLastExternalImport({
+        type: "off-error",
+        source: "off",
+        barcode,
+        item: null,
+        items: [],
+        message: result.error,
+      });
+      saveToStorage(state, activeStorageKey);
+      updateUI(["all"]);
+      return;
+    }
+
+    document.getElementById("foodName").value = result.name;
+    document.getElementById("foodKcal").value = formatInputNumber(result.kcal, {
+      decimals: 0,
+    });
+    document.getElementById("foodP").value = formatInputNumber(result.prot, {
+      decimals: 1,
+    });
+    document.getElementById("foodC").value = formatInputNumber(result.carb, {
+      decimals: 1,
+    });
+    document.getElementById("foodF").value = formatInputNumber(result.fat, {
+      decimals: 1,
+    });
+    document.getElementById("foodFiber").value = formatInputNumber(
+      result.fiber,
+      {
+        decimals: 1,
+      },
+    );
+    document.getElementById("foodBarcode").value = result.barcode;
+
+    setFoodTagSelection([]);
+    setFoodFormState({
+      editingId: "",
+      source: result.source,
+      externalId: result.externalId,
+      rawExternal: result.rawExternal || result.raw || null,
+    });
+    setLastExternalImport({
+      type: "off-barcode",
+      source: "off",
+      barcode,
+      item: result,
+      items: [result],
+      message: `${result.name} was imported from Open Food Facts. Review it and save when ready.`,
+    });
+    saveToStorage(state, activeStorageKey);
+    updateUI(["all"]);
+  });
+}

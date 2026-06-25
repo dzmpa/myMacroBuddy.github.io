@@ -128,10 +128,10 @@ async function writeIndexedDbValue(key, value) {
   });
 }
 
-async function persistSerializedState(rawValue) {
+async function persistSerializedState(rawValue, storageKey = STORAGE_KEY) {
   if (storageRuntime.driver !== "localstorage" && isIndexedDbAvailable()) {
     try {
-      await writeIndexedDbValue(STORAGE_KEY, rawValue);
+      await writeIndexedDbValue(storageKey, rawValue);
       storageRuntime.driver = "indexeddb";
       cleanupLegacyLocalStorage();
       return;
@@ -140,13 +140,13 @@ async function persistSerializedState(rawValue) {
     }
   }
 
-  writeLocalStorageValue(STORAGE_KEY, rawValue);
+  writeLocalStorageValue(storageKey, rawValue);
 }
 
-function queueStorageWrite(rawValue) {
+function queueStorageWrite(rawValue, storageKey = STORAGE_KEY) {
   storageRuntime.writeQueue = storageRuntime.writeQueue
     .catch(() => {})
-    .then(() => persistSerializedState(rawValue));
+    .then(() => persistSerializedState(rawValue, storageKey));
 
   return storageRuntime.writeQueue;
 }
@@ -792,10 +792,10 @@ function serializeState(sourceState) {
   };
 }
 
-export async function loadFromStorage() {
+export async function loadFromStorage(storageKey = STORAGE_KEY) {
   if (isIndexedDbAvailable()) {
     try {
-      const rawIndexedState = await readIndexedDbValue(STORAGE_KEY);
+      const rawIndexedState = await readIndexedDbValue(storageKey);
 
       if (rawIndexedState) {
         storageRuntime.driver = "indexeddb";
@@ -811,7 +811,7 @@ export async function loadFromStorage() {
     storageRuntime.driver = "localstorage";
   }
 
-  const rawV6 = readLocalStorageValue(STORAGE_KEY);
+  const rawV6 = readLocalStorageValue(storageKey);
 
   if (rawV6) {
     const parsedV6 = parseJson(rawV6);
@@ -823,10 +823,18 @@ export async function loadFromStorage() {
     const migratedV6State = sanitizeState(parsedV6);
 
     if (storageRuntime.driver === "indexeddb") {
-      await persistSerializedState(JSON.stringify(serializeState(migratedV6State)));
+      await persistSerializedState(
+        JSON.stringify(serializeState(migratedV6State)),
+        storageKey,
+      );
     }
 
     return migratedV6State;
+  }
+
+  // Only attempt legacy migration when using the default global key.
+  if (storageKey !== STORAGE_KEY) {
+    return null;
   }
 
   const rawLegacy = readLocalStorageValue(LEGACY_STORAGE_KEY);
@@ -842,17 +850,20 @@ export async function loadFromStorage() {
   const migratedState = migrateLegacyState(parsedLegacy);
 
   if (storageRuntime.driver === "indexeddb") {
-    await persistSerializedState(JSON.stringify(serializeState(migratedState)));
+    await persistSerializedState(
+      JSON.stringify(serializeState(migratedState)),
+      storageKey,
+    );
   } else {
-    saveToStorage(migratedState);
+    saveToStorage(migratedState, storageKey);
   }
 
   return migratedState;
 }
 
-export function saveToStorage(sourceState) {
+export function saveToStorage(sourceState, storageKey = STORAGE_KEY) {
   try {
-    queueStorageWrite(JSON.stringify(serializeState(sourceState)));
+    queueStorageWrite(JSON.stringify(serializeState(sourceState)), storageKey);
     return true;
   } catch (error) {
     console.warn("Storage save skipped because state serialization failed.", error);

@@ -11,6 +11,29 @@ const LEVEL_THRESHOLDS = [
   { level: 1, minXp: 0 },
 ];
 
+export const BADGE_DEFINITIONS = {
+  FIRST_BLOOD: {
+    id: "FIRST_BLOOD",
+    name: "First Blood",
+    description: "Logged food for the first time.",
+  },
+  PROTEIN_MASTER: {
+    id: "PROTEIN_MASTER",
+    name: "Protein Master",
+    description: "Hit protein with elite precision.",
+  },
+  IRON_STREAK_7: {
+    id: "IRON_STREAK_7",
+    name: "Iron Streak",
+    description: "Logged food for 7 straight days.",
+  },
+  FIBER_KING: {
+    id: "FIBER_KING",
+    name: "Fiber King",
+    description: "Met the full daily fiber target.",
+  },
+};
+
 function hasLoggedFood(day = createEmptyDay()) {
   return (
     safeNumber(day.kcal) > 0 ||
@@ -31,35 +54,64 @@ function getLoggedDayKeys(daysState = {}) {
     .sort();
 }
 
-export function calculateDailyXP(day = createEmptyDay(), targets = null) {
+export function calculateDailyXPBreakdown(
+  day = createEmptyDay(),
+  targets = null,
+) {
   const safeDay = day && typeof day === "object" ? day : createEmptyDay();
   const safeTargets = targets && typeof targets === "object" ? targets : null;
 
   if (!hasLoggedFood(safeDay)) {
-    return 0;
+    return {
+      baseXp: 0,
+      proteinBonus: 0,
+      waterBonus: 0,
+      overeatPenalty: 0,
+      total: 0,
+    };
   }
 
-  let xp = 10;
+  const breakdown = {
+    baseXp: 10,
+    proteinBonus: 0,
+    waterBonus: 0,
+    overeatPenalty: 0,
+    total: 10,
+  };
   const calorieTarget = safeNumber(safeTargets?.kcal);
   const proteinTarget = safeNumber(safeTargets?.prot);
   const waterTarget = safeNumber(safeTargets?.water);
 
   if (calorieTarget > 0 && safeNumber(safeDay.kcal) - calorieTarget > 250) {
-    return Math.max(0, xp - 15);
+    breakdown.overeatPenalty = -15;
+    breakdown.total = Math.max(0, breakdown.total + breakdown.overeatPenalty);
+    return breakdown;
   }
 
   if (
     proteinTarget > 0 &&
     Math.abs(safeNumber(safeDay.prot) - proteinTarget) <= 5
   ) {
-    xp += 25;
+    breakdown.proteinBonus = 25;
   }
 
   if (waterTarget > 0 && safeNumber(safeDay.agua) >= waterTarget) {
-    xp += 10;
+    breakdown.waterBonus = 10;
   }
 
-  return xp;
+  breakdown.total = Math.max(
+    0,
+    breakdown.baseXp +
+      breakdown.proteinBonus +
+      breakdown.waterBonus +
+      breakdown.overeatPenalty,
+  );
+
+  return breakdown;
+}
+
+export function calculateDailyXP(day = createEmptyDay(), targets = null) {
+  return calculateDailyXPBreakdown(day, targets).total;
 }
 
 export function calculateLevel(totalXP) {
@@ -69,6 +121,40 @@ export function calculateLevel(totalXP) {
     LEVEL_THRESHOLDS[LEVEL_THRESHOLDS.length - 1];
 
   return matchedLevel.level;
+}
+
+export function calculateLevelProgress(totalXP) {
+  const normalizedXp = Math.max(0, Math.floor(safeNumber(totalXP)));
+  const currentThreshold =
+    LEVEL_THRESHOLDS.find((threshold) => normalizedXp >= threshold.minXp) ||
+    LEVEL_THRESHOLDS[LEVEL_THRESHOLDS.length - 1];
+  const ascendingThresholds = [...LEVEL_THRESHOLDS].sort(
+    (left, right) => left.minXp - right.minXp,
+  );
+  const currentIndex = ascendingThresholds.findIndex(
+    (threshold) => threshold.level === currentThreshold.level,
+  );
+  const nextThreshold =
+    currentIndex >= 0 ? ascendingThresholds[currentIndex + 1] || null : null;
+  const currentLevelMinXp = currentThreshold.minXp;
+  const nextLevelMinXp = nextThreshold?.minXp ?? currentLevelMinXp;
+  const xpIntoLevel = normalizedXp - currentLevelMinXp;
+  const xpToNextLevel = nextThreshold
+    ? Math.max(0, nextThreshold.minXp - normalizedXp)
+    : 0;
+  const progressDenominator = Math.max(1, nextLevelMinXp - currentLevelMinXp);
+
+  return {
+    level: currentThreshold.level,
+    currentLevelMinXp,
+    nextLevel: nextThreshold?.level ?? null,
+    nextLevelMinXp: nextThreshold?.minXp ?? null,
+    xpIntoLevel,
+    xpToNextLevel,
+    progress: nextThreshold
+      ? Math.min(1, Math.max(0, xpIntoLevel / progressDenominator))
+      : 1,
+  };
 }
 
 export function checkStreaks(
@@ -123,18 +209,18 @@ export function evaluateBadges(
     safeNumber(currentState?.gamification?.xp) > 0 ||
     safeNumber(dailyXp) > 0
   ) {
-    qualifiedBadges.push("THE_FIRST_REP");
+    qualifiedBadges.push("FIRST_BLOOD");
   }
 
   if (
     proteinTarget > 0 &&
     Math.abs(safeNumber(currentDay?.prot) - proteinTarget) <= 3
   ) {
-    qualifiedBadges.push("MACRO_SNIPER");
+    qualifiedBadges.push("PROTEIN_MASTER");
   }
 
   if (safeNumber(currentState?.gamification?.currentStreak) >= 7) {
-    qualifiedBadges.push("IRON_DISCIPLINE_7");
+    qualifiedBadges.push("IRON_STREAK_7");
   }
 
   if (
@@ -147,17 +233,25 @@ export function evaluateBadges(
   return uniqueStrings(qualifiedBadges);
 }
 
+export function getBadgeDetails(badgeIds = []) {
+  return uniqueStrings(badgeIds)
+    .map((badgeId) => BADGE_DEFINITIONS[badgeId])
+    .filter(Boolean);
+}
+
 export function processDayGamification(dateValue) {
   const currentState = getState();
   const dateKey = formatDate(dateValue || currentState.selectedDate);
   const targets = currentState.targets;
   const currentDay = currentState.days[dateKey] || createEmptyDay();
-  const dailyXp = calculateDailyXP(currentDay, targets);
+  const dailyXpBreakdown = calculateDailyXPBreakdown(currentDay, targets);
+  const dailyXp = dailyXpBreakdown.total;
   const totalXp = getLoggedDayKeys(currentState.days).reduce((sum, dayKey) => {
     const day = currentState.days[dayKey] || createEmptyDay();
     return sum + calculateDailyXP(day, targets);
   }, 0);
   const nextLevel = calculateLevel(totalXp);
+  const levelProgress = calculateLevelProgress(totalXp);
   const streakState = checkStreaks(
     dateKey,
     currentState.gamification,
@@ -199,6 +293,10 @@ export function processDayGamification(dateValue) {
   return {
     ...finalGamification,
     dailyXp,
+    dailyXpBreakdown,
+    levelProgress,
+    unlockedBadgeDetails: getBadgeDetails(finalGamification.badges),
     newlyUnlockedBadges,
+    newlyUnlockedBadgeDetails: getBadgeDetails(newlyUnlockedBadges),
   };
 }

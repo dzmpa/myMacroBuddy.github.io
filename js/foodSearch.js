@@ -609,3 +609,27 @@ export async function searchAllApis(query, sourceState, options = {}) {
     };
   }
 }
+
+export function bindGlobalFoodSearch() {
+  const searchButton = document.getElementById("searchAllApis");
+  const searchInput = document.getElementById("globalFoodSearch");
+
+  if (!searchButton || !searchInput || searchButton.dataset.bound === "true") {
+    return;
+  }
+
+  searchButton.dataset.bound = "true";
+  searchButton.addEventListener("click", () => {
+    runGlobalFoodSearch(1);
+  });
+
+  if (searchInput.dataset.bound !== "true") {
+    searchInput.dataset.bound = "true";
+    searchInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        runGlobalFoodSearch(1);
+      }
+    });
+  }
+}

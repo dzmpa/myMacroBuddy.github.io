@@ -1,19 +1,3 @@
-
-import { bindPageNavigation, getActiveAppPage, setActiveAppPage } from "./core/router.js";
-import { bindProfileForm, bindProfileActions, requireProfile, revalidateProfileState, shouldShowOnboarding } from "./controllers/profile.js";
-import { bindMacroCalculator } from "./controllers/macroCalculator.js";
-import { bindFoodForm, clearFoodForm } from "./controllers/foodForm.js";
-import { bindAuthOverlay, bindLogoutButton, dismissAuthOverlay, updateUserBadge } from "./controllers/authUI.js";
-import { bindBackupControls } from "./controllers/backup.js";
-import { bindRecipeForm } from "./recipes.js";
-import { bindOpenFoodFacts } from "./openFoodFacts.js";
-import { bindEdamamFoodSearch } from "./edamam.js";
-import { bindGlobalFoodSearch } from "./foodSearch.js";
-import { bindMealPlanner } from "./mealPlanner.js";
-import { bindFoodLog } from "./foodLog.js";
-import { bindPantryAssistant } from "./pantry.js";
-import { bindApiConfig } from "./apiConfig.js";
-
 import {
   calculateAdaptiveTDEE,
   calculateBaseMacros,
@@ -228,14 +212,18 @@ function emptyRecipeSuggestions(message = "") {
   };
 }
 
-export function getExternalSearchResults() {
+function getExternalSearchResults() {
   return Array.isArray(state.lastExternalImport?.items)
     ? state.lastExternalImport.items
     : [];
 }
 
-export function getSelectedDay() {
+function getSelectedDay() {
   return state.days[formatDate(state.selectedDate)] || createEmptyDay();
+}
+
+function shouldShowOnboarding() {
+  return isProfileModalForcedOpen;
 }
 
 
@@ -279,7 +267,7 @@ function setFoodTagSelection(tags = []) {
 
 
 
-export function ensureSeedData() {
+function ensureSeedData() {
   const patch = getSeedStatePatch(state);
 
   if (!Object.keys(patch).length) {
@@ -347,7 +335,7 @@ function refreshDerivedState() {
   });
 }
 
-export function updateUI(scopes = ["all"]) {
+function updateUI(scopes = ["all"]) {
   const isAll = scopes.includes("all");
 
   // Âmbito: Perfil e Metas
@@ -401,7 +389,7 @@ export function updateUI(scopes = ["all"]) {
 }
 
 // Nova versão da persistência que aceita o âmbito
-export function persistAndUpdate(scopes = ["all"]) {
+function persistAndUpdate(scopes = ["all"]) {
   refreshDerivedState();
   saveToStorage(state, activeStorageKey);
   updateUI(scopes);
@@ -420,7 +408,7 @@ function resetRecipeSuggestions(message = "") {
   });
 }
 
-export function resetPantryAfterFoodChange() {
+function resetPantryAfterFoodChange() {
   const validFoodIds = new Set(state.foods.map((food) => food.id));
 
   setState({
@@ -434,7 +422,7 @@ export function resetPantryAfterFoodChange() {
   resetRecipeSuggestions();
 }
 
-export function setLastExternalImport(payload) {
+function setLastExternalImport(payload) {
   setState({
     lastExternalImport: {
       importedAt: new Date().toISOString(),
@@ -913,7 +901,7 @@ function handleSearchPageChange(nextPage) {
  * Boot all app subsystems after auth is resolved.
  * Can be called from init() (existing session) or after login/register.
  */
-export async function bootApp(account) {
+async function bootApp(account) {
   updateUserBadge(account);
   dismissAuthOverlay();
 
@@ -956,7 +944,7 @@ async function init() {
   // ── Auth gate ──────────────────────────────────────────────────────────────
   const activeUsername = getActiveSession();
 
-  bindAuthOverlay((key) => { activeStorageKey = key; }, loadFromStorage);
+  bindAuthOverlay();
   bindLogoutButton();
 
   if (!activeUsername) {

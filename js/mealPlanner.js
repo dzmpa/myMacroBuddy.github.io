@@ -299,3 +299,14 @@ export function generatePlan(state, target, coachScores = {}) {
 
   return { plan };
 }
+
+export function bindMealPlanner() {
+  const generateButton = document.getElementById("generateMealPlanBtn");
+  if (!generateButton || generateButton.dataset.bound === "true") return;
+
+  generateButton.dataset.bound = "true";
+  generateButton.addEventListener("click", () => {
+    refreshDerivedState();
+    updateUI(["day"]);
+  });
+}

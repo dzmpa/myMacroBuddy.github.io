@@ -317,3 +317,80 @@ export async function analyseRecipe(ingredientsText, config = {}) {
 
   return normalizeAnalysisResponse(data);
 }
+
+export function bindEdamamFoodSearch() {
+  const searchButton = document.getElementById("searchEdamamFoodBtn");
+  const searchInput = document.getElementById("edamamFoodQuery");
+
+  if (!searchButton || !searchInput || searchButton.dataset.bound === "true") {
+    return;
+  }
+
+  searchButton.dataset.bound = "true";
+  searchButton.addEventListener("click", async () => {
+    const query = String(searchInput.value).trim();
+
+    if (!query) {
+      setLastExternalImport({
+        type: "edamam-food-search",
+        source: "edamam",
+        query: "",
+        item: null,
+        items: [],
+        message: "Type a food name to search Edamam.",
+      });
+      saveToStorage(state, activeStorageKey);
+      updateUI(["all"]);
+      return;
+    }
+
+    if (!hasEdamamConfig(state.apiConfig)) {
+      setLastExternalImport({
+        type: "edamam-food-search",
+        source: "edamam",
+        query,
+        item: null,
+        items: [],
+        message: "Add Edamam credentials before running this optional search.",
+      });
+      saveToStorage(state, activeStorageKey);
+      updateUI(["all"]);
+      return;
+    }
+
+    searchButton.disabled = true;
+    searchButton.textContent = "Searching...";
+
+    try {
+      const foods = await searchFood(query, state.apiConfig);
+
+      setLastExternalImport({
+        type: "edamam-food-search",
+        source: "edamam",
+        query,
+        item: null,
+        items: foods,
+        message: foods.length
+          ? `Found ${foods.length} food result(s) in Edamam.`
+          : "No Edamam results matched that search.",
+      });
+    } catch (error) {
+      setLastExternalImport({
+        type: "edamam-food-search",
+        source: "edamam",
+        query,
+        item: null,
+        items: [],
+        message:
+          error instanceof Error
+            ? error.message
+            : "Edamam search failed. The app still works with local and Open Food Facts data.",
+      });
+    } finally {
+      searchButton.disabled = false;
+      searchButton.textContent = "Search Edamam";
+      saveToStorage(state, activeStorageKey);
+      updateUI(["all"]);
+    }
+  });
+}
