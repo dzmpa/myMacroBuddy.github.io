@@ -223,35 +223,34 @@ export function renderFoodList({ onEdit, onDelete }) {
 
   if (!list) return;
 
+  // Clear once
   list.innerHTML = "";
 
-  if (recipeSelect) {
-    recipeSelect.innerHTML = `<option value="">Seleciona alimento...</option>`;
-  }
-
-  if (quickSelect) {
-    quickSelect.innerHTML = `<option value="">Seleciona alimento...</option>`;
-  }
+  if (recipeSelect) recipeSelect.innerHTML = `<option value="">Seleciona alimento...</option>`;
+  if (quickSelect) quickSelect.innerHTML = `<option value="">Seleciona alimento...</option>`;
 
   if (!state.foods.length) {
     list.innerHTML =
-      '<div class="rounded-2xl border border-dashed border-slate-700 p-4 text-sm text-slate-400">Sem alimentos guardados.</div>';
+      '<div class="card border-dashed text-sm text-slate-400">Sem alimentos guardados.</div>';
     return;
   }
 
+  const listFragment = document.createDocumentFragment();
+  const recipeSelectFragment = document.createDocumentFragment();
+  const quickSelectFragment = document.createDocumentFragment();
+
   state.foods.forEach((food) => {
-    if (recipeSelect) recipeSelect.add(new Option(food.name, food.id));
-    if (quickSelect) quickSelect.add(new Option(food.name, food.id));
+    if (recipeSelect) recipeSelectFragment.appendChild(new Option(food.name, food.id));
+    if (quickSelect) quickSelectFragment.appendChild(new Option(food.name, food.id));
 
     const item = document.createElement("article");
-    item.className =
-      "rounded-2xl border border-slate-700 bg-slate-900/80 p-4 shadow-sm";
+    item.className = "card rounded-3xl p-6";
 
     item.innerHTML = `
       <div class="flex items-start justify-between gap-3">
         <div class="space-y-1">
-          <h3 class="font-semibold text-white">${escapeHtml(food.name)}</h3>
-          <p class="text-xs text-slate-400">${renderMacroLine(food)}</p>
+          <h3 class="text-lg font-semibold text-white">${escapeHtml(food.name)}</h3>
+          <p class="text-sm text-slate-300">${renderMacroLine(food)}</p>
           <p class="text-[11px] text-slate-500">
             Fonte: ${escapeHtml(renderSourceBadge(food.source))}
             ${food.barcode ? ` | Barcode: ${escapeHtml(food.barcode)}` : ""}
@@ -260,8 +259,8 @@ export function renderFoodList({ onEdit, onDelete }) {
           <p class="text-[11px] text-slate-500">${escapeHtml((food.tags || []).join(" | "))}</p>
         </div>
         <div class="flex gap-2">
-          <button type="button" data-edit="${food.id}" class="rounded-full border border-slate-600 px-3 py-1 text-xs text-slate-200">Editar</button>
-          <button type="button" data-delete="${food.id}" class="rounded-full border border-rose-500/40 px-3 py-1 text-xs text-rose-300">Apagar</button>
+          <button type="button" data-edit="${food.id}" class="btn transition px-3 py-1 text-xs">Editar</button>
+          <button type="button" data-delete="${food.id}" class="btn transition px-3 py-1 text-xs">Apagar</button>
         </div>
       </div>
     `;
@@ -269,8 +268,12 @@ export function renderFoodList({ onEdit, onDelete }) {
     item.querySelector("[data-edit]").addEventListener("click", () => onEdit(food.id));
     item.querySelector("[data-delete]").addEventListener("click", () => onDelete(food.id));
 
-    list.appendChild(item);
+    listFragment.appendChild(item);
   });
+
+  list.appendChild(listFragment);
+  if (recipeSelect) recipeSelect.appendChild(recipeSelectFragment);
+  if (quickSelect) quickSelect.appendChild(quickSelectFragment);
 }
 
 export function renderExternalFoodResults(
@@ -306,16 +309,16 @@ export function renderExternalFoodResults(
     return;
   }
 
+  const fragment = document.createDocumentFragment();
   lastExternalImport.items.forEach((food, index) => {
     const card = document.createElement("article");
-    card.className =
-      "rounded-2xl border border-slate-700 bg-slate-900/80 p-4 shadow-sm";
+    card.className = "card rounded-3xl p-6";
 
     card.innerHTML = `
       <div class="flex items-start justify-between gap-3">
         <div class="space-y-1">
-          <h3 class="font-semibold text-white">${escapeHtml(food.name)}</h3>
-          <p class="text-xs text-slate-400">${renderMacroLine(food)}</p>
+          <h3 class="text-lg font-semibold text-white">${escapeHtml(food.name)}</h3>
+          <p class="text-sm text-slate-300">${renderMacroLine(food)}</p>
           <p class="text-[11px] text-slate-500">
             Source: ${escapeHtml(renderSourceBadge(food.source))}
             ${food.externalId ? ` | ${escapeHtml(food.externalId)}` : ""}
@@ -324,19 +327,18 @@ export function renderExternalFoodResults(
         <button
           type="button"
           data-save-external="${index}"
-          class="rounded-2xl bg-emerald-500 px-3 py-2 text-xs font-semibold text-slate-950 transition hover:bg-emerald-400"
+          class="btn bg-emerald-500 text-slate-950 font-semibold"
         >
           Save food
         </button>
       </div>
     `;
 
-    card
-      .querySelector("[data-save-external]")
-      .addEventListener("click", () => onSaveFood?.(food));
-
-    container.appendChild(card);
+    card.querySelector("[data-save-external]").addEventListener("click", () => onSaveFood?.(food));
+    fragment.appendChild(card);
   });
+
+  container.appendChild(fragment);
 }
 
 export function renderSearchResults(
@@ -376,6 +378,7 @@ export function renderSearchResults(
   }
 
   container.innerHTML = "";
+  const fragment = document.createDocumentFragment();
 
   items.forEach((food, index) => {
     const card = document.createElement("article");
@@ -388,7 +391,7 @@ export function renderSearchResults(
       : renderSourceBadge(food.source);
 
     card.className =
-      `rounded-2xl border bg-slate-900/80 p-4 shadow-sm transition ${
+      `card rounded-3xl transition ${
         isRecentMatch
           ? "border-emerald-500/40 shadow-emerald-950/30"
           : "border-slate-700"
@@ -398,7 +401,7 @@ export function renderSearchResults(
       <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div class="space-y-2">
           <div class="flex flex-wrap items-center gap-2">
-            <h3 class="font-semibold text-white">${escapeHtml(food.name)}</h3>
+            <h3 class="text-lg font-semibold text-white">${escapeHtml(food.name)}</h3>
             <span class="rounded-full bg-slate-800 px-3 py-1 text-[11px] text-slate-300">
               ${escapeHtml(sourceLabels)}
             </span>
@@ -419,7 +422,7 @@ export function renderSearchResults(
         </div>
 
         <div class="flex w-full flex-col gap-2 sm:w-auto sm:min-w-[220px]">
-          <label class="flex items-center gap-2 rounded-2xl border border-slate-800 bg-slate-950/80 px-3 py-2 text-xs text-slate-400">
+          <label class="flex items-center gap-2 rounded-3xl border border-slate-800 bg-slate-950/80 px-3 py-2 text-xs text-slate-400">
             <span>Grams</span>
             <input
               type="number"
@@ -435,7 +438,7 @@ export function renderSearchResults(
           <button
             type="button"
             data-log-search-result="${index}"
-            class="rounded-2xl px-4 py-3 text-sm font-semibold text-slate-950 transition ${
+            class="btn px-4 py-3 text-sm font-semibold text-slate-950 ${
               isRecentMatch && recentAction === "logged"
                 ? "bg-emerald-400 hover:bg-emerald-300"
                 : "bg-emerald-500 hover:bg-emerald-400"
@@ -447,7 +450,7 @@ export function renderSearchResults(
           <button
             type="button"
             data-add-search-result="${index}"
-            class="rounded-2xl px-4 py-3 text-sm font-semibold transition ${
+            class="btn px-4 py-3 text-sm font-semibold transition ${
               isDisabled
                 ? "cursor-not-allowed border border-slate-700 bg-slate-800 text-slate-500"
                 : "border border-sky-500/40 bg-sky-500/10 text-sky-100 hover:border-sky-400 hover:bg-sky-500/20"
@@ -485,8 +488,10 @@ export function renderSearchResults(
       actionButton.addEventListener("click", () => onAddFood?.(food));
     }
 
-    container.appendChild(card);
+    fragment.appendChild(card);
   });
+
+  container.appendChild(fragment);
 
   if (paginationContainer) {
     const pagination = searchState?.pagination || null;
@@ -569,14 +574,15 @@ export function renderPantryList() {
 
   if (!state.foods.length) {
     pantryList.innerHTML =
-      '<div class="rounded-2xl border border-dashed border-slate-700 p-4 text-sm text-slate-400">Sem alimentos disponiveis para a despensa.</div>';
+      '<div class="card border-dashed text-sm text-slate-400">Sem alimentos disponiveis para a despensa.</div>';
     return;
   }
 
+  const fragment = document.createDocumentFragment();
   state.foods.forEach((food) => {
     const label = document.createElement("label");
     label.className =
-      "flex items-center gap-3 rounded-2xl border border-slate-700 bg-slate-900/70 px-4 py-3 text-sm text-slate-200";
+      "flex items-center gap-3 card p-4 text-sm text-slate-200";
 
     label.innerHTML = `
       <input
@@ -595,8 +601,10 @@ export function renderPantryList() {
       </span>
     `;
 
-    pantryList.appendChild(label);
+    fragment.appendChild(label);
   });
+
+  pantryList.appendChild(fragment);
 }
 
 export function renderRecipeBuilder({ onRemove }) {
@@ -614,7 +622,7 @@ export function renderRecipeBuilder({ onRemove }) {
 
   if (!state.builder.length) {
     list.innerHTML =
-      '<li class="rounded-2xl border border-dashed border-slate-700 p-3 text-sm text-slate-400">Sem ingredientes no builder.</li>';
+      '<li class="card border-dashed p-3 text-sm text-slate-400">Sem ingredientes no builder.</li>';
   }
 
   state.builder.forEach((item) => {
@@ -629,7 +637,7 @@ export function renderRecipeBuilder({ onRemove }) {
 
     const row = document.createElement("li");
     row.className =
-      "flex items-center justify-between rounded-2xl border border-slate-700 bg-slate-900/70 p-3";
+      "flex items-center justify-between card p-3";
 
     row.innerHTML = `
       <span>${item.grams}g | ${escapeHtml(food.name)}</span>
@@ -653,14 +661,14 @@ export function renderRecipesList({ onDelete }) {
 
   if (!state.recipes.length) {
     list.innerHTML =
-      '<div class="rounded-2xl border border-dashed border-slate-700 p-4 text-sm text-slate-400">Sem receitas guardadas.</div>';
+      '<div class="card border-dashed text-sm text-slate-400">Sem receitas guardadas.</div>';
     return;
   }
 
   state.recipes.forEach((recipe) => {
     const card = document.createElement("article");
     card.className =
-      "rounded-2xl border border-slate-700 bg-slate-900/80 p-4 shadow-sm";
+      "card rounded-3xl p-6";
 
     card.innerHTML = `
       <div class="flex items-start justify-between gap-3">
@@ -681,20 +689,21 @@ export function renderDayFoods({ onRemove }) {
   const list = document.getElementById("dayFoodList");
   if (!list) return;
 
+  // Clear once
   list.innerHTML = "";
 
   const day = state.days[formatDate(state.selectedDate)];
 
   if (!day || !Array.isArray(day.foods) || day.foods.length === 0) {
     list.innerHTML =
-      '<li class="rounded-2xl border border-dashed border-slate-700 p-3 text-sm text-slate-400">Sem alimentos registados.</li>';
+      '<li class="card border-dashed p-3 text-sm text-slate-400">Sem alimentos registados.</li>';
     return;
   }
 
+  const fragment = document.createDocumentFragment();
   day.foods.forEach((food, index) => {
     const row = document.createElement("li");
-    row.className =
-      "flex items-center justify-between rounded-2xl border border-slate-700 bg-slate-900/70 p-3";
+    row.className = "flex items-center justify-between card p-3";
 
     row.innerHTML = `
       <div>
@@ -706,8 +715,10 @@ export function renderDayFoods({ onRemove }) {
     `;
 
     row.querySelector("[data-remove]").addEventListener("click", () => onRemove(index));
-    list.appendChild(row);
+    fragment.appendChild(row);
   });
+
+  list.appendChild(fragment);
 }
 
 export function renderMealPlan(result, { onEatMeal } = {}) {
@@ -719,7 +730,7 @@ export function renderMealPlan(result, { onEatMeal } = {}) {
 
   if (!result || result.error) {
     container.innerHTML = `
-      <div class="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-100">
+      <div class="card p-4" style="border-color: rgba(245,158,11,0.15); background: rgba(245,158,11,0.06);">
         ${escapeHtml(result?.error || "Sem plano disponivel.")}
       </div>
     `;
@@ -914,4 +925,37 @@ export function renderOnboardingModal({ isOpen }) {
   overlay.classList.toggle("flex", Boolean(isOpen));
   overlay.setAttribute("aria-hidden", String(!isOpen));
   document.body.classList.toggle("overflow-hidden", Boolean(isOpen));
+}
+
+// High-level view renderers used by the router
+export function renderSettings() {
+  try {
+    renderProfileSummary();
+  } catch (e) {
+    console.error('renderSettings: profile summary failed', e);
+  }
+
+  try {
+    renderApiConfig();
+  } catch (e) {
+    console.error('renderSettings: api config failed', e);
+  }
+
+  try {
+    // These renderers are safe to call even if their containers are not present
+    renderFoodList();
+    renderRecipesList();
+    renderPantryList();
+    renderPantrySuggestions();
+  } catch (e) {
+    console.error('renderSettings: auxiliary renderers failed', e);
+  }
+}
+
+export function renderDiary() {
+  try {
+    renderDayFoods();
+  } catch (e) {
+    console.error('renderDiary: renderDayFoods failed', e);
+  }
 }

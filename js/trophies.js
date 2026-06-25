@@ -1,6 +1,15 @@
 // js/trophies.js
 import { getState } from "./state.js";
 
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
 export const BADGE_DICTIONARY = {
   THE_FIRST_REP: {
     icon: "🏗️",
@@ -12,16 +21,63 @@ export const BADGE_DICTIONARY = {
     title: "Macro Sniper",
     description: "Hit your daily protein target within a strict 3g margin.",
   },
+  GLYCOGEN_MASTER: {
+    icon: "🍚",
+    title: "Glycogen Master",
+    description:
+      "Hit your daily carbohydrate target within a 5g margin to fuel your workouts.",
+  },
+  FAT_ARCHITECT: {
+    icon: "🥑",
+    title: "Fat Architect",
+    description:
+      "Hit your daily fat target within a 3g margin for optimal hormone function.",
+  },
+  CALORIC_BULLSEYE: {
+    icon: "🎯",
+    title: "Caloric Bullseye",
+    description:
+      "Hit your daily calorie target within a strict 50 kcal margin.",
+  },
+  FIBER_KING: {
+    icon: "🥦",
+    title: "Fiber King",
+    description: "Meet or exceed your calculated daily fiber target.",
+  },
+  HYDRO_ENGINE: {
+    icon: "💧",
+    title: "Hydro Engine",
+    description: "Meet or exceed your daily water intake target.",
+  },
+  CONSISTENT_FUEL: {
+    icon: "🔋",
+    title: "Consistent Fuel",
+    description:
+      "Log at least 4 items in a single day, proving you track every detail.",
+  },
+  THE_PPL_CYCLE: {
+    icon: "🔄",
+    title: "The PPL Cycle",
+    description:
+      "Maintain a perfect daily food logging streak for 3 consecutive days.",
+  },
   IRON_DISCIPLINE_7: {
     icon: "⛓️",
     title: "Iron Discipline",
     description:
       "Maintain a perfect daily food logging streak for 7 consecutive days.",
   },
-  FIBER_KING: {
-    icon: "🥦",
-    title: "Fiber King",
-    description: "Meet or exceed your calculated daily fiber target.",
+  UNBREAKABLE_30: {
+    icon: "🛡️",
+    title: "Unbreakable",
+    description:
+      "Maintain a perfect daily food logging streak for 30 consecutive days.",
+  },
+  CENTURY_CLUB: {
+    icon: "👑",
+    title: "Century Club",
+    description:
+      "Accumulate a total of 1000 XP through unwavering consistency.",
   },
 };
 
@@ -40,8 +96,8 @@ export function renderTrophyRoom() {
         return `
         <div class="flex flex-col items-center p-5 rounded-3xl border border-emerald-500/50 bg-slate-800 shadow-[0_0_20px_rgba(16,185,129,0.15)] text-center transition-transform hover:scale-105">
           <div class="text-5xl mb-3 drop-shadow-md">${badge.icon}</div>
-          <h4 class="text-sm font-bold text-white mb-2 tracking-wide">${badge.title}</h4>
-          <p class="text-xs text-emerald-100/80 leading-relaxed">${badge.description}</p>
+          <h4 class="text-sm font-bold text-white mb-2 tracking-wide">${escapeHtml(badge.title)}</h4>
+          <p class="text-xs text-emerald-100/80 leading-relaxed">${escapeHtml(badge.description)}</p>
         </div>
       `;
       } else {
@@ -51,8 +107,8 @@ export function renderTrophyRoom() {
             ${badge.icon}
             <div class="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center bg-slate-900 border border-slate-700 rounded-full text-[10px]">🔒</div>
           </div>
-          <h4 class="text-sm font-bold text-slate-400 mb-1">${badge.title}</h4>
-          <p class="text-xs text-slate-500 leading-relaxed italic">Requirement: ${badge.description}</p>
+          <h4 class="text-sm font-bold text-slate-400 mb-1">${escapeHtml(badge.title)}</h4>
+          <p class="text-xs text-slate-500 leading-relaxed italic">Requirement: ${escapeHtml(badge.description)}</p>
         </div>
       `;
       }
@@ -63,24 +119,31 @@ export function renderTrophyRoom() {
 export function toggleTrophyModal(forceOpen) {
   const modal = document.getElementById("trophyModal");
   if (!modal) return;
+  // Determine current visibility more robustly (computed style may differ from classes)
+  const computedHidden = (typeof window !== 'undefined')
+    ? window.getComputedStyle(modal).display === 'none'
+    : modal.classList.contains("hidden");
 
-  const isHidden = modal.classList.contains("hidden");
+  const isHidden = modal.classList.contains("hidden") || computedHidden;
   const willOpen = forceOpen !== undefined ? forceOpen : isHidden;
 
   if (willOpen) {
     renderTrophyRoom();
     modal.classList.remove("hidden");
     modal.classList.add("flex");
+    modal.setAttribute("aria-hidden", "false");
     document.body.classList.add("overflow-hidden");
-
-    const closeBtn = document.getElementById("closeTrophyModalBtn");
-    if (closeBtn && closeBtn.dataset.bound !== "true") {
-      closeBtn.dataset.bound = "true";
-      closeBtn.addEventListener("click", () => toggleTrophyModal(false));
-    }
   } else {
     modal.classList.add("hidden");
     modal.classList.remove("flex");
+    modal.setAttribute("aria-hidden", "true");
     document.body.classList.remove("overflow-hidden");
+  }
+
+  // Always ensure close button is bound once, regardless of how modal was opened
+  const closeBtn = document.getElementById("closeTrophyModalBtn");
+  if (closeBtn && closeBtn.dataset.bound !== "true") {
+    closeBtn.dataset.bound = "true";
+    closeBtn.addEventListener("click", () => toggleTrophyModal(false));
   }
 }

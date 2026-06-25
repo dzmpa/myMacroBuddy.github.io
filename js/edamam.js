@@ -1,4 +1,5 @@
 import { safeNumber, uniqueStrings } from "./utils.js";
+import { isValidEdamamFoodHit, isValidEdamamRecipe } from "./validators.js";
 
 const EDAMAM_FOOD_API_BASE = "https://api.edamam.com/api/food-database/v2";
 const EDAMAM_RECIPE_API_BASE = "https://api.edamam.com/api/recipes/v2";
@@ -48,6 +49,8 @@ function normalizeFoodHit(hit = {}) {
   if (!name) {
     return null;
   }
+
+  if (!isValidEdamamFoodHit(hit)) return null;
 
   return {
     source: "edamam",

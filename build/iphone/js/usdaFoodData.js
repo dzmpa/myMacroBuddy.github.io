@@ -65,6 +65,28 @@ function getNutrientMeta(entry = {}) {
   };
 }
 
+function parseNumberOrNull(value) {
+  if (value === null || value === undefined) return null;
+  if (typeof value === "number") return Number.isFinite(value) ? value : null;
+  const s = String(value).trim();
+  if (s === "") return null;
+  const n = Number(s);
+  return Number.isFinite(n) ? n : null;
+}
+
+function isValidNutrientEntry(entry = {}) {
+  const candidates = [entry.amount, entry.value, entry.nutrient?.amount, entry.nutrient?.value];
+  for (const c of candidates) {
+    if (c === undefined) continue;
+    const parsed = parseNumberOrNull(c);
+    if (parsed === null && c !== null && String(c).trim() !== "") {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 function resolveNutrientAmount(foodNutrients = [], definition = {}) {
   const wantedIds = new Set((definition.ids || []).map((value) => safeNumber(value)));
   const wantedNames = new Set(
@@ -89,6 +111,12 @@ export function normalizeFoodResult(food = {}) {
 
   if (!name || !externalId) {
     return null;
+  }
+
+  for (const entry of nutrients) {
+    if (!isValidNutrientEntry(entry)) {
+      return null;
+    }
   }
 
   return {

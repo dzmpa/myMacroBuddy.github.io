@@ -70,6 +70,21 @@ export function renderWeightChart(days = {}) {
     .sort(([left], [right]) => left.localeCompare(right))
     .slice(-21);
 
+  // Ensure canvas has pixel dimensions so Chart.js can render reliably in headless
+  try {
+    const parent = canvas.parentElement || canvas;
+    const rect = parent.getBoundingClientRect();
+    const dpr = Math.max(1, window.devicePixelRatio || 1);
+    const w = Math.max(1, Math.floor((rect.width || 400) * dpr));
+    const h = Math.max(1, Math.floor((rect.height || 140) * dpr));
+    canvas.width = w;
+    canvas.height = h;
+    canvas.style.width = (w / dpr) + "px";
+    canvas.style.height = (h / dpr) + "px";
+  } catch (e) {
+    // ignore sizing errors
+  }
+
   weightChart = new Chart(canvas, {
     type: "line",
     data: {
@@ -97,6 +112,12 @@ export function renderWeightChart(days = {}) {
     },
     options: baseOptions(),
   });
+  try {
+    const ts = String(Date.now());
+    try { canvas.dataset.renderedAt = ts; } catch (e) {}
+    try { canvas.setAttribute('data-rendered-at', ts); } catch (e) {}
+    try { console.debug && console.debug('charts:renderMacroChart set ts', ts); } catch (e) {}
+  } catch {}
 }
 
 export function renderMacroChart(day = {}, target = {}) {
@@ -106,6 +127,21 @@ export function renderMacroChart(day = {}, target = {}) {
   if (!canvas) return;
 
   if (macroChart) macroChart.destroy();
+
+  // Ensure canvas has pixel dimensions so Chart.js can render reliably in headless
+  try {
+    const parent = canvas.parentElement || canvas;
+    const rect = parent.getBoundingClientRect();
+    const dpr = Math.max(1, window.devicePixelRatio || 1);
+    const w = Math.max(1, Math.floor((rect.width || 400) * dpr));
+    const h = Math.max(1, Math.floor((rect.height || 280) * dpr));
+    canvas.width = w;
+    canvas.height = h;
+    canvas.style.width = (w / dpr) + "px";
+    canvas.style.height = (h / dpr) + "px";
+  } catch (e) {
+    // ignore sizing errors
+  }
 
   macroChart = new Chart(canvas, {
     type: "bar",
@@ -138,9 +174,16 @@ export function renderMacroChart(day = {}, target = {}) {
     },
     options: baseOptions(),
   });
+  try {
+    canvas.dataset.renderedAt = String(Date.now());
+  } catch {}
 }
 
 export function renderCharts(day, target, days) {
   renderMacroChart(day, target);
   renderWeightChart(days);
+  try {
+    const mc = document.getElementById('macroChart');
+    if (mc) mc.dataset.renderedAt = String(Date.now());
+  } catch {}
 }

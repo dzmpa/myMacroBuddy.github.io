@@ -1,4 +1,5 @@
 import { safeNumber } from "./utils.js";
+import { isValidOFFProduct } from "./validators.js";
 
 const OFF_API_BASE = "https://world.openfoodfacts.org/api/v2";
 const OFF_API_SEARCH_BASE = `${OFF_API_BASE}/search`;
@@ -18,7 +19,11 @@ function getOpenFoodFactsProxySearchUrl() {
 
   const hostname = String(window.location.hostname || "").trim().toLowerCase();
 
-  if (!["localhost", "127.0.0.1"].includes(hostname)) {
+  // Allow localhost, loopback and common LAN IP ranges so mobile devices
+  // on the same Wi-Fi can use a local proxy (e.g., 192.168.x.x, 10.x.x.x, 172.16-31.x.x)
+  const localIpRegex = /^(localhost|127\.0\.0\.1|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2[0-9]|3[0-1])\.\d{1,3}\.\d{1,3})$/;
+
+  if (!localIpRegex.test(hostname)) {
     return "";
   }
 
@@ -107,7 +112,8 @@ function normalizeOffProduct(product = {}) {
   const nutriments = product.nutriments || {};
   const name = resolveProductName(product, barcode || "OFF");
 
-  if (!name) {
+  // Bouncer: drop malformed or incomplete products at the boundary
+  if (!isValidOFFProduct(product)) {
     return null;
   }
 

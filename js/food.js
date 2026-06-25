@@ -1,5 +1,6 @@
 import { getState, setState } from "./state.js";
 import { safeNumber, uniqueStrings } from "./utils.js";
+import { refreshSearchIndex } from "./search.js";
 
 export const FOOD_TAGS = [
   "protein",
@@ -144,6 +145,14 @@ export function addFood(payload) {
     foods: [...currentState.foods, food],
   });
 
+  // Keep in-memory search index live
+  try {
+    refreshSearchIndex();
+  } catch (e) {
+    // non-fatal
+    console.error("refreshSearchIndex error (addFood)", e);
+  }
+
   return food;
 }
 
@@ -161,6 +170,13 @@ export function updateFood(id, payload) {
     ),
   });
 
+  // Keep in-memory search index live
+  try {
+    refreshSearchIndex();
+  } catch (e) {
+    console.error("refreshSearchIndex error (updateFood)", e);
+  }
+
   return updatedFood;
 }
 
@@ -170,4 +186,11 @@ export function deleteFood(id) {
   setState({
     foods: currentState.foods.filter((food) => food.id !== id),
   });
+
+  // Keep in-memory search index live
+  try {
+    refreshSearchIndex();
+  } catch (e) {
+    console.error("refreshSearchIndex error (deleteFood)", e);
+  }
 }
