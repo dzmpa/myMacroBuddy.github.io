@@ -9,6 +9,9 @@ test.use({ viewport: { width: 1280, height: 800 } });
 test('Dashboard visual regression (Chromium)', async ({ page, browserName }) => {
   test.skip(browserName !== 'chromium', 'Run visual regression on Chromium for stable snapshots');
 
+  await page.addInitScript(() => {
+    sessionStorage.setItem('mmb_session_v1', 'support@v6fitness.app');
+  });
   await page.goto('http://127.0.0.1:8000');
 
   // Wait for key UI to render

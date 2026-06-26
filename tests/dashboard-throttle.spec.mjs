@@ -6,6 +6,9 @@ import { test, expect } from '@playwright/test';
 test('Throttled network and CPU do not freeze UI (Chromium only)', async ({ page, browserName }) => {
   test.skip(browserName !== 'chromium', 'CDP network/CPU throttling available only on Chromium');
 
+  await page.addInitScript(() => {
+    sessionStorage.setItem('mmb_session_v1', 'support@v6fitness.app');
+  });
   await page.goto('http://127.0.0.1:8000');
   await page.waitForLoadState('networkidle');
 

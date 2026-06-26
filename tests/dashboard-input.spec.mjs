@@ -2,6 +2,9 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Dashboard input debounce and granular updates', () => {
   test('kcal input updates immediate text and charts are debounced', async ({ page }) => {
+    await page.addInitScript(() => {
+      sessionStorage.setItem('mmb_session_v1', 'support@v6fitness.app');
+    });
     await page.goto('http://127.0.0.1:8000');
 
     // Wait for the app to fully initialise before interacting
@@ -40,6 +43,9 @@ test.describe('Dashboard input debounce and granular updates', () => {
   });
 
   test('updating water does not re-render selected date label', async ({ page }) => {
+    await page.addInitScript(() => {
+      sessionStorage.setItem('mmb_session_v1', 'support@v6fitness.app');
+    });
     await page.goto('http://127.0.0.1:8000');
     await page.waitForLoadState('networkidle');
 

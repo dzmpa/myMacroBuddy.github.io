@@ -12,6 +12,9 @@ for (const deviceName of MOBILE_DEVICES) {
       const context = await browser.newContext({ ...device });
       const page = await context.newPage();
 
+      await page.addInitScript(() => {
+        sessionStorage.setItem('mmb_session_v1', 'support@v6fitness.app');
+      });
       await page.goto('http://127.0.0.1:8000');
       await page.waitForLoadState('networkidle');
 
@@ -50,6 +53,9 @@ for (const deviceName of MOBILE_DEVICES) {
       const context = await browser.newContext({ ...device });
       const page = await context.newPage();
 
+      await page.addInitScript(() => {
+        sessionStorage.setItem('mmb_session_v1', 'support@v6fitness.app');
+      });
       await page.goto('http://127.0.0.1:8000');
       await page.waitForLoadState('networkidle');
 
@@ -60,12 +66,9 @@ for (const deviceName of MOBILE_DEVICES) {
       await expect(modal).toBeAttached({ timeout: 5000 });
 
       // Open the modal programmatically (mirrors what toggleTrophyModal(true) does)
-      await page.evaluate(() => {
-        const m = document.getElementById('trophyModal');
-        if (m) {
-          m.classList.remove('hidden');
-          m.classList.add('flex');
-        }
+      await page.evaluate(async () => {
+        const mod = await import('./js/trophies.js');
+        mod.toggleTrophyModal(true);
       });
 
       await expect(modal).toBeVisible({ timeout: 2000 });
